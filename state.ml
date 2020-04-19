@@ -21,16 +21,18 @@ type t = {
 
 type result = Legal of t | Illegal
 
-let init_state (d:Deck.t) = {
-  stock_pile = start_stock d;
-  discard_pile = start_discard d;
-  players = [];
-  current_player = 0;
-  dealer = 0;
-  last_move = None;
-}
+let init_state (d:Deck.t) = 
+  let starting_cards = start_cards d in
+  {
+    stock_pile = start_stock d;
+    discard_pile = start_discard d;
+    players = init_players starting_cards;
+    current_player = 0;
+    dealer = 0;
+    last_move = None;
+  }
 
-let init_player (p:player) (d:deck) = {
+let init_player (d:deck) = {
   hand = start_player_hand d;
   score = 0;
 }
@@ -85,14 +87,14 @@ let get_new_draw_state st deck location =
   let current_stock  = current_stock_pile st in
   let current_discard = get_discard_pile st in
   let current_player = get_current_player st in
-  let card = if (location == Stock) then get_top_card current_stock else get_top_card current_discard in
+  let card = if (location = "Stock") then get_top_card current_stock else get_top_card current_discard in
   {
-    stock_pile = if (location==Stock) then (remove_top_card current_stock) 
+    stock_pile = if (location="Stock") then (remove_top_card current_stock) 
       else current_stock;
-    discard_pile = if (location==Discard) then (remove_top_card current_discard)
+    discard_pile = if (location="Discard") then (remove_top_card current_discard)
       else current_discard;
     players = update_player player st;
-    current_player = if (current_player == 0) then 1 else 0;
+    current_player = if (current_player = 0) then 1 else 0;
     dealer = get_dealer st;
     last_move = Draw location;
     last_state = st;
@@ -100,8 +102,7 @@ let get_new_draw_state st deck location =
 
 
 let draw_deck location deck st =
-  let options = get_options deck in
-  if (List.mem location options) then  
+  if (List.mem location ["Stock","Discard"]) then  
     (let new_st = get_new_draw_state st deck location
      in
      Legal new_st) 
