@@ -1,22 +1,22 @@
-open deck
+open Deck
+open Command
 
 exception Malformed
 
 (* TODO: replace [unit] with a type of your own design. *)
 
 type p = {
-  hand: deck;
+  hand: Deck.t;
   score: int;
 }
 
 type t = {
-  stock_pile: deck;
-  discard_pile : deck;
+  stock_pile: Deck.t;
+  discard_pile : Deck.t;
   players : p list;
   current_player : p;
   dealer : int;
   last_move: command;
-  last_state: t;
 }
 
 type result = Legal of t | Illegal
@@ -28,7 +28,6 @@ let init_state (d:deck) = {
   current_player = 0;
   dealer = 0;
   last_move = None;
-  last_state = t;
 }
 
 let init_player (p:player) (d:deck) = {
@@ -102,9 +101,10 @@ let get_new_draw_state st deck location =
 
 let draw_deck location deck st =
   let options = get_options deck in
-  if (List.mem location options) then  (
-    let new_st = get_new_draw_state st deck location
-    in
-    Legal new_st else Illegal
+  if (List.mem location options) then  
+    (let new_st = get_new_draw_state st deck location
+     in
+     Legal new_st) 
+  else Illegal
 
 
