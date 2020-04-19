@@ -21,18 +21,19 @@ type t = {
 
 type result = Legal of t | Illegal
 
-let init_state (d:Deck.t) = 
+let init_state (d:Deck.t) players_starting_scores current_player = 
   let starting_cards = start_cards d in
   {
     stock_pile = start_stock d;
     discard_pile = start_discard d;
-    players = init_players starting_cards;
-    current_player = 0;
-    dealer = 0;
+    players = init_players starting_cards players_starting_scores;
+    current_player = current_player;
     last_move = None;
   }
 
-let init_player (d:deck) = {
+(*return player list*)
+
+let init_player (d:deck) players_starting_scores = {
   hand = start_player_hand d;
   score = 0;
 }
