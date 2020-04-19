@@ -7,4 +7,5 @@
 *)
 
 (** The abstract type of values representing the game state. *)
-type state 
+type t 
+val discard : Deck.card -> t -> t
