@@ -239,7 +239,3 @@ let deadwood_value hand =
 
 let meld_value hand =
   (hand |> value_of_hand) - (hand |> deadwood_value)
-
-let hand = [(Queen, Hearts);(Six, Clubs); (Four, Hearts); (Four, Clubs); (Four, Spades); (Two, Clubs); (Two, Hearts); (Ace, Spades); (Three, Spades); (Two, Spades)];;
-let hand2 = ((Ace, Clubs)::(Ace, Hearts)::(Three, Hearts)::(Ace, Diamonds)::hand);;
-let hand3 = [(Five, Spades); (Six, Diamonds); (Three, Spades); (Four, Diamonds); (Six, Spades); (Five, Diamonds); (Two, Spades); (Five, Clubs); (Four, Spades); (Six, Clubs)];;
