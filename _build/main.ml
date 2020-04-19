@@ -2,7 +2,6 @@ open Deck
 open Command
 open State
 
-
 (** [play_game f] starts the adventure in file [f]. *)
 let play_game name1 name2 =
   failwith "unimplemented" 
