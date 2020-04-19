@@ -130,7 +130,7 @@ let run_melds hand =
     or elements of [l2]. *)
 let rec union l1 l2 =
   List.fold_right 
-    (fun card acc -> if List.mem card l2 
+    (fun card acc -> if List.mem card l2
       then acc else card::acc) l1 l2
 
 (** [intersect l1 l2] contains only the elements that are elements of [l1]
