@@ -1,4 +1,5 @@
 open Deck
+open Command
 
 exception Malformed
 
@@ -16,7 +17,6 @@ type t = {
   current_player : p;
   dealer : int;
   last_move: command;
-  last_state: t;
 }
 
 type result = Legal of t | Illegal
@@ -28,7 +28,6 @@ let init_state (d:Deck.t) = {
   current_player = 0;
   dealer = 0;
   last_move = None;
-  last_state = t;
 }
 
 let init_player (p:player) (d:deck) = {
@@ -102,19 +101,20 @@ let get_new_draw_state st deck location =
 
 let draw_deck location deck st =
   let options = get_options deck in
-  if (List.mem location options) then  (
-    let new_st = get_new_draw_state st deck location
-    in
-    Legal new_st else Illegal
+  if (List.mem location options) then  
+    (let new_st = get_new_draw_state st deck location
+     in
+     Legal new_st) 
+  else Illegal
 
 
 let discard card prev_st = 
-  if prev_st.last_move = Draw "discard" and
-  (List.hd prev_st.discard_pile) = card then Illegal else
-  Legal ({
-      (* todo: insert other parameters of state *)
-      discard = card :: prev_st.discard;
-      last_move = Discard (card);
-      last_state = prev_st;
-      players = Players.remove_card prev_st.current_player card
-    })
+  if prev_st.last_move = Draw "discard" && 
+     (List.hd prev_st.discard_pile) = card then Illegal else
+    Legal ({
+        (* todo: insert other parameters of state *)
+        discard = card :: prev_st.discard;
+        last_move = Discard (card);
+        last_state = prev_st;
+        players = Players.remove_card prev_st.current_player card
+      })
