@@ -4,6 +4,7 @@ type command =
   | Draw of object_phrase
   | Discard of object_phrase
   | Knock
+  | Pass
   | Sort
   | Score
   | Show of object_phrase
@@ -47,6 +48,7 @@ let gen_obj_phrase str_list =
   | "draw" :: x :: xs -> Draw (x :: xs)
   | "discard" :: x :: xs -> Discard (x :: xs)
   | "knock" :: [] | "gin" :: [] -> Knock
+  | "pass" :: [] -> Pass
   | "sort" :: [] -> Sort
   | "score" :: [] -> Score
   | "show" :: x :: xs -> Show (x :: xs)

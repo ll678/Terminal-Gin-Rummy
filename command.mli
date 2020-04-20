@@ -13,13 +13,14 @@ type object_phrase
 (** The type [command] represents a player command that is decomposed
     into a verb and possibly an object phrase. *)
 type command = 
-| Draw of object_phrase
-| Discard of object_phrase
-| Knock
-| Sort
-| Score
-| Show of object_phrase
-| Quit
+  | Draw of object_phrase
+  | Discard of object_phrase
+  | Knock
+  | Pass
+  | Sort
+  | Score
+  | Show of object_phrase
+  | Quit
 
 (** Raised when an empty command is parsed. *)
 exception Empty
