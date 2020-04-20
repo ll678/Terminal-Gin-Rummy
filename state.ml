@@ -21,11 +21,11 @@ type t = {
 
 type result = Legal of t | Illegal
 
-let init_state (d:Deck.t) players_starting_scores current_player = 
-  let starting_cards = start_cards d in
+let init_state d players_starting_scores current_player = 
+  let starting_cards = start_cards in
   {
-    stock_pile = start_stock d;
-    discard_pile = start_discard d;
+    stock_pile = List.nth starting_cards 1;
+    discard_pile = List.nth starting_cards 2;
     players = init_players starting_cards players_starting_scores;
     current_player = current_player;
     last_move = None;
@@ -33,10 +33,14 @@ let init_state (d:Deck.t) players_starting_scores current_player =
 
 (*return player list*)
 
-let init_player (d:deck) players_starting_scores = {
-  hand = start_player_hand d;
-  score = 0;
-}
+let init_players starting_cards starting_scores = 
+  [{
+    hand = List.nth starting_cards 3 ;
+    score = fst starting_scores;
+  },{
+      hand = List.nth starting_cards 4 ;
+      score = snd starting_scores;
+    }]
 
 let current_stock_pile st =
   st.stock_pile
@@ -50,14 +54,9 @@ let get_current_player st =
 let get_players st = 
   st.players
 
-let get_dealer st =
-  st.dealer
-
 let get_last_move st =
   st.last_move
 
-let get_last_st st =
-  st.last_state 
 
 (* We need to decide if the discard pile is ordered (which we would want in this case to get the faceup card) *)
 let remove_top_card deck =
@@ -75,13 +74,13 @@ let update_player player st =
     let player_hand = card::((fst st.p).hand) in 
     {
       hand = player_hand;
-      score = get_score hand
+      score = value_of_hand player_hand
     }
   else 
     let player_hand = card::((snd st.p).hand) in 
     {
       hand = player_hand;
-      score = get_score player_hand
+      score = value_of_hand player_hand
     }
 
 let get_new_draw_state st deck location =
@@ -96,11 +95,8 @@ let get_new_draw_state st deck location =
       else current_discard;
     players = update_player player st;
     current_player = if (current_player = 0) then 1 else 0;
-    dealer = get_dealer st;
-    last_move = Draw location;
-    last_state = st;
+    last_move = (Draw location,card);
   }
-
 
 let draw_deck location deck st =
   if (List.mem location ["Stock","Discard"]) then  

@@ -239,3 +239,17 @@ let deadwood_value hand =
 
 let meld_value hand =
   (hand |> value_of_hand) - (hand |> deadwood_value)
+
+let rec get_list n l = 
+  if n=0 then [] else
+    match l with 
+    | []-> []
+    | h::t ->  h::(get_list (n-1) t)
+
+let start_cards =
+  let temp = shuffle init_deck in  
+  let fst = get_list 31 temp  in
+  let snd = get_list 1 (difference temp fst) in
+  let trd = get_list 10 (difference (difference temp fst) snd) in
+  let fth = get_list 10 (difference (difference (difference temp fst) snd) trd) in
+  [fst; snd; trd; fth]
