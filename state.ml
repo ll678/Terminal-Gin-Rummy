@@ -3,8 +3,6 @@ open Command
 
 exception Malformed
 
-(* TODO: replace [unit] with a type of your own design. *)
-
 type p = {
   hand: Deck.t;
   score: int;
@@ -21,17 +19,7 @@ type t = {
 
 type result = Legal of t | Illegal
 
-let init_state d players_starting_scores current_player = 
-  let starting_cards = start_cards in
-  {
-    stock_pile = List.nth starting_cards 1;
-    discard_pile = List.nth starting_cards 2;
-    players = init_players starting_cards players_starting_scores;
-    current_player = current_player;
-    last_move = None;
-  }
-
-(*return player list*)
+(** Return player list*)
 
 let init_players starting_cards starting_scores = 
   [{
@@ -41,6 +29,16 @@ let init_players starting_cards starting_scores =
       hand = List.nth starting_cards 4 ;
       score = snd starting_scores;
     }]
+
+let init_state players_starting_scores current_player = 
+  let starting_cards = start_cards in
+  {
+    stock_pile = List.nth starting_cards 1;
+    discard_pile = List.nth starting_cards 2;
+    players = init_players starting_cards players_starting_scores;
+    current_player = current_player;
+    last_move = None;
+  }
 
 let current_stock_pile st =
   st.stock_pile

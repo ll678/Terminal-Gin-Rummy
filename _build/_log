@@ -24,9 +24,11 @@ ocamlfind ocamldep -modules state.ml > state.ml.depends
 # Target: state.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:state.cmo, file:state.ml, implem, ocaml, quiet }
 ocamlfind ocamlc -c -o state.cmo state.ml
 + ocamlfind ocamlc -c -o state.cmo state.ml
-File "state.ml", line 25, characters 15-26:
-25 |   stock_pile = start_stock d;
-                    ^^^^^^^^^^^
-Error: Unbound value start_stock
+File "state.ml", line 38, characters 14-65:
+38 |     players = init_players starting_cards players_starting_scores;
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type (p * p) list
+       but an expression was expected of type p list
+       Type p * p is not compatible with type p 
 Command exited with code 2.
 # Compilation unsuccessful.

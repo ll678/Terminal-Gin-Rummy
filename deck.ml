@@ -150,13 +150,13 @@ let difference l1 l2 =
 (** [combs r list] finds all possible combinations of the elements of [list]
     in a list of length [r]. This is a helper function for [all_combs]. *)
 let rec combs r list =
-  if r <= 0 then [[]]
+  if r < 1 then [[]]
   else match list with
     | [] -> []
-    | h :: t ->
-      let hd = List.map (fun l -> h :: l) (combs (r - 1) t) in
+    | h::t ->
+      let hd = List.map (fun a -> h::a) (combs (r - 1) t) in
       let tl = combs r t in
-      hd @ tl
+      List.concat [hd; tl]
 
 (** [all_combs r list acc] finds all possible combinations of the elements 
     of [list] in lists ranging from length 0 to length [r]. 
