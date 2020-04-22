@@ -1,4 +1,5 @@
 ### Starting build.
+<<<<<<< HEAD
 # Target: deck.mli.depends, tags: { extension:mli, file:deck.mli, ocaml, ocamldep, quiet }
 ocamlfind ocamldep -modules deck.mli > deck.mli.depends # cached
 # Target: deck.cmi, tags: { byte, compile, extension:mli, file:deck.mli, interf, ocaml, quiet }
@@ -40,3 +41,6 @@ ocamlfind ocamldep -modules author.ml > author.ml.depends # cached
 # Target: author.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:author.cmo, file:author.ml, implem, ocaml, quiet }
 ocamlfind ocamlc -c -o author.cmo author.ml # cached
 # Compilation successful.
+=======
+# Compilation unsuccessful.
+>>>>>>> 7a6e65dcb6ff66fa2702b5fe2aacbcd35e798a73
