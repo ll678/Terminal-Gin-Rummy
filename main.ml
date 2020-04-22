@@ -2,6 +2,7 @@ open Deck
 open Command
 open State
 
+
 (* Things to do:
    Implement knocking in state
    Implement getting current player's hand
@@ -10,6 +11,7 @@ open State
    If command is invalid, rerun previous state and prompt for command again
 *)
 
+
 let rec print_list lst =
   match lst with
   | [] -> ()
@@ -17,21 +19,64 @@ let rec print_list lst =
     print_string " "; 
     print_list t
 
+
+
+let change command st = 
+  match command with 
+  | Legal t -> t;
+  | Illegal -> print_string "This is an illegal move.\n"; st
+(** We need to implement win condition*)
+(* | Win t -> print_string (t); exit 0 *)
+
+let handle_score st = 
+  print_string "Your score is: " ; 
+  print_int (get_player_score st);
+  print_endline "\n"
+
+(**take_command takes terminal input and executes a command. The command may or
+   may not change state but take_command always returns a state *)
+let take_command command st =  
+  match command with
+  | Draw t -> change (draw_deck (String.concat " " t) st) st
+  | Discard t -> change (discard (String.concat " " t) st) st
+  | Knock -> change (knock (String.concat " " ) st) st
+  | Pass -> st (** Need to discuss this, not currently functional*)
+  | Sort -> change (sort (String.concat " " ) st) st
+  | Score -> handle_score st; st
+  | Show t -> st (**Need to discuss *)
+  | Quit -> exit 0
+
+
+(*A function that either quits or executes a command based on input*)
+let take_readline read_line  st = 
+  match parse read_line with
+  | exception Empty -> print_endline "This is an invalid command.\n"; st
+  | exception Malformed -> print_endline "This is an malformed command.\n"; st
+  | command -> (take_command command st)
+
+(* Should initalize game but not initiate state transitions *)
 let rec play_game st =
   (* Print stock pile *)
   (* TODO: will we want to do this? *)
   (* print_list (State.get_stock st); *)
-
   (* Print first card in discard pile *)
+  print_string "Discard Pile:\n";
   print_endline (st |> State.get_discard |> Deck.string_of_deck |> List.hd);
-
-  (* Print hand of current player 
-     (Function not yet defined in state.ml *)
+  (* Print hand of current player (Function not yet defined in state.ml string function @lawrence?*)
+  print_endline (st |> State.get_current_player_string); print_string "'s Hand:\n";
   print_list (st |> State.get_current_player_hand |> Deck.string_of_deck);
-
   (* Prompt for player to draw. *)
-  print_endline ("Draw a card from either the stock or the discard pile.");
-  match parse (read_line ()) with
+  print_endline ("Please draw a card from either the stock or the discard pile.");
+  print_string  "> ";
+
+  (* match parse (read_line ()) with *)
+  match read_line () with 
+  | exception End_of_file -> ()
+  | read_line -> let state = take_readline read_line st in 
+    (play_game state )
+
+(* 
+
   | Draw deck -> let new_st = draw_deck deck st in
     (* Print stock pile *)
     print_list (State.get_stock new_st);
@@ -59,13 +104,22 @@ let rec play_game st =
        match parse (read_line ()) with
        | Discard card -> let next_st = discard card new_st in play_game next_st
        | _ -> print_endline ("Invalid command."))
-  | _ -> print_endline ("Invalid command.")
 
-           failwith "unimplemented"
+ *)
+
+
+
+
+
+
+(* | _ -> print_endline ("Invalid command.")
+
+         failwith "unimplemented" *)
 
 (** [init_game n1 n2] starts a game of gin rummy with players [n1] and [n2]. *)
 let init_game name1 name2 =
-  let init = State.init_state (0, 0) 0 (name1,name2) in
+  let starting_cards = Deck.start_cards in
+  let init = State.init_state (0, 0) 0 (name1,name2) starting_cards in
   play_game init
 
 (** [main ()] prompts for the game to play, then starts it. *)
@@ -76,7 +130,7 @@ let main () =
   match read_line () with
   | exception End_of_file -> ()
   | name1 -> 
-    print_endline "Please enter your name, Player 1.\n";
+    print_endline "Please enter your name, Player 2.\n";
     print_string  "> ";
     match read_line () with
     | exception End_of_file -> ()
