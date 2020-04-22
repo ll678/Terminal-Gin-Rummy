@@ -40,4 +40,10 @@ val deadwood_value : t -> int
 (** [meld_value hand] is the total int value of the meld in [hand]. *)
 val meld_value : t -> int
 
+<<<<<<< HEAD
+=======
+(** [start_cards] creates an initialized and shuffled deck and returns a list
+    that contains a list of stock pile cards, a list of discard pile cards, 
+    and each player's starting hand. *)
+>>>>>>> d0db4581be422a55d1904b28edd5fb546873fd79
 val start_cards : t list

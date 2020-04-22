@@ -3,7 +3,10 @@ open Deck
 
 exception Malformed
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> d0db4581be422a55d1904b28edd5fb546873fd79
 type p = {
   hand: Deck.t;
   score: int;
@@ -20,6 +23,7 @@ type t = {
 
 type result = Legal of t | Illegal
 
+<<<<<<< HEAD
 
 let init_players starting_cards starting_scores : p list = 
   [{
@@ -32,16 +36,37 @@ let init_players starting_cards starting_scores : p list =
 
 let init_state players_starting_scores start_player = 
   let starting_cards = Deck.start_cards in
+=======
+(** Return player list*)
+
+let init_players starting_cards starting_scores = 
+  [{
+    hand = List.nth starting_cards 3 ;
+    score = fst starting_scores;
+  },{
+      hand = List.nth starting_cards 4 ;
+      score = snd starting_scores;
+    }]
+
+let init_state players_starting_scores current_player = 
+  let starting_cards = start_cards in
+>>>>>>> d0db4581be422a55d1904b28edd5fb546873fd79
   {
     stock_pile = List.nth starting_cards 1;
     discard_pile = List.nth starting_cards 2;
     players = init_players starting_cards players_starting_scores;
+<<<<<<< HEAD
     current_player = start_player;
     dealer = start_player;
     last_move = None;
   }
 
 
+=======
+    current_player = current_player;
+    last_move = None;
+  }
+>>>>>>> d0db4581be422a55d1904b28edd5fb546873fd79
 
 (* 
 let current_stock_pile st =
