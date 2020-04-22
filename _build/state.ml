@@ -1,19 +1,13 @@
-
-open Deck
-
 exception Malformed
 
-<<<<<<< HEAD
-
-=======
->>>>>>> d0db4581be422a55d1904b28edd5fb546873fd79
 type p = {
-  hand: Deck.t;
-  score: int;
+  name : string;
+  hand : Deck.t;
+  score : int;
 }
 
 type t = {
-  stock_pile: Deck.t;
+  stock_pile : Deck.t;
   discard_pile : Deck.t;
   players : p list;
   current_player : int;
@@ -21,62 +15,43 @@ type t = {
   last_move: (Command.command * Deck.card) option;
 }
 
-type result = Legal of t | Illegal
+type result = Legal of t | Illegal | Null of t
 
-<<<<<<< HEAD
 
-let init_players starting_cards starting_scores : p list = 
+let init_players starting_cards starting_scores names = 
   [{
+    name = fst names;
     hand = List.nth starting_cards 3 ;
     score = fst starting_scores;
   };{
+     name = snd names;
      hand = List.nth starting_cards 4 ;
      score = snd starting_scores;
    }]
 
-let init_state players_starting_scores start_player = 
+let init_state players_starting_scores start_player names = 
   let starting_cards = Deck.start_cards in
-=======
-(** Return player list*)
-
-let init_players starting_cards starting_scores = 
-  [{
-    hand = List.nth starting_cards 3 ;
-    score = fst starting_scores;
-  },{
-      hand = List.nth starting_cards 4 ;
-      score = snd starting_scores;
-    }]
-
-let init_state players_starting_scores current_player = 
-  let starting_cards = start_cards in
->>>>>>> d0db4581be422a55d1904b28edd5fb546873fd79
   {
     stock_pile = List.nth starting_cards 1;
     discard_pile = List.nth starting_cards 2;
-    players = init_players starting_cards players_starting_scores;
-<<<<<<< HEAD
+    players = init_players starting_cards players_starting_scores names;
     current_player = start_player;
     dealer = start_player;
     last_move = None;
   }
 
-
-=======
-    current_player = current_player;
-    last_move = None;
-  }
->>>>>>> d0db4581be422a55d1904b28edd5fb546873fd79
-
-(* 
-let current_stock_pile st =
+let get_stock st =
   st.stock_pile
 
-let get_discard_pile st =
+let get_discard st =
   st.discard_pile
 
+(* TODO: fix this. when will this be used? is a string ok? do we want to reveal this? *)
 let get_current_player st = 
   st.current_player
+
+let get_current_player_hand st = 
+  (List.nth st.players st.current_player).hand
 
 let get_players st = 
   st.players
@@ -84,7 +59,7 @@ let get_players st =
 let get_last_move st =
   st.last_move
 
-
+(* 
 (* We need to decide if the discard pile is ordered (which we would want in this case to get the faceup card) *)
 let remove_top_card deck =
   match deck with
@@ -110,6 +85,8 @@ let update_player player st =
       score = value_of_hand player_hand
     }
 
+(* TODO: draw should return a Null of t result if < 2 cards in stock *)
+
 let get_new_draw_state st deck location =
   let current_stock  = current_stock_pile st in
   let current_discard = get_discard_pile st in
@@ -130,24 +107,53 @@ let draw_deck location deck st =
     (let new_st = get_new_draw_state st deck location
      in
      Legal new_st) 
-  else Illegal
+  else Illegal *)
 
+(** [discard_player card player] is [player] but with [card] removed.
+    Precondition: [card] is in [player.hand].
+*)
+let discard_player card player =
+  {
+    name = player.name;
+    hand = Deck.remove card player.hand;
+    score = player.score;
+  }
 
-let discard card prev_st = 
-  if prev_st.last_move = (Draw "discard",card) then Illegal
+let discard card st = 
+  if st.last_move = Some (Draw ["discard"],card) then Illegal
   else
-    Legal ({
-        stock_pile: Deck.t;
-        discard_pile : Deck.t;
-        players : p list;
-        current_player : p;
-        dealer : int;
-        last_move: command * Deck.card;
+    let p_ind = st.current_player in
+    let p = List.nth st.players p_ind in
+    if not (Deck.mem card p.hand) then Illegal
+    else
+      let opp_ind = (p_ind + 1) mod 2 in
+      let opp = List.nth st.players opp_ind in
+      Legal ({
+          stock_pile = st.stock_pile;
+          discard_pile = Deck.push card st.discard_pile;
+          players =
+            if p_ind = 0 then [discard_player card p;opp]
+            else [opp;discard_player card p];
+          current_player = opp_ind;
+          dealer = st.dealer;
+          last_move = Some (Discard ["discard"], card);
+        })
 
-        stock_pile = prev_st.stock_pile;
-        discard_pile = card :: prev_st.discard;
-        players = prev_st.players;
-        last_move = Discard (card);
-        last_state = prev_st;
-        players = Players.remove_card prev_st.current_player card
-      }) *)
+let knock_declare st = 
+  (* 1. Determine whether curr_p can knock. *)
+  match st.last_move with
+  | Some (Discard _,_) | Some (Pass,_) -> Illegal
+  | _ ->
+    let knocker = List.nth st.players st.current_player in
+    if Deck.deadwood_value knocker.hand > 10 then Illegal
+    else Legal ({
+        stock_pile = st.stock_pile;
+        discard_pile = st.discard_pile;
+        players = st.players;
+        current_player = (st.current_player + 1) mod 2;
+        dealer = st.dealer;
+        last_move = st.last_move;
+      })
+
+let knock_match deck st = 
+  failwith "todo"

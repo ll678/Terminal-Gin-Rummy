@@ -20,18 +20,17 @@ ocamlfind ocamldep -modules state.mli > state.mli.depends # cached
 # Target: state.cmi, tags: { byte, compile, extension:mli, file:state.mli, interf, ocaml, quiet }
 ocamlfind ocamlc -c -o state.cmi state.mli # cached
 # Target: state.ml.depends, tags: { extension:ml, file:state.ml, ocaml, ocamldep, quiet }
-ocamlfind ocamldep -modules state.ml > state.ml.depends # cached
+ocamlfind ocamldep -modules state.ml > state.ml.depends
 # Target: state.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:state.cmo, file:state.ml, implem, ocaml, quiet }
-<<<<<<< HEAD
-ocamlfind ocamlc -c -o state.cmo state.ml # cached
+ocamlfind ocamlc -c -o state.cmo state.ml
 # Target: main.mli.depends, tags: { extension:mli, file:main.mli, ocaml, ocamldep, quiet }
 ocamlfind ocamldep -modules main.mli > main.mli.depends # cached
 # Target: main.cmi, tags: { byte, compile, extension:mli, file:main.mli, interf, ocaml, quiet }
 ocamlfind ocamlc -c -o main.cmi main.mli # cached
 # Target: main.ml.depends, tags: { extension:ml, file:main.ml, ocaml, ocamldep, quiet }
-ocamlfind ocamldep -modules main.ml > main.ml.depends # cached
+ocamlfind ocamldep -modules main.ml > main.ml.depends
 # Target: main.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet }
-ocamlfind ocamlc -c -o main.cmo main.ml # cached
+ocamlfind ocamlc -c -o main.cmo main.ml
 # Target: author.mli.depends, tags: { extension:mli, file:author.mli, ocaml, ocamldep, quiet }
 ocamlfind ocamldep -modules author.mli > author.mli.depends # cached
 # Target: author.cmi, tags: { byte, compile, extension:mli, file:author.mli, interf, ocaml, quiet }
@@ -41,15 +40,3 @@ ocamlfind ocamldep -modules author.ml > author.ml.depends # cached
 # Target: author.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:author.cmo, file:author.ml, implem, ocaml, quiet }
 ocamlfind ocamlc -c -o author.cmo author.ml # cached
 # Compilation successful.
-=======
-ocamlfind ocamlc -c -o state.cmo state.ml
-+ ocamlfind ocamlc -c -o state.cmo state.ml
-File "state.ml", line 38, characters 14-65:
-38 |     players = init_players starting_cards players_starting_scores;
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Error: This expression has type (p * p) list
-       but an expression was expected of type p list
-       Type p * p is not compatible with type p 
-Command exited with code 2.
-# Compilation unsuccessful.
->>>>>>> d0db4581be422a55d1904b28edd5fb546873fd79

@@ -253,3 +253,67 @@ let start_cards =
   let trd = get_list 10 (difference (difference temp fst) snd) in
   let fth = get_list 10 (difference (difference (difference temp fst) snd) trd) in
   [fst; snd; trd; fth]
+
+let push card deck = 
+  card :: deck
+
+let mem card deck = 
+  List.mem card deck
+
+let rec remove card deck = 
+  match deck with
+  | [] -> failwith "remove failure: card not in deck."
+  | h :: t -> if h = card then t else h :: remove card t
+
+let string_of_card card = 
+  let suit = match snd card with
+    | Clubs -> "Clubs"
+    | Diamonds -> "Diamonds"
+    | Hearts -> "Hearts"
+    | Spades -> "Spades"
+  in
+  let rank = match fst card with
+    | Ace -> "Ace"
+    | Two -> "Two"
+    | Three -> "Three"
+    | Four -> "Four"
+    | Five -> "Five"
+    | Six -> "Six"
+    | Seven -> "Seven"
+    | Eight -> "Eight"
+    | Nine -> "Nine"
+    | Ten -> "Ten"
+    | Jack -> "Jack"
+    | Queen -> "Queen"
+    | King -> "King"
+  in
+  rank ^ " of " ^ suit
+
+let string_of_card_short card = 
+  let suit = match snd card with
+    | Clubs -> "♣"
+    | Diamonds -> "♦"
+    | Hearts -> "♥"
+    | Spades -> "♠"
+  in
+  let rank = match fst card with
+    | Ace -> "A"
+    | Two -> "2"
+    | Three -> "3"
+    | Four -> "4"
+    | Five -> "5"
+    | Six -> "6"
+    | Seven -> "7"
+    | Eight -> "8"
+    | Nine -> "9"
+    | Ten -> "10"
+    | Jack -> "J"
+    | Queen -> "Q"
+    | King -> "K"
+  in
+  rank ^ suit
+
+let rec string_of_deck deck = 
+  match deck with
+  | [] -> []
+  | h :: t -> string_of_card_short h :: string_of_deck t

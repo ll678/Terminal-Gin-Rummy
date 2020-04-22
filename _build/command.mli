@@ -8,7 +8,7 @@
     characters.  Thus, no element of the list should contain any leading,
     internal, or trailing spaces.  The list is in the same order as the words 
     in the original player command. *)
-type object_phrase
+type object_phrase = string list
 
 (** The type [command] represents a player command that is decomposed
     into a verb and possibly an object phrase. *)

@@ -40,10 +40,27 @@ val deadwood_value : t -> int
 (** [meld_value hand] is the total int value of the meld in [hand]. *)
 val meld_value : t -> int
 
-<<<<<<< HEAD
-=======
 (** [start_cards] creates an initialized and shuffled deck and returns a list
     that contains a list of stock pile cards, a list of discard pile cards, 
     and each player's starting hand. *)
->>>>>>> d0db4581be422a55d1904b28edd5fb546873fd79
 val start_cards : t list
+
+(** [push card deck] pushes [card] onto the top of [deck]. *)
+val push : card -> t -> t
+
+(** [mem card deck] is true when [card] is in [deck], else false. *)
+val mem : card -> t -> bool
+
+(** [remove card deck] is the deck without [card] in [deck].
+    Throws: Failure "remove failure: card not in deck." if [card] not in [deck].
+*)
+val remove : card -> t -> t
+
+(** [string_of_card card] is the string representation of [card]. *)
+val string_of_card : card -> string
+
+(** [string_of_card_short card] is a compact string representation of [card]. *)
+val string_of_card_short : card -> string
+
+(** [string_of_deck deck] is the list of stringified cards in [deck]. *)
+val string_of_deck : t -> string list
