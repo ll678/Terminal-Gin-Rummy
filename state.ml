@@ -3,10 +3,6 @@ open Deck
 
 exception Malformed
 
-<<<<<<< HEAD
-
-=======
->>>>>>> d0db4581be422a55d1904b28edd5fb546873fd79
 type p = {
   hand: Deck.t;
   score: int;
@@ -23,7 +19,6 @@ type t = {
 
 type result = Legal of t | Illegal
 
-<<<<<<< HEAD
 
 let init_players starting_cards starting_scores : p list = 
   [{
@@ -45,9 +40,7 @@ let init_state players_starting_scores start_player =
     last_move = None;
   }
 
-=======
 (** Return player list*)
->>>>>>> d0db4581be422a55d1904b28edd5fb546873fd79
 
 
 
