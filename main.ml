@@ -2,7 +2,6 @@ open Deck
 open Command
 open State
 
-
 (* Things to do:
    Implement knocking in state
    Implement getting current player's hand
@@ -11,15 +10,12 @@ open State
    If command is invalid, rerun previous state and prompt for command again
 *)
 
-
 let rec print_list lst =
   match lst with
   | [] -> ()
   | h::t -> print_string h; 
     print_string " "; 
     print_list t
-
-
 
 let change command st = 
   match command with 
@@ -106,10 +102,6 @@ let rec play_game st =
        | _ -> print_endline ("Invalid command."))
 
  *)
-
-
-
-
 
 
 (* | _ -> print_endline ("Invalid command.")
