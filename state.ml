@@ -1,9 +1,8 @@
+
 open Deck
-open Command
 
 exception Malformed
 
-(* TODO: replace [unit] with a type of your own design. *)
 
 type p = {
   hand: Deck.t;
@@ -14,33 +13,36 @@ type t = {
   stock_pile: Deck.t;
   discard_pile : Deck.t;
   players : p list;
-  current_player : p;
+  current_player : int;
   dealer : int;
-  last_move: command;
+  last_move: (Command.command * Deck.card) option;
 }
 
 type result = Legal of t | Illegal
 
-let init_state d players_starting_scores current_player = 
-  let starting_cards = start_cards in
+
+let init_players starting_cards starting_scores : p list = 
+  [{
+    hand = List.nth starting_cards 3 ;
+    score = fst starting_scores;
+  };{
+     hand = List.nth starting_cards 4 ;
+     score = snd starting_scores;
+   }]
+
+let init_state players_starting_scores start_player = 
+  let starting_cards = Deck.start_cards in
   {
     stock_pile = List.nth starting_cards 1;
     discard_pile = List.nth starting_cards 2;
     players = init_players starting_cards players_starting_scores;
-    current_player = current_player;
+    current_player = start_player;
+    dealer = start_player;
     last_move = None;
   }
 
-(*return player list*)
 
-let init_players starting_cards starting_scores = 
-  [{
-    hand = List.nth starting_cards 3 ;
-    score = fst starting_scores;
-  },{
-      hand = List.nth starting_cards 4 ;
-      score = snd starting_scores;
-    }]
+
 
 let current_stock_pile st =
   st.stock_pile
@@ -62,12 +64,12 @@ let get_last_move st =
 let remove_top_card deck =
   match deck with
   | [] -> None
-  | h::t ->t
+  | h::t -> t
 
 let get_top_card deck =
   match deck with
   | [] -> None
-  | h::t ->h
+  | h::t -> h
 
 let update_player player st =
   if (st.current_player == 0) then 
@@ -107,11 +109,19 @@ let draw_deck location deck st =
 
 
 let discard card prev_st = 
-  if prev_st.last_move = Draw "discard" && 
-     (List.hd prev_st.discard_pile) = card then Illegal else
+  if prev_st.last_move = (Draw "discard",card) then Illegal
+  else
     Legal ({
-        (* todo: insert other parameters of state *)
-        discard = card :: prev_st.discard;
+        stock_pile: Deck.t;
+        discard_pile : Deck.t;
+        players : p list;
+        current_player : p;
+        dealer : int;
+        last_move: command * Deck.card;
+
+        stock_pile = prev_st.stock_pile;
+        discard_pile = card :: prev_st.discard;
+        players = prev_st.players;
         last_move = Discard (card);
         last_state = prev_st;
         players = Players.remove_card prev_st.current_player card

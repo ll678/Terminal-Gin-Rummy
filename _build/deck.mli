@@ -39,3 +39,5 @@ val deadwood_value : t -> int
 
 (** [meld_value hand] is the total int value of the meld in [hand]. *)
 val meld_value : t -> int
+
+val start_cards : t list
