@@ -2,6 +2,8 @@ open Deck
 open Command
 open State
 
+(** This code was inspired by the adventure game we created in p2 and p3*)
+
 (* Things to do:
    Implement knocking in state
    Implement getting current player's hand
