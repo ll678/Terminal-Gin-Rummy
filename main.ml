@@ -1,7 +1,3 @@
-open Deck
-open Command
-open State
-
 (** This code was inspired by the adventure game we created in p2 and p3*)
 
 (* Things to do:
@@ -36,8 +32,8 @@ let handle_score st =
    may not change state but take_command always returns a state *)
 let take_command command st =  
   match command with
-  | Draw t -> change (State.draw_deck (String.concat " " t) st) st
-  | Discard t -> change (discard (String.concat " " t) st) st
+  | Draw t -> change (State.draw (String.concat " " t) st) st
+  | Discard t -> change (State.discard (String.concat " " t) st) st
   | Knock -> change (State.knock (String.concat " " ) st) st
   | Pass -> st (** Need to discuss this, not currently functional*)
   | Sort -> change (State.sort (String.concat " " ) st) st
@@ -80,7 +76,7 @@ let rec play_game st =
 
 (* 
 
-  | Draw deck -> let new_st = draw_deck deck st in
+  | Draw deck -> let new_st = draw deck st in
     (* Print stock pile *)
     print_list (State.get_stock new_st);
 

@@ -59,7 +59,7 @@ let get_players st =
 let get_last_move st =
   st.last_move
 
-(* 
+
 (* We need to decide if the discard pile is ordered (which we would want in this case to get the faceup card) *)
 let remove_top_card deck =
   match deck with
@@ -107,7 +107,7 @@ let draw_deck location deck st =
     (let new_st = get_new_draw_state st deck location
      in
      Legal new_st) 
-  else Illegal *)
+  else Illegal
 
 (** [discard_player card player] is [player] but with [card] removed.
     Precondition: [card] is in [player.hand].

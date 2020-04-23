@@ -23,6 +23,9 @@ val get_discard: t -> Deck.t
 
 val get_current_player : t -> int
 
+(** [get_current_player_string st] is the name of the current player. *)
+val get_current_player_string : t -> string
+
 (** [get_current_player_hand st] is the hand of the current player. *)
 val get_current_player_hand : t -> Deck.t
 
