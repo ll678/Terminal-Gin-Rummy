@@ -107,7 +107,7 @@ let get_new_draw_state st deck location =
     last_move = (Draw location,card);
   }
 
-let draw_deck location deck st =
+let draw location deck st =
   if (List.mem location ["Stock","Discard"]) then  
     (let new_st = get_new_draw_state st deck location
      in
