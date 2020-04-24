@@ -34,31 +34,8 @@ let handle_score (st : State.t) =
   print_int (State.get_current_player_score st);
   print_endline "\n"
 
-
-(**process_command takes terminal input and executes a command. The command may or
-   may not change state but process_command always returns a state *)
-let process_command (command : Command.command) (st : State.t) =  
-  match command with
-  | Draw obj_phrase -> change (State.draw (String.concat " " obj_phrase) st) st
-  | Discard obj_phrase -> change (State.discard (String.concat " " obj_phrase) st) st
-  | Knock -> change (State.knock (String.concat " " ) st) st
-  | Pass -> change (State.pass (String.concat " " ) st) st
-  | Sort -> change (State.sort (String.concat " " ) st) st
-  | Score -> handle_score st; st
-  | Quit -> exit 0
-
-
-(*A function that either quits or executes a command based on input*)
-let process_readline read_line (st : State.t) = 
-  match Command.parse read_line with
-  | exception Command.Empty ->
-    print_endline "This is an invalid command.\n"; st
-  | exception Command.Malformed ->
-    print_endline "This is an malformed command.\n"; st
-  | command -> (process_command command st)
-
 (** After Player 1 knocks, [knock] handles [st], in which Player 2 is the
-    current player and can choose cards to lay off. *)
+    current player and can choose cards to lay off. The resulting *)
 let rec knock (command : State.result) (st : State.t) =
   match command with 
   | Legal t -> 
@@ -73,18 +50,43 @@ let rec knock (command : State.result) (st : State.t) =
      (* match parse (read_line ()) with *)
      match read_line () with 
      | exception End_of_file -> ()
-     | read_line-> let res = State.knock_match (Deck.string_to_deck read_line) st in (* Implement string_to_deck in Deck. *)
+     | read_line-> let res = State.knock_match (Deck.deck_of_string read_line) st in
        match res with
-       | Win -> print_string "This is an illegal move.\n"; exit 0
        | Legal new_st ->
-         print_string (st |> State.get_current_player_name); print_string "'s Score: "; print_endline (st |> State.get_current_player_score);
-         print_string (new_st |> State.get_current_player_name); print_string "'s Score: "; print_endline (new_st |> State.get_current_player_score);
-         print_endline (get_winner_name ^ " has won this round!");
-       | Illegal -> print_string "This is an illegal move.\n"; knock st
-       | Null t -> print_endline "This is an invalid command.\n"; knock st)
-  | Illegal -> print_string "This is an illegal move.\n"; knock st
-  | Null t -> print_endline "This is an invalid command.\n"; knock st
-  | Win -> print_string "This is an illegal move.\n"; exit 0
+         print_string (st |> State.get_current_player_name); print_string "'s Score: "; print_endline (st |> State.get_current_player_score |> string_of_int);
+         print_string (new_st |> State.get_current_player_name); print_string "'s Score: "; print_endline (new_st |> State.get_current_player_score |> string_of_int);
+         print_endline (get_winner_name ^ " has won this round!"); (* Implement get_winner_name *)
+         play_game new_st
+       | Illegal -> print_string "This is an illegal move.\n"; knock command st
+       | Null t -> print_endline "This is an invalid command.\n"; knock command st)
+  | Illegal -> print_string "This is an illegal move.\n"; knock command st
+  | Null t -> print_endline "This is an invalid command.\n"; knock command st
+
+(**process_command takes terminal input and executes a command. The command may or
+   may not change state but process_command always returns a state *)
+let process_command (command : Command.command) (st : State.t) =  
+  match command with
+  | Draw obj_phrase -> change (State.draw (String.concat " " obj_phrase) st) st
+  | Discard obj_phrase -> change (State.discard (String.concat " " obj_phrase |> Deck.card_of_string) st) st
+  | Knock -> knock (State.knock_declare st) st
+  | Pass -> st (** Need to discuss this, not currently functional*)
+  | Sort -> change (State.sort (String.concat " " ) st) st
+  | Score -> handle_score st; st
+  | Quit -> exit 0
+
+(* | Discard obj_phrase -> change (State.discard (String.concat " " obj_phrase) st) st
+   | Knock -> change (State.knock (String.concat " " ) st) st
+   | Pass -> change (State.pass (String.concat " " ) st) st *)
+
+
+(*A function that either quits or executes a command based on input*)
+let process_readline read_line (st : State.t) = 
+  match Command.parse read_line with
+  | exception Command.Empty ->
+    print_endline "This is an invalid command.\n"; st
+  | exception Command.Malformed ->
+    print_endline "This is an malformed command.\n"; st
+  | command -> (process_command command st)
 
 (* Should initalize game but not initiate state transitions *)
 let rec play_game (st : State.t) =
@@ -109,7 +111,7 @@ let rec play_game (st : State.t) =
 
   (* Prompt for player to draw. *)
   print_endline ("Please draw a card from either the stock or the discard pile.");
-  print_string  "> ";
+  print_string "> ";
 
   (* match parse (read_line ()) with *)
   match read_line () with 

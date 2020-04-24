@@ -65,11 +65,11 @@ let get_moves st =
 
 let remove_top_card deck =
   match deck with
-  | h::t ->t
+  | h::t -> t
 
 let get_top_card deck =
   match deck with
-  | h::t ->h
+  | h::t -> h
 
 let update_player st card =
   if (st.current_player == 0) then 
