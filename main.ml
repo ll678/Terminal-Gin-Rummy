@@ -1,7 +1,4 @@
-open Deck
-open Command
-open State
-
+(** This code was inspired by the adventure game we created in p2 and p3*)
 
 (* Things to do:
    Implement knocking in state
@@ -18,6 +15,7 @@ let rec print_list lst =
     print_string " "; 
     print_list t
 
+    <<<<<<< HEAD
 let rec print_melds lst =
   match lst with
   | [] -> ()
@@ -25,6 +23,8 @@ let rec print_melds lst =
     print_string "\n"; 
     print_melds t
 
+    =======
+    >>>>>>> cb1bcae55e2c385245089b3ef0a16ab2fbcb2d6d
 let change command st = 
   match command with 
   | Legal t -> t;
@@ -38,15 +38,16 @@ let handle_score st =
   (* print_int (get_player_score st); *)
   print_endline "\n"
 
+
 (**take_command takes terminal input and executes a command. The command may or
    may not change state but take_command always returns a state *)
 let take_command command st =  
   match command with
-  | Draw t -> change (draw_deck (String.concat " " t)) st
-  | Discard t -> change (discard (String.concat " " t) st) st
-  | Knock -> knock (knock_declare st) st
+  | Draw t -> change (State.draw (String.concat " " t)) st
+  | Discard t -> change (State.discard (String.concat " " t) st) st
+  | Knock -> change (State.knock st) st
   | Pass -> st (** Need to discuss this, not currently functional*)
-  | Sort -> change (sort (String.concat " " ) st) st
+  | Sort -> change (State.sort (String.concat " " ) st) st
   | Score -> handle_score st; st
   | Show t -> st (**Need to discuss *)
   | Quit -> exit 0
@@ -86,6 +87,10 @@ let rec play_game st =
   (* TODO: will we want to do this? *)
   (* print_list (State.get_stock st); *)
   (* Print first card in discard pile *)
+
+
+
+
   print_string "Discard Pile:\n";
   print_endline (st |> State.get_discard |> Deck.string_of_deck |> List.hd);
 
@@ -114,7 +119,7 @@ let rec play_game st =
 
 (* 
 
-  | Draw deck -> let new_st = draw_deck deck st in
+  | Draw deck -> let new_st = draw deck st in
     (* Print stock pile *)
     print_list (State.get_stock new_st);
 
@@ -143,10 +148,6 @@ let rec play_game st =
        | _ -> print_endline ("Invalid command."))
 
  *)
-
-
-
-
 
 
 (* | _ -> print_endline ("Invalid command.")

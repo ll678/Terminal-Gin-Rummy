@@ -59,6 +59,8 @@ let get_players st =
 let get_last_move st =
   st.last_move
 
+
+(* We need to decide if the discard pile is ordered (which we would want in this case to get the faceup card) *)
 let remove_top_card deck =
   match deck with
   | [] -> None

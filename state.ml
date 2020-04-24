@@ -6,18 +6,23 @@ type p = {
   score : int;
 }
 
+(** The abstract type of values representing a move. *)
+type move = (Command.command * Deck.card) option
+
 type t = {
   stock_pile : Deck.t;
   discard_pile : Deck.t;
+  (* fst players is player 0, snd players is player 1 *)
   players : (p * p);
   current_player : int;
-  last_move: (Command.command * Deck.card) option;
+  (* fst last_moves is the last move, snd last_moves is move before last move *)
+  last_moves: (move * move);
 }
 
 type result = Legal of t | Illegal | Null of t
 
 
-let init_players starting_cards starting_scores names = 
+let init_players starting_cards starting_scores names = (
   {
     name = fst names;
     hand = List.nth starting_cards 3 ;
@@ -26,7 +31,7 @@ let init_players starting_cards starting_scores names =
     name = snd names;
     hand = List.nth starting_cards 4 ;
     score = snd starting_scores;
-  }
+  })
 
 let init_state players_starting_scores start_player names starting_cards = 
   {
@@ -34,7 +39,7 @@ let init_state players_starting_scores start_player names starting_cards =
     discard_pile = List.nth starting_cards 2;
     players = init_players starting_cards players_starting_scores names;
     current_player = start_player;
-    last_move = None;
+    last_moves = (None, None);
   }
 
 let get_stock st =
@@ -102,7 +107,7 @@ let get_new_draw_state st location =
     last_move = (Draw location,card);
   }
 
-let draw_deck location st =
+let draw location st =
   if (List.mem location ["Stock"; "Discard"]) then  
     (let new_st = get_new_draw_state st location
      in
@@ -120,42 +125,41 @@ let discard_player card player =
   }
 
 let discard card st = 
-  if st.last_move = Some (Draw ["discard"],card) then Illegal
+  if fst st.last_moves = Some (Draw ["discard"],card) then Illegal
   else
     let p_ind = st.current_player in
-    let p = List.nth st.players p_ind in
+    let p = if p_ind = 0 then fst st.players else snd st.players in
     if not (Deck.mem card p.hand) then Illegal
     else
       let opp_ind = (p_ind + 1) mod 2 in
-      let opp = List.nth st.players opp_ind in
+      let opp = if opp_ind = 0 then fst st.players else snd st.players in
       Legal ({
           stock_pile = st.stock_pile;
           discard_pile = Deck.push card st.discard_pile;
           players =
-            if p_ind = 0 then [discard_player card p;opp]
-            else [opp;discard_player card p];
+            if p_ind = 0 then (discard_player card p,opp)
+            else (opp,discard_player card p);
           current_player = opp_ind;
-          dealer = st.dealer;
-          last_move = Some (Discard ["discard"], card);
+          last_moves = (Some (Discard ["discard"], card),fst st.last_moves);
         })
 
 let sort_player_hand current_player players =
   if (current_player = 0) then 
-    let player_hand = Deck.suit_sort ((fst players).hand) in 
-    let new_player = {
+    let sorted_hand = Deck.suit_sort ((fst players).hand) in 
+    let sorted_player = {
       name = (fst players).name;
-      hand = player_hand;
+      hand = sorted_hand;
       score = (fst players).score
     } in
-    ( new_player, snd players)
+    (sorted_player, snd players)
   else 
-    let player_hand = Deck.suit_sort ((snd players).hand) in 
-    let new_player = {
+    let sorted_hand = Deck.suit_sort ((snd players).hand) in 
+    let sorted_player = {
       name = (snd players).name;
-      hand = player_hand;
+      hand = sorted_hand;
       score = (snd players).score
     } in
-    (fst players, new_player)
+    (fst players, sorted_player)
 
 (** Sort does not and should not update last_move even though it returns a different state. *)
 let sort st =
@@ -164,7 +168,7 @@ let sort st =
     discard_pile = st.discard_pile;
     players = sort_player_hand st.current_player st.players;
     current_player = st.current_player;
-    last_move = st.last_move;
+    last_moves = st.last_moves;
   }
 
 let knock_declare st = 
