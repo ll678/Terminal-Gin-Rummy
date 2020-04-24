@@ -133,8 +133,6 @@ let rec union l1 l2 =
     (fun card acc -> if List.mem card l2
       then acc else card::acc) l1 l2
 
-(** [intersect l1 l2] contains only the elements that are elements of [l1]
-    and elements of [l2]. *)
 let intersect l1 l2 =
   List.fold_right 
     (fun card acc -> if (List.mem card l1) && (List.mem card l2) 
@@ -257,13 +255,24 @@ let start_cards =
 let push card deck = 
   card :: deck
 
+let push_deck from_deck to_deck = 
+  from_deck @ to_deck
+
 let mem card deck = 
   List.mem card deck
+
+let is_empty deck = 
+  deck = []
 
 let rec remove card deck = 
   match deck with
   | [] -> failwith "remove failure: card not in deck."
   | h :: t -> if h = card then t else h :: remove card t
+
+let rec remove_deck rm_deck deck = 
+  match rm_deck with
+  | [] -> deck
+  | h :: t -> remove_deck t (remove h deck)
 
 let string_of_card card = 
   let suit = match snd card with

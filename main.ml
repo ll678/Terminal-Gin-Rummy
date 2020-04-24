@@ -1,4 +1,4 @@
-(** This code was inspired by the adventure game we created in p2 and p3*)
+(** This code was inspired by the adventure game we created in p2 and p3 *)
 
 (* Things to do:
    Implement knocking in state
@@ -15,42 +15,46 @@ let rec print_list lst =
     print_string " "; 
     print_list t
 
-let change command st = 
+let change (command : State.result) (st : State.t) = 
   match command with 
-  | Legal t -> t;
+  | Legal t -> t
   | Illegal -> print_string "This is an illegal move.\n"; st
+  | Null t -> t
+
 (** We need to implement win condition*)
 (* | Win t -> print_string (t); exit 0 *)
 
-let handle_score st = 
+let handle_score (st : State.t) = 
   print_string "Your score is: " ; 
   print_int (get_player_score st);
   print_endline "\n"
 
 
-(**take_command takes terminal input and executes a command. The command may or
-   may not change state but take_command always returns a state *)
-let take_command command st =  
+(**process_command takes terminal input and executes a command. The command may or
+   may not change state but process_command always returns a state *)
+let process_command (command : Command.command) (st : State.t) =  
   match command with
-  | Draw t -> change (State.draw (String.concat " " t) st) st
-  | Discard t -> change (State.discard (String.concat " " t) st) st
+  | Draw obj_phrase -> change (State.draw (String.concat " " obj_phrase) st) st
+  | Discard obj_phrase -> change (State.discard (String.concat " " obj_phrase) st) st
   | Knock -> change (State.knock (String.concat " " ) st) st
   | Pass -> st (** Need to discuss this, not currently functional*)
   | Sort -> change (State.sort (String.concat " " ) st) st
   | Score -> handle_score st; st
-  | Show t -> st (**Need to discuss *)
+  | Show obj_phrase -> st (**Need to discuss *)
   | Quit -> exit 0
 
 
 (*A function that either quits or executes a command based on input*)
-let take_readline read_line  st = 
-  match parse read_line with
-  | exception Empty -> print_endline "This is an invalid command.\n"; st
-  | exception Malformed -> print_endline "This is an malformed command.\n"; st
-  | command -> (take_command command st)
+let process_readline read_line (st : State.t) = 
+  match Command.parse read_line with
+  | exception Command.Empty ->
+    print_endline "This is an invalid command.\n"; st
+  | exception Command.Malformed ->
+    print_endline "This is an malformed command.\n"; st
+  | command -> (process_command command st)
 
 (* Should initalize game but not initiate state transitions *)
-let rec play_game st =
+let rec play_game (st : State.t) =
   (* Print stock pile *)
   (* TODO: will we want to do this? *)
   (* print_list (State.get_stock st); *)
@@ -71,7 +75,7 @@ let rec play_game st =
   (* match parse (read_line ()) with *)
   match read_line () with 
   | exception End_of_file -> ()
-  | read_line -> let state = take_readline read_line st in 
+  | read_line -> let state = process_readline read_line st in 
     (play_game state )
 
 (* 
@@ -113,8 +117,7 @@ let rec play_game st =
 
 (** [init_game n1 n2] starts a game of gin rummy with players [n1] and [n2]. *)
 let init_game name1 name2 =
-  let starting_cards = Deck.start_cards in
-  let init = State.init_state (0, 0) 0 (name1,name2) starting_cards in
+  let init = State.init_state (0, 0) 0 (name1,name2) in
   play_game init
 
 (** [main ()] prompts for the game to play, then starts it. *)

@@ -23,15 +23,13 @@ val get_discard: t -> Deck.t
 
 val get_current_player : t -> int
 
-(** [get_current_player_string st] is the name of the current player. *)
-val get_current_player_string : t -> string
+(** [get_current_player_name st] is the name of the current player. *)
+val get_current_player_name : t -> string
 
 (** [get_current_player_hand st] is the hand of the current player. *)
 val get_current_player_hand : t -> Deck.t
 
-val get_players : t -> p list
-
-val get_last_move : t -> (Command.command * Deck.card) option
+val draw : string -> t -> t
 
 (* val remove_top_card : 'a list -> 'a list
 
@@ -64,8 +62,7 @@ val knock_declare : t -> result
     that all form melds, [r] is [Legal st'].
     Otherwise, the result is [Illegal]. 
     - Determine legality of input deck.
-    - Calculate value of deadwood for knocker pre-matching, value of deadwood
-      for matcher post-matching
+    - Calculate value of deadwood for players
     - Determine winner and calculate scores accordingly
     - Initialize new state
 *)

@@ -26,6 +26,10 @@ val shuffle : t -> t
 (** [suit_sort hand] sorts [hand] by suit first, then number. *)
 val suit_sort : t -> t
 
+(** [intersect l1 l2] contains only the elements that are elements of [l1]
+    and elements of [l2]. *)
+val intersect : t -> t -> t
+
 (** [best_meld hand] returns a list of the meld combinations of [hand] that 
     results in the lowest deadwood value. *)
 val best_meld : t -> t list
@@ -48,13 +52,25 @@ val start_cards : t list
 (** [push card deck] pushes [card] onto the top of [deck]. *)
 val push : card -> t -> t
 
+(** [push_deck from_deck to_deck] pushes [from_deck] onto the top of [to_deck].
+*)
+val push_deck : t -> t -> t
+
 (** [mem card deck] is true when [card] is in [deck], else false. *)
 val mem : card -> t -> bool
+
+(** [is_empty deck] is true when [deck] is empty, else false. *)
+val is_empty : t -> bool
 
 (** [remove card deck] is the deck without [card] in [deck].
     Throws: Failure "remove failure: card not in deck." if [card] not in [deck].
 *)
 val remove : card -> t -> t
+
+(** [remove_deck rm_deck deck] is the deck without the cards in [rm_list].
+    Throws: Failure "remove failure: card not in deck." if [card] not in [deck].
+*)
+val remove_deck : t -> t -> t
 
 (** [string_of_card card] is the string representation of [card]. *)
 val string_of_card : card -> string
