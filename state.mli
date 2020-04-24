@@ -20,7 +20,6 @@ type result = Legal of t | Illegal | Null of t | Win
      the scores s. *)
 val init_state : (int * int) -> int -> (string * string) -> t
 
-
 (** [get_stock st] is the current stock pile for the state st. *)
 val get_stock : t -> Deck.t
 
@@ -39,27 +38,25 @@ val get_current_player_hand : t -> Deck.t
 (** [get_current_player_score st] is the hand of the current player. *)
 val get_current_player_score : t -> int
 
-                                    <<<<<<< HEAD
+
+(** [draw location st] is [Illegal] if stock pile<2. It is illegal if draw 
+    location is not "Stock" or "Discard". Otherwise result is [Legal st'], where
+    in [st'] is different from [st] in that it:
+    - removes [card] from location
+    - adds [card] to players pile
+    - switches [st.current_player]
+    - updates [st.last_move]
+*)
 val draw : string -> t -> result
 
-(* val remove_top_card : 'a list -> 'a list
 
-   val get_top_card : 'a list -> 'a
+(** [sort st] is [r] Legal of [st'] where the current player's deck is sorted *)
+val sort : t -> result
 
-   val update_player : p -> t -> p *)
 
-val draw_deck : string -> result
-                          =======
-                          (** [draw location st] is [Illegal] if stock pile<2. It is illegal if draw 
-                              location is not "Stock" or "Discard". Otherwise result is [Legal st'], where
-                              in [st'] is different from [st] in that it:
-                              - removes [card] from location
-                              - adds [card] to players pile
-                              - switches [st.current_player]
-                              - updates [st.last_move]
-                          *)
-val draw : string -> t -> result
-  >>>>>>> 5a933371dec8c8e529769778c8dd8beb644f6f45
+(** [pass st] is [Illegal] if one of the last moves isn't None otherwise
+    Legal of [st'] where the current player's is swapped *)
+val pass : t -> result
 
 (** [discard card st] is [r] if attempting to discard [card] from the hand
     of the current player in [st] results in [r]. If [card] can be discarded,
