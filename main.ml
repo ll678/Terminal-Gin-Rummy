@@ -69,7 +69,7 @@ let process_command (command : Command.command) (st : State.t) =
   | Draw obj_phrase -> change (State.draw (String.concat " " obj_phrase) st) st
   | Discard obj_phrase -> change (State.discard (String.concat " " obj_phrase |> Deck.card_of_string) st) st
   | Knock -> knock (State.knock_declare st) st
-  | Pass -> st (** Need to discuss this, not currently functional*)
+  | Pass -> change (State.pass (String.concat " " ) st) st 
   | Sort -> change (State.sort (String.concat " " ) st) st
   | Score -> handle_score st; st
   | Quit -> exit 0
