@@ -7,7 +7,6 @@ type p = {
 (** The abstract type of values representing a move. *)
 type move = (Command.command * Deck.card) option
 
-(** Type t represents the state of the game. *)
 type t = {
   stock_pile : Deck.t;
   discard_pile : Deck.t;
@@ -69,7 +68,7 @@ let get_top_card deck =
   match deck with
   | h::t ->h
 
-let update_player player st =
+let update_player player st card =
   if (st.current_player == 0) then 
     let player_hand = card::((fst st.p).hand) in 
     {
@@ -85,7 +84,6 @@ let update_player player st =
       score = Deck.value_of_hand player_hand
     }
 
-(* TODO: draw should return a Null of t result if < 2 cards in stock *)
 
 let get_new_draw_state st location =
   let current_stock  = get_stock st in
@@ -97,15 +95,13 @@ let get_new_draw_state st location =
       else current_stock;
     discard_pile = if (location="Discard") then (remove_top_card current_discard)
       else current_discard;
-    players = update_player player st;
+    players = update_player player st card;
     current_player = if (current_player = 0) then 1 else 0;
     last_moves = (Some (Draw ["draw"], card),fst st.last_moves);
   }
 
-
-
 let draw location st =
-  if List.length st.stock_pile<2 then Null  st else 
+  if List.length st.stock_pile<2 then Null st else 
   if (List.mem location ["Stock"; "Discard"]) then  
     (let new_st = get_new_draw_state st location
      in
@@ -114,7 +110,6 @@ let draw location st =
      | Some (command , card)-> if (command == Draw ["draw"]) then Illegal else
          Legal new_st) 
   else Illegal
-
 
 
 (** [discard_player card player] is [player] but with [card] removed.
