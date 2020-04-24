@@ -15,7 +15,7 @@ type t
 (** The result of a new game state. *)
 type result = Legal of t | Illegal | Null of t
 
-val init_state : int * int -> int -> (string * string) -> Deck.t list -> t
+val init_state : int * int -> int -> (string * string) -> t
 
 val get_stock : t -> Deck.t
 
@@ -32,7 +32,7 @@ val get_current_player_hand : t -> Deck.t
 (** [get_current_player_score st] is the hand of the current player. *)
 val get_current_player_score : t -> int
 
-val draw : string -> t -> t
+val draw : string -> t -> result
 
 (* val remove_top_card : 'a list -> 'a list
 
