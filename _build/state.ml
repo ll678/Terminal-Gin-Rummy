@@ -9,9 +9,8 @@ type p = {
 type t = {
   stock_pile : Deck.t;
   discard_pile : Deck.t;
-  players : p list;
+  players : (p * p);
   current_player : int;
-  dealer : int;
   last_move: (Command.command * Deck.card) option;
 }
 
@@ -19,24 +18,22 @@ type result = Legal of t | Illegal | Null of t
 
 
 let init_players starting_cards starting_scores names = 
-  [{
+  {
     name = fst names;
     hand = List.nth starting_cards 3 ;
     score = fst starting_scores;
-  };{
-     name = snd names;
-     hand = List.nth starting_cards 4 ;
-     score = snd starting_scores;
-   }]
+  },{
+    name = snd names;
+    hand = List.nth starting_cards 4 ;
+    score = snd starting_scores;
+  }
 
-let init_state players_starting_scores start_player names = 
-  let starting_cards = Deck.start_cards in
+let init_state players_starting_scores start_player names starting_cards = 
   {
     stock_pile = List.nth starting_cards 1;
     discard_pile = List.nth starting_cards 2;
     players = init_players starting_cards players_starting_scores names;
     current_player = start_player;
-    dealer = start_player;
     last_move = None;
   }
 
@@ -46,12 +43,15 @@ let get_stock st =
 let get_discard st =
   st.discard_pile
 
-(* TODO: fix this. when will this be used? is a string ok? do we want to reveal this? *)
+(*Note: used below*)
 let get_current_player st = 
   st.current_player
 
+let get_current_player_string st = 
+  if (st.current_player=0) then (fst (st.players)).name else (snd (st.players)).name
+
 let get_current_player_hand st = 
-  (List.nth st.players st.current_player).hand
+  if (st.current_player=0) then (fst (st.players)).hand else (snd (st.players)).hand
 
 let get_players st = 
   st.players
@@ -59,12 +59,10 @@ let get_players st =
 let get_last_move st =
   st.last_move
 
-(* 
-(* We need to decide if the discard pile is ordered (which we would want in this case to get the faceup card) *)
 let remove_top_card deck =
   match deck with
   | [] -> None
-  | h::t -> t
+  | h::t -> Some t
 
 let get_top_card deck =
   match deck with
@@ -75,12 +73,14 @@ let update_player player st =
   if (st.current_player == 0) then 
     let player_hand = card::((fst st.p).hand) in 
     {
+      name = (fst st.players).name;
       hand = player_hand;
       score = value_of_hand player_hand
     }
   else 
     let player_hand = card::((snd st.p).hand) in 
     {
+      name = (snd st.players).name;
       hand = player_hand;
       score = value_of_hand player_hand
     }
@@ -107,7 +107,7 @@ let draw_deck location deck st =
     (let new_st = get_new_draw_state st deck location
      in
      Legal new_st) 
-  else Illegal *)
+  else Illegal
 
 (** [discard_player card player] is [player] but with [card] removed.
     Precondition: [card] is in [player.hand].
@@ -138,6 +138,34 @@ let discard card st =
           dealer = st.dealer;
           last_move = Some (Discard ["discard"], card);
         })
+
+let sort_player_hand current_player players =
+  if (current_player = 0) then 
+    let player_hand = Deck.suit_sort ((fst players).hand) in 
+    let new_player = {
+      name = (fst players).name;
+      hand = player_hand;
+      score = (fst players).score
+    } in
+    ( new_player, snd players)
+  else 
+    let player_hand = Deck.suit_sort ((snd players).hand) in 
+    let new_player = {
+      name = (snd players).name;
+      hand = player_hand;
+      score = (snd players).score
+    } in
+    (fst players, new_player)
+
+(** Sort does not and should not update last_move even though it returns a different state. *)
+let sort st =
+  {
+    stock_pile = st.stock_pile;
+    discard_pile = st.discard_pile;
+    players = sort_player_hand st.current_player st.players;
+    current_player = st.current_player;
+    last_move = st.last_move;
+  }
 
 let knock_declare st = 
   (* 1. Determine whether curr_p can knock. *)

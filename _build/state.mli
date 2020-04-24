@@ -15,7 +15,7 @@ type t
 (** The result of a new game state. *)
 type result = Legal of t | Illegal | Null of t
 
-val init_state : int * int -> int -> (string * string) -> t
+val init_state : int * int -> int -> (string * string) -> Deck.t list -> t
 
 val get_stock : t -> Deck.t
 
@@ -26,6 +26,8 @@ val get_current_player : t -> int
 (** [get_current_player_hand st] is the hand of the current player. *)
 val get_current_player_hand : t -> Deck.t
 
+val get_current_player_string : t -> string
+
 val get_players : t -> p list
 
 val get_last_move : t -> (Command.command * Deck.card) option
@@ -35,6 +37,8 @@ val get_last_move : t -> (Command.command * Deck.card) option
    val get_top_card : 'a list -> 'a
 
    val update_player : p -> t -> p *)
+
+val draw_deck : string -> result
 
 (** [discard card st] is [r] if attempting to discard [card] from the hand
     of the current player in [st] results in [r]. If [card] can be discarded,
