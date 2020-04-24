@@ -60,6 +60,15 @@ let get_current_player_hand st = if st.current_player = 0
 let get_current_player_score st = if st.current_player = 0
   then (fst (st.players)).score else (snd (st.players)).score
 
+(* We need to decide if the discard pile is ordered (which we would want in this case to get the faceup card) *)
+let remove_top_card deck =
+  match deck with
+  | h::t ->t
+
+let get_top_card deck =
+  match deck with
+  | h::t ->h
+
 let update_player player st =
   if (st.current_player == 0) then 
     let player_hand = card::((fst st.p).hand) in 
@@ -78,8 +87,6 @@ let update_player player st =
 
 (* TODO: draw should return a Null of t result if < 2 cards in stock *)
 
-
-
 let get_new_draw_state st location =
   let current_stock  = get_stock st in
   let current_discard = get_discard st in
@@ -94,8 +101,6 @@ let get_new_draw_state st location =
     current_player = if (current_player = 0) then 1 else 0;
     last_moves = (Some (Draw ["draw"], card),fst st.last_moves);
   }
-
-
 
 
 
