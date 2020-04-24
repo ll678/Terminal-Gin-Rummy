@@ -1,4 +1,4 @@
-MODULES= deck command state main author
+MODULES= deck command state main authors
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
