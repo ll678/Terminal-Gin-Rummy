@@ -27,8 +27,7 @@ let change (command : State.result) (st : State.t) =
   | Legal t -> t
   | Illegal -> print_string "This is an illegal move.\n"; st
   | Null t -> print_string "This is an invalid command.\n"; st
-(** We need to implement win condition*)
-(* | Win t -> print_string (t); exit 0 *)
+  | Win -> print_string ("Congrats, you've won"); exit 0 
 
 let handle_score (st : State.t) = 
   print_string "Your score is: " ; 
@@ -73,7 +72,6 @@ let process_command (command : Command.command) (st : State.t) =
   | Pass -> st (** Need to discuss this, not currently functional*)
   | Sort -> change (State.sort (String.concat " " ) st) st
   | Score -> handle_score st; st
-  | Show obj_phrase -> st (**Need to discuss *)
   | Quit -> exit 0
 
 
@@ -92,7 +90,6 @@ let rec play_game (st : State.t) =
   (* TODO: will we want to do this? *)
   (* print_list (State.get_stock st); *)
   (* Print first card in discard pile *)
-
   print_string "Discard Pile:\n";
   print_endline (st |> State.get_discard |> Deck.string_of_deck |> List.hd);
 
@@ -118,43 +115,6 @@ let rec play_game (st : State.t) =
   | read_line -> let state = process_readline read_line st in 
     (play_game state )
 
-
-(* 
-
-  | Draw deck -> let new_st = draw deck st in
-    (* Print stock pile *)
-    print_list (State.get_stock new_st);
-
-    (* Print first card in discard pile *)
-    print_endline (st |> State.get_discard |> Deck.string_of_deck |> List.hd);
-
-    (* TODO: note - after a player knocks, main should immediately prompt
-       the opponent for a list of cards to match with the knocker's deadwood *)
-    (* 1. player 1 knocks 2. call State.knock_declare, this will return
-       Legal / Illegal for the knocker 3. prompt player 2 for a list of cards
-       4. call State.knock_match, this will return Legal / Illegal for player 2 *)
-
-    (* Print hand of current player 
-       (Function not yet defined in state.ml) *)
-    print_list (st |> State.get_current_player_hand |> Deck.string_of_deck);
-    if knocking allowed then
-      (print_endline ("Discard a card from your hand or knock.");
-       match parse (read_line()) with
-       | Discard card -> let next_st = discard card new_st in play_game next_st
-       | Knock -> (* implement knocking function in state *) failwith "unimplemented"
-       | _ -> print_endline ("Invalid command."))
-    else 
-      (print_endline ("Discard a card from your hand or knock.");
-       match parse (read_line ()) with
-       | Discard card -> let next_st = discard card new_st in play_game next_st
-       | _ -> print_endline ("Invalid command."))
-
- *)
-
-
-(* | _ -> print_endline ("Invalid command.")
-
-         failwith "unimplemented" *)
 
 (** [init_game n1 n2] starts a game of gin rummy with players [n1] and [n2]. *)
 let init_game name1 name2 =

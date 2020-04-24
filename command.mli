@@ -19,7 +19,7 @@ type command =
   | Pass
   | Sort
   | Score
-  | Show of object_phrase
+  (* | Show of object_phrase *)
   | Quit
 
 (** Raised when an empty command is parsed. *)

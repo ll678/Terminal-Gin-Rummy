@@ -7,7 +7,6 @@ type command =
   | Pass
   | Sort
   | Score
-  | Show of object_phrase
   | Quit
 
 
@@ -51,7 +50,7 @@ let gen_obj_phrase str_list =
   | "pass" :: [] -> Pass
   | "sort" :: [] -> Sort
   | "score" :: [] -> Score
-  | "show" :: x :: xs -> Show (x :: xs)
+  (* | "show" :: x :: xs -> Show (x :: xs) *)
   | _ -> raise Malformed
 
 let parse str =

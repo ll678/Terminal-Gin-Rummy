@@ -13,14 +13,21 @@ type p
 type t 
 
 (** The result of a new game state. *)
-type result = Legal of t | Illegal | Null of t
+type result = Legal of t | Illegal | Null of t | Win
 
-val init_state : int * int -> int -> (string * string) -> t
+(** [init_state s p n] is the initial state of the game when playing Terminal 
+    Gin Runnmy. In that state the player p starts. Players have the names n and
+     the scores s. *)
+val init_state : (int * int) -> int -> (string * string) -> t
 
+
+(** [get_stock st] is the current stock pile for the state st. *)
 val get_stock : t -> Deck.t
 
+(** [get_discard st] is the current discard pile for the state st. *)
 val get_discard: t -> Deck.t
 
+(** [get_curreent_player st] is the current player for the state st. *)
 val get_current_player : t -> int
 
 (** [get_current_player_name st] is the name of the current player. *)
@@ -32,6 +39,7 @@ val get_current_player_hand : t -> Deck.t
 (** [get_current_player_score st] is the hand of the current player. *)
 val get_current_player_score : t -> int
 
+                                    <<<<<<< HEAD
 val draw : string -> t -> result
 
 (* val remove_top_card : 'a list -> 'a list
@@ -41,6 +49,17 @@ val draw : string -> t -> result
    val update_player : p -> t -> p *)
 
 val draw_deck : string -> result
+                          =======
+                          (** [draw location st] is [Illegal] if stock pile<2. It is illegal if draw 
+                              location is not "Stock" or "Discard". Otherwise result is [Legal st'], where
+                              in [st'] is different from [st] in that it:
+                              - removes [card] from location
+                              - adds [card] to players pile
+                              - switches [st.current_player]
+                              - updates [st.last_move]
+                          *)
+val draw : string -> t -> result
+  >>>>>>> 5a933371dec8c8e529769778c8dd8beb644f6f45
 
 (** [discard card st] is [r] if attempting to discard [card] from the hand
     of the current player in [st] results in [r]. If [card] can be discarded,

@@ -17,7 +17,7 @@ type t = {
   last_moves: (move * move);
 }
 
-type result = Legal of t | Illegal | Null of t
+type result = Legal of t | Illegal | Null of t | Win
 
 let init_players starting_cards starting_scores names = (
   {
@@ -59,27 +59,37 @@ let get_current_player_hand st = if st.current_player = 0
 let get_current_player_score st = if st.current_player = 0
   then (fst (st.players)).score else (snd (st.players)).score
 
-let update_player player st =
-  if (st.current_player == 0) then 
-    let player_hand = card::((fst st.p).hand) in 
-    {
-      name = (fst st.players).name;
-      hand = player_hand;
-      score = value_of_hand player_hand
-    }
-  else 
-    let player_hand = card::((snd st.p).hand) in 
-    {
-      name = (snd st.players).name;
-      hand = player_hand;
-      score = value_of_hand player_hand
-    }
+let remove_top_card deck =
+  match deck with
+  | h::t ->t
 
-(* TODO: draw should return a Null of t result if < 2 cards in stock *)
+let get_top_card deck =
+  match deck with
+  | h::t ->h
+
+let update_player st card =
+  if (st.current_player == 0) then 
+    let player_hand = card::((fst st.players).hand) in 
+    let tmp = 
+      {
+        name = (fst st.players).name;
+        hand = player_hand;
+        score = Deck.value_of_hand player_hand
+      }
+    in (tmp, fst st.players)
+  else 
+    let player_hand = card::((snd st.players).hand) in 
+    let tmp =
+      {
+        name = (snd st.players).name;
+        hand = player_hand;
+        score = Deck.value_of_hand player_hand
+      } in (fst st.players, tmp)
+
 
 let get_new_draw_state st location =
-  let current_stock  = current_stock_pile st in
-  let current_discard = get_discard_pile st in
+  let current_stock  = get_stock st in
+  let current_discard = get_discard st in
   let current_player = get_current_player st in
   let card = if (location = "Stock") then get_top_card current_stock else get_top_card current_discard in
   {
@@ -87,18 +97,21 @@ let get_new_draw_state st location =
       else current_stock;
     discard_pile = if (location="Discard") then (remove_top_card current_discard)
       else current_discard;
-    players = update_player player st;
+    players = update_player st card;
     current_player = if (current_player = 0) then 1 else 0;
-    last_move = (Draw location,card);
+    last_moves = (Some (Draw ["draw"], card),fst st.last_moves);
   }
 
 let draw location st =
+  if List.length st.stock_pile<2 then Null st else 
   if (List.mem location ["Stock"; "Discard"]) then  
     (let new_st = get_new_draw_state st location
      in
-     Legal new_st) 
+     match (fst st.last_moves) with
+     | None ->Legal new_st
+     | Some (command , card)-> if (command == Draw ["draw"]) then Illegal else
+         Legal new_st) 
   else Illegal
-
 
 (** [discard_player card player] is [player] but with [card] removed.
     Precondition: [card] is in [player.hand].
@@ -196,7 +209,9 @@ let sort_player_hand current_player players =
     } in
     (fst players, sorted_player)
 
-(** Sort does not and should not update last_move even though it returns a different state. *)
+(** [Sort st], sorts the cards of the current player. 
+    Sort does not and should not update last_move even though it returns a 
+    different state. *)
 let sort st =
   {
     stock_pile = st.stock_pile;

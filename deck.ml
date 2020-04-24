@@ -334,7 +334,7 @@ let rec string_of_deck deck =
 
 let card_of_string string = 
   let str_lst = String.split_on_char ' ' string |> Command.remove_emptys in
-  let fst = List.nth str_lst 0 |> String.lowercase in 
+  let fst = List.nth str_lst 0 |> String.lowercase_ascii in 
   let rank = 
     if fst = "ace" then Ace
     else if fst = "two" then Two
@@ -351,7 +351,7 @@ let card_of_string string =
     else if fst = "king" then King
     else failwith "invalid rank" 
   in
-  let snd = List.nth str_lst 2 |> String.lowercase in
+  let snd = List.nth str_lst 2 |> String.lowercase_ascii in
   let suit = 
     if snd = "clubs" then Clubs
     else if snd = "diamonds" then Diamonds

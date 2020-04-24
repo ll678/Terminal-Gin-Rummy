@@ -26,6 +26,9 @@ val shuffle : t -> t
 (** [suit_sort hand] sorts [hand] by suit first, then rank. *)
 val suit_sort : t -> t
 
+(** [suit_sort hand] is the score of [hand]. *)
+val value_of_hand : t -> int
+
 (** [intersect l1 l2] contains only the elements that are elements of [l1]
     and elements of [l2]. *)
 val intersect : t -> t -> t
