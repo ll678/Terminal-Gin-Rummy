@@ -59,6 +59,10 @@ let get_current_player_hand st = if st.current_player = 0
 let get_current_player_score st = if st.current_player = 0
   then (fst (st.players)).score else (snd (st.players)).score
 
+
+let get_moves st = 
+  st.last_moves
+
 let remove_top_card deck =
   match deck with
   | h::t ->t
@@ -213,11 +217,35 @@ let sort_player_hand current_player players =
     Sort does not and should not update last_move even though it returns a 
     different state. *)
 let sort st =
-  {
-    stock_pile = st.stock_pile;
-    discard_pile = st.discard_pile;
-    players = sort_player_hand st.current_player st.players;
-    current_player = st.current_player;
-    last_moves = st.last_moves;
-  }
+  Legal 
+    {
+      stock_pile = st.stock_pile;
+      discard_pile = st.discard_pile;
+      players = sort_player_hand st.current_player st.players;
+      current_player = st.current_player;
+      last_moves = st.last_moves;
+    }
 
+(* (Command.command * Deck.card) option *)
+
+let pass_valid st = 
+  match st.last_moves with
+  | (None, None)->true
+  | (None, (Some p))-> if (fst p)= Pass then true else false
+  | ((Some p), None) -> if (fst p)= Pass  then true else false
+  | _ -> false
+
+
+
+
+let pass st =
+  if pass_valid st then
+    Legal
+      {
+        stock_pile = st.stock_pile;
+        discard_pile = st.discard_pile;
+        players = sort_player_hand st.current_player st.players;
+        current_player = if (st.current_player = 0) then 1 else 0;
+        last_moves = st.last_moves;
+      }
+  else Illegal
