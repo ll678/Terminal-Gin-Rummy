@@ -11,7 +11,6 @@ open State
    If command is invalid, rerun previous state and prompt for command again
 *)
 
-
 let rec print_list lst =
   match lst with
   | [] -> ()
@@ -19,27 +18,33 @@ let rec print_list lst =
     print_string " "; 
     print_list t
 
-
+let rec print_melds lst =
+  match lst with
+  | [] -> ()
+  | h::t -> print_list (Deck.string_of_deck h); 
+    print_string "\n"; 
+    print_melds t
 
 let change command st = 
   match command with 
   | Legal t -> t;
   | Illegal -> print_string "This is an illegal move.\n"; st
+  | Null t -> print_string "This is an invalid command.\n"; st
 (** We need to implement win condition*)
 (* | Win t -> print_string (t); exit 0 *)
 
 let handle_score st = 
   print_string "Your score is: " ; 
-  print_int (get_player_score st);
+  (* print_int (get_player_score st); *)
   print_endline "\n"
 
 (**take_command takes terminal input and executes a command. The command may or
    may not change state but take_command always returns a state *)
 let take_command command st =  
   match command with
-  | Draw t -> change (draw_deck (String.concat " " t) st) st
+  | Draw t -> change (draw_deck (String.concat " " t)) st
   | Discard t -> change (discard (String.concat " " t) st) st
-  | Knock -> change (knock (String.concat " " ) st) st
+  | Knock -> knock (knock_declare st) st
   | Pass -> st (** Need to discuss this, not currently functional*)
   | Sort -> change (sort (String.concat " " ) st) st
   | Score -> handle_score st; st
@@ -48,11 +53,32 @@ let take_command command st =
 
 
 (*A function that either quits or executes a command based on input*)
-let take_readline read_line  st = 
+let take_readline read_line st = 
   match parse read_line with
   | exception Empty -> print_endline "This is an invalid command.\n"; st
   | exception Malformed -> print_endline "This is an malformed command.\n"; st
   | command -> (take_command command st)
+
+(** After Player 1 knocks, [knock] handles [st], in which Player 2 is the
+    current player and can choose cards to lay off. *)
+let knock command st =
+  match command with 
+  | Legal t -> 
+    (print_endline (st |> State.get_current_player_string); print_string "'s Hand:\n";
+     print_list (st |> State.get_current_player_hand |> Deck.string_of_deck);
+     (* Print deadwood of current player's hand *)
+     print_string "Deadwood:\n";
+     print_list (st |> State.get_current_player_hand |> Deck.deadwood 
+                 |> Deck.string_of_deck);
+     print_endline ("Please choose cards to lay off.");
+     print_string  "> ";
+     (* match parse (read_line ()) with *)
+     match read_line () with 
+     | exception End_of_file -> ()
+     | read_line-> let state = take_readline read_line st in 
+       failwith "unimplemented")
+  | Illegal -> print_string "This is an illegal move.\n"; st
+  | Null t -> print_endline "This is an invalid command.\n"; st
 
 (* Should initalize game but not initiate state transitions *)
 let rec play_game st =
@@ -62,9 +88,19 @@ let rec play_game st =
   (* Print first card in discard pile *)
   print_string "Discard Pile:\n";
   print_endline (st |> State.get_discard |> Deck.string_of_deck |> List.hd);
-  (* Print hand of current player (Function not yet defined in state.ml string function @lawrence?*)
+
   print_endline (st |> State.get_current_player_string); print_string "'s Hand:\n";
   print_list (st |> State.get_current_player_hand |> Deck.string_of_deck);
+
+  (* Print melds of current player's hand *)
+  print_string "Melds:\n";
+  print_melds (st |> State.get_current_player_hand |> Deck.best_meld);
+
+  (* Print deadwood of current player's hand *)
+  print_string "Deadwood:\n";
+  print_list (st |> State.get_current_player_hand |> Deck.deadwood 
+              |> Deck.string_of_deck);
+
   (* Prompt for player to draw. *)
   print_endline ("Please draw a card from either the stock or the discard pile.");
   print_string  "> ";
@@ -74,6 +110,7 @@ let rec play_game st =
   | exception End_of_file -> ()
   | read_line -> let state = take_readline read_line st in 
     (play_game state )
+
 
 (* 
 

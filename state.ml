@@ -62,7 +62,7 @@ let get_last_move st =
 let remove_top_card deck =
   match deck with
   | [] -> None
-  | h::t -> t
+  | h::t -> Some t
 
 let get_top_card deck =
   match deck with
@@ -87,7 +87,7 @@ let update_player player st =
 
 (* TODO: draw should return a Null of t result if < 2 cards in stock *)
 
-let get_new_draw_state st deck location =
+let get_new_draw_state st location =
   let current_stock  = current_stock_pile st in
   let current_discard = get_discard_pile st in
   let current_player = get_current_player st in
@@ -102,9 +102,9 @@ let get_new_draw_state st deck location =
     last_move = (Draw location,card);
   }
 
-let draw_deck location deck st =
-  if (List.mem location ["Stock","Discard"]) then  
-    (let new_st = get_new_draw_state st deck location
+let draw_deck location st =
+  if (List.mem location ["Stock"; "Discard"]) then  
+    (let new_st = get_new_draw_state st location
      in
      Legal new_st) 
   else Illegal
