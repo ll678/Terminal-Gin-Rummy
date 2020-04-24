@@ -15,18 +15,24 @@ let rec print_list lst =
     print_string " "; 
     print_list t
 
+let rec print_melds lst =
+  match lst with
+  | [] -> ()
+  | h::t -> print_list (Deck.string_of_deck h); 
+    print_string "\n"; 
+    print_melds t
+
 let change (command : State.result) (st : State.t) = 
   match command with 
   | Legal t -> t
   | Illegal -> print_string "This is an illegal move.\n"; st
-  | Null t -> t
-
+  | Null t -> print_string "This is an invalid command.\n"; st
 (** We need to implement win condition*)
 (* | Win t -> print_string (t); exit 0 *)
 
 let handle_score (st : State.t) = 
   print_string "Your score is: " ; 
-  print_int (get_player_score st);
+  (* print_int (get_player_score st); *)
   print_endline "\n"
 
 
@@ -53,6 +59,27 @@ let process_readline read_line (st : State.t) =
     print_endline "This is an malformed command.\n"; st
   | command -> (process_command command st)
 
+(** After Player 1 knocks, [knock] handles [st], in which Player 2 is the
+    current player and can choose cards to lay off. *)
+let knock (command : State.result) (st : State.t) =
+  match command with 
+  | Legal t -> 
+    (print_endline (st |> State.get_current_player_string); print_string "'s Hand:\n";
+     print_list (st |> State.get_current_player_hand |> Deck.string_of_deck);
+     (* Print deadwood of current player's hand *)
+     print_string "Deadwood:\n";
+     print_list (st |> State.get_current_player_hand |> Deck.deadwood 
+                 |> Deck.string_of_deck);
+     print_endline ("Please choose cards to lay off.");
+     print_string  "> ";
+     (* match parse (read_line ()) with *)
+     match read_line () with 
+     | exception End_of_file -> ()
+     | read_line-> let state = take_readline read_line st in 
+       failwith "unimplemented")
+  | Illegal -> print_string "This is an illegal move.\n"; st
+  | Null t -> print_endline "This is an invalid command.\n"; st
+
 (* Should initalize game but not initiate state transitions *)
 let rec play_game (st : State.t) =
   (* Print stock pile *)
@@ -65,9 +92,19 @@ let rec play_game (st : State.t) =
 
   print_string "Discard Pile:\n";
   print_endline (st |> State.get_discard |> Deck.string_of_deck |> List.hd);
-  (* Print hand of current player (Function not yet defined in state.ml string function @lawrence?*)
+
   print_endline (st |> State.get_current_player_string); print_string "'s Hand:\n";
   print_list (st |> State.get_current_player_hand |> Deck.string_of_deck);
+
+  (* Print melds of current player's hand *)
+  print_string "Melds:\n";
+  print_melds (st |> State.get_current_player_hand |> Deck.best_meld);
+
+  (* Print deadwood of current player's hand *)
+  print_string "Deadwood:\n";
+  print_list (st |> State.get_current_player_hand |> Deck.deadwood 
+              |> Deck.string_of_deck);
+
   (* Prompt for player to draw. *)
   print_endline ("Please draw a card from either the stock or the discard pile.");
   print_string  "> ";
@@ -77,6 +114,7 @@ let rec play_game (st : State.t) =
   | exception End_of_file -> ()
   | read_line -> let state = process_readline read_line st in 
     (play_game state )
+
 
 (* 
 

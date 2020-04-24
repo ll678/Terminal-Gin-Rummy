@@ -15,7 +15,7 @@ type number
 type card = number * suit
 
 (** The abstract type of values representing card decks. *)
-type t
+type t = card list
 
 (** [init_deck] is the initialized and sorted standard 52-card deck. *)
 val init_deck : t

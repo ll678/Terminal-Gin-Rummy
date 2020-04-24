@@ -127,7 +127,8 @@ let run_melds hand =
   List.filter (fun lst -> lst <> []) runs
 
 (** [union l1 l2] contains only the elements that are elements of [l1]
-    or elements of [l2]. *)
+    or elements of [l2]. This function was inspired by code previously
+    used in A4: Search. *)
 let rec union l1 l2 =
   List.fold_right 
     (fun card acc -> if List.mem card l2
@@ -139,7 +140,8 @@ let intersect l1 l2 =
       then card::acc else acc) (union l1 l2) []
 
 (** [difference l1 l2] contains only the elements that are elements of [l1]
-    but not elements of [l2]. *)
+    but not elements of [l2]. This function was inspired by code previously
+    used in A4: Search. *)
 let difference l1 l2 =
   List.fold_right 
     (fun card acc -> if (List.mem card l1) && not (List.mem card l2) 
@@ -185,7 +187,10 @@ let diff_melds hand =
 let rec add meld_cards list tup acc =
   match list with
   | [] -> acc
-  | h::t -> add meld_cards t tup ((List.concat [h; (fst tup)], List.concat [(difference meld_cards h); (snd tup)])::acc)
+  | h::t -> 
+    add meld_cards t tup 
+      ((List.concat [h; (fst tup)], 
+        List.concat [(difference meld_cards h); (snd tup)])::acc)
 
 (** [get_melds hand] creates a list of pairs of all possible set and run meld 
     combinations in hand. *)

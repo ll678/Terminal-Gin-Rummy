@@ -15,7 +15,7 @@ type t
 (** The result of a new game state. *)
 type result = Legal of t | Illegal | Null of t
 
-val init_state : int * int -> int -> (string * string) -> t
+val init_state : int * int -> int -> (string * string) -> Deck.t list -> t
 
 val get_stock : t -> Deck.t
 
@@ -36,6 +36,8 @@ val draw : string -> t -> t
    val get_top_card : 'a list -> 'a
 
    val update_player : p -> t -> p *)
+
+val draw_deck : string -> result
 
 (** [discard card st] is [r] if attempting to discard [card] from the hand
     of the current player in [st] results in [r]. If [card] can be discarded,
