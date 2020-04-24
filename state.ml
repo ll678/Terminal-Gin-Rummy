@@ -5,7 +5,7 @@ type p = {
 }
 
 (** The abstract type of values representing a move. *)
-type move = (Command.command * Deck.card) option
+type move = (Command.command * Deck.card option) option
 
 type t = {
   stock_pile : Deck.t;
@@ -103,7 +103,7 @@ let get_new_draw_state st location =
       else current_discard;
     players = update_player st card;
     current_player = if (current_player = 0) then 1 else 0;
-    last_moves = (Some (Draw ["draw"], card),fst st.last_moves);
+    last_moves = (Some (Draw ["draw"], Some card),fst st.last_moves);
   }
 
 let draw location st =
@@ -128,7 +128,7 @@ let discard_player card player =
   }
 
 let discard card st = 
-  if fst st.last_moves = Some (Draw ["discard"],card) then Illegal
+  if fst st.last_moves = Some (Draw ["discard"], Some card) then Illegal
   else
     let p_ind = st.current_player in
     let p = if p_ind = 0 then fst st.players else snd st.players in
@@ -143,7 +143,7 @@ let discard card st =
             if p_ind = 0 then (discard_player card p,opp)
             else (opp,discard_player card p);
           current_player = opp_ind;
-          last_moves = (Some (Discard ["discard"], card),fst st.last_moves);
+          last_moves = (Some (Discard ["discard"], Some card),fst st.last_moves);
         })
 
 let knock_declare st = 
@@ -226,12 +226,13 @@ let sort st =
       last_moves = st.last_moves;
     }
 
-(* (Command.command * Deck.card) option *)
+(* (Command.command * Deck.card option) option *)
+
+
 
 let pass_valid st = 
   match st.last_moves with
   | (None, None)->true
-  | (None, (Some p))-> if (fst p)= Pass then true else false
   | ((Some p), None) -> if (fst p)= Pass  then true else false
   | _ -> false
 
@@ -246,6 +247,6 @@ let pass st =
         discard_pile = st.discard_pile;
         players = sort_player_hand st.current_player st.players;
         current_player = if (st.current_player = 0) then 1 else 0;
-        last_moves = st.last_moves;
+        last_moves =  (Some (Pass , None),fst st.last_moves);
       }
   else Illegal

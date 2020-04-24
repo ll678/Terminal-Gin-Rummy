@@ -29,6 +29,7 @@ let change (command : State.result) (st : State.t) =
   | Null t -> print_string "This is an invalid command.\n"; st
   | Win -> print_string ("Congrats, you've won"); exit 0 
 
+
 let handle_score (st : State.t) = 
   print_string "Your score is: " ; 
   print_int (State.get_current_player_score st);
@@ -58,9 +59,11 @@ let rec knock (command : State.result) (st : State.t) =
          print_endline (get_winner_name ^ " has won this round!"); (* Implement get_winner_name *)
          play_game new_st
        | Illegal -> print_string "This is an illegal move.\n"; knock command st
+       | Win -> print_string ("Congrats, you've won"); exit 0 
        | Null t -> print_endline "This is an invalid command.\n"; knock command st)
   | Illegal -> print_string "This is an illegal move.\n"; knock command st
   | Null t -> print_endline "This is an invalid command.\n"; knock command st
+  | Win -> print_string ("Congrats, you've won"); exit 0 
 
 (**process_command takes terminal input and executes a command. The command may or
    may not change state but process_command always returns a state *)
