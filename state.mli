@@ -29,6 +29,9 @@ val get_current_player_name : t -> string
 (** [get_current_player_hand st] is the hand of the current player. *)
 val get_current_player_hand : t -> Deck.t
 
+(** [get_current_player_score st] is the hand of the current player. *)
+val get_current_player_score : t -> int
+
 val draw : string -> t -> t
 
 (* val remove_top_card : 'a list -> 'a list

@@ -56,6 +56,8 @@ let get_current_player_name st = if st.current_player = 0
 let get_current_player_hand st = if st.current_player = 0
   then (fst (st.players)).hand else (snd (st.players)).hand
 
+let get_current_player_score st = if st.current_player = 0
+  then (fst (st.players)).score else (snd (st.players)).score
 
 let update_player player st =
   if (st.current_player == 0) then 

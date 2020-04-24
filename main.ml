@@ -32,7 +32,7 @@ let change (command : State.result) (st : State.t) =
 
 let handle_score (st : State.t) = 
   print_string "Your score is: " ; 
-  (* print_int (get_player_score st); *)
+  print_int (State.get_current_player_score st);
   print_endline "\n"
 
 
@@ -61,24 +61,30 @@ let process_readline read_line (st : State.t) =
 
 (** After Player 1 knocks, [knock] handles [st], in which Player 2 is the
     current player and can choose cards to lay off. *)
-let knock (command : State.result) (st : State.t) =
+let rec knock (command : State.result) (st : State.t) =
   match command with 
   | Legal t -> 
-    (print_endline (st |> State.get_current_player_string); print_string "'s Hand:\n";
+    (print_endline (st |> State.get_current_player_name); print_string "'s Hand:\n";
      print_list (st |> State.get_current_player_hand |> Deck.string_of_deck);
      (* Print deadwood of current player's hand *)
      print_string "Deadwood:\n";
      print_list (st |> State.get_current_player_hand |> Deck.deadwood 
                  |> Deck.string_of_deck);
-     print_endline ("Please choose cards to lay off.");
+     print_endline ("Please list any cards you want to lay off.");
      print_string  "> ";
      (* match parse (read_line ()) with *)
      match read_line () with 
      | exception End_of_file -> ()
-     | read_line-> let state = take_readline read_line st in 
-       failwith "unimplemented")
-  | Illegal -> print_string "This is an illegal move.\n"; st
-  | Null t -> print_endline "This is an invalid command.\n"; st
+     | read_line-> let res = State.knock_match (Deck.string_to_deck read_line) st in (* Implement string_to_deck in Deck. *)
+       match res with
+       | Legal new_st ->
+         print_string (st |> State.get_current_player_name); print_string "'s Score: "; print_endline (st |> State.get_current_player_score);
+         print_string (new_st |> State.get_current_player_name); print_string "'s Score: "; print_endline (new_st |> State.get_current_player_score);
+         print_endline (get_winner_name ^ " has won this round!");
+       | Illegal -> print_string "This is an illegal move.\n"; knock st
+       | Null t -> print_endline "This is an invalid command.\n"; knock st)
+  | Illegal -> print_string "This is an illegal move.\n"; knock st
+  | Null t -> print_endline "This is an invalid command.\n"; knock st
 
 (* Should initalize game but not initiate state transitions *)
 let rec play_game (st : State.t) =
@@ -93,7 +99,7 @@ let rec play_game (st : State.t) =
   print_string "Discard Pile:\n";
   print_endline (st |> State.get_discard |> Deck.string_of_deck |> List.hd);
 
-  print_endline (st |> State.get_current_player_string); print_string "'s Hand:\n";
+  print_string (st |> State.get_current_player_name); print_string "'s Hand:\n";
   print_list (st |> State.get_current_player_hand |> Deck.string_of_deck);
 
   (* Print melds of current player's hand *)
