@@ -59,7 +59,6 @@ let get_current_player_hand st = if st.current_player = 0
 let get_current_player_score st = if st.current_player = 0
   then (fst (st.players)).score else (snd (st.players)).score
 
-(* We need to decide if the discard pile is ordered (which we would want in this case to get the faceup card) *)
 let remove_top_card deck =
   match deck with
   | h::t ->t
@@ -68,21 +67,24 @@ let get_top_card deck =
   match deck with
   | h::t ->h
 
-let update_player player st card =
+let update_player st card =
   if (st.current_player == 0) then 
-    let player_hand = card::((fst st.p).hand) in 
-    {
-      name = (fst st.players).name;
-      hand = player_hand;
-      score = Deck.value_of_hand player_hand
-    }
+    let player_hand = card::((fst st.players).hand) in 
+    let tmp = 
+      {
+        name = (fst st.players).name;
+        hand = player_hand;
+        score = Deck.value_of_hand player_hand
+      }
+    in (tmp, fst st.players)
   else 
-    let player_hand = card::((snd st.p).hand) in 
-    {
-      name = (snd st.players).name;
-      hand = player_hand;
-      score = Deck.value_of_hand player_hand
-    }
+    let player_hand = card::((snd st.players).hand) in 
+    let tmp =
+      {
+        name = (snd st.players).name;
+        hand = player_hand;
+        score = Deck.value_of_hand player_hand
+      } in (fst st.players, tmp)
 
 
 let get_new_draw_state st location =
@@ -95,7 +97,7 @@ let get_new_draw_state st location =
       else current_stock;
     discard_pile = if (location="Discard") then (remove_top_card current_discard)
       else current_discard;
-    players = update_player player st card;
+    players = update_player st card;
     current_player = if (current_player = 0) then 1 else 0;
     last_moves = (Some (Draw ["draw"], card),fst st.last_moves);
   }
@@ -110,7 +112,6 @@ let draw location st =
      | Some (command , card)-> if (command == Draw ["draw"]) then Illegal else
          Legal new_st) 
   else Illegal
-
 
 (** [discard_player card player] is [player] but with [card] removed.
     Precondition: [card] is in [player.hand].

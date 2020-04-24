@@ -13,12 +13,12 @@ type p
 type t 
 
 (** The result of a new game state. *)
-type result = Legal of t | Illegal | Null of t
+type result = Legal of t | Illegal | Null of t | Win
 
 (** [init_state s p n] is the initial state of the game when playing Terminal 
     Gin Runnmy. In that state the player p starts. Players have the names n and
      the scores s. *)
-val init_state : int * int -> int -> (string * string) -> Deck.t list -> t
+val init_state : (int * int) -> int -> (string * string) -> t
 
 
 (** [get_stock st] is the current stock pile for the state st. *)

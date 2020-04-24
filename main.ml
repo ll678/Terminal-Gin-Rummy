@@ -27,8 +27,7 @@ let change (command : State.result) (st : State.t) =
   | Legal t -> t
   | Illegal -> print_string "This is an illegal move.\n"; st
   | Null t -> print_string "This is an invalid command.\n"; st
-(** We need to implement win condition*)
-(* | Win t -> print_string (t); exit 0 *)
+  | Win -> print_string ("Congrats, you've won"); exit 0 
 
 let handle_score (st : State.t) = 
   print_string "Your score is: " ; 
@@ -46,7 +45,6 @@ let process_command (command : Command.command) (st : State.t) =
   | Pass -> st (** Need to discuss this, not currently functional*)
   | Sort -> change (State.sort (String.concat " " ) st) st
   | Score -> handle_score st; st
-  | Show obj_phrase -> st (**Need to discuss *)
   | Quit -> exit 0
 
 
@@ -77,6 +75,7 @@ let rec knock (command : State.result) (st : State.t) =
      | exception End_of_file -> ()
      | read_line-> let res = State.knock_match (Deck.string_to_deck read_line) st in (* Implement string_to_deck in Deck. *)
        match res with
+       | Win -> print_string "This is an illegal move.\n"; exit 0
        | Legal new_st ->
          print_string (st |> State.get_current_player_name); print_string "'s Score: "; print_endline (st |> State.get_current_player_score);
          print_string (new_st |> State.get_current_player_name); print_string "'s Score: "; print_endline (new_st |> State.get_current_player_score);
@@ -85,6 +84,7 @@ let rec knock (command : State.result) (st : State.t) =
        | Null t -> print_endline "This is an invalid command.\n"; knock st)
   | Illegal -> print_string "This is an illegal move.\n"; knock st
   | Null t -> print_endline "This is an invalid command.\n"; knock st
+  | Win -> print_string "This is an illegal move.\n"; exit 0
 
 (* Should initalize game but not initiate state transitions *)
 let rec play_game (st : State.t) =
