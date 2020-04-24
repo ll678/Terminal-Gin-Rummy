@@ -8,11 +8,11 @@
 (** The type of card suits. *)
 type suit
 
-(** The type of card numbers. *)
-type number
+(** The type of card ranks. *)
+type rank
 
 (** The type of cards. *)
-type card = number * suit
+type card = rank * suit
 
 (** The abstract type of values representing card decks. *)
 type t = card list
@@ -23,7 +23,7 @@ val init_deck : t
 (** [shuffle deck] randomizes the order of [deck]. *)
 val shuffle : t -> t
 
-(** [suit_sort hand] sorts [hand] by suit first, then number. *)
+(** [suit_sort hand] sorts [hand] by suit first, then rank. *)
 val suit_sort : t -> t
 
 (** [intersect l1 l2] contains only the elements that are elements of [l1]
@@ -80,3 +80,9 @@ val string_of_card_short : card -> string
 
 (** [string_of_deck deck] is the list of stringified cards in [deck]. *)
 val string_of_deck : t -> string list
+
+(** [card_of_string string] is the card of [string]. *)
+val card_of_string : string -> card
+
+(** [deck_of_string string] is deck of a string of cards [string]. *)
+val deck_of_string : string -> t

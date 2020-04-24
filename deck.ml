@@ -1,9 +1,9 @@
 type suit = Clubs | Diamonds | Hearts | Spades
 
-type number = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine
-            | Ten | Jack | Queen | King
+type rank = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine
+          | Ten | Jack | Queen | King
 
-type card = number * suit
+type card = rank * suit
 
 type t = card list
 
@@ -26,15 +26,15 @@ let init_deck =
 
 (** [value_of_card num] returns the int value corresponding to 
     a card of [num]. *)
-let value_of_card num =
-  match num with
+let value_of_card rank =
+  match rank with
   | Ace -> 1 | Two -> 2 | Three -> 3 | Four -> 4 | Five -> 5 | Six -> 6
   | Seven -> 7 | Eight -> 8 | Nine -> 9 | Ten -> 10 | Jack -> 10 
   | Queen -> 10 | King -> 10
 
 (** [value_of_hand hand] returns the total int value of [hand]. *)
 let value_of_hand hand =
-  List.fold_right (fun (num, _) -> (+) (value_of_card num)) hand 0
+  List.fold_right (fun (rank, _) -> (+) (value_of_card rank)) hand 0
 
 let shuffle deck =
   let int_dict = List.map (fun c -> (Random.bits (), c)) deck in
@@ -42,26 +42,26 @@ let shuffle deck =
   sort_dict |> List.split |> snd
 
 let suit_sort hand =
-  let swap = List.map (fun (num, suit) -> (suit, num)) hand in
+  let swap = List.map (fun (rank, suit) -> (suit, rank)) hand in
   let sort = List.sort compare swap in 
-  List.map (fun (num, suit) -> (suit, num)) sort
+  List.map (fun (rank, suit) -> (suit, rank)) sort
 
 (** [set_melds hand] creates a list of all possible set melds 
     in [hand]. *)
 let set_melds hand =
-  let aces = List.filter (fun (num, _) -> num = Ace) hand in
-  let twos = List.filter (fun (num, _) -> num = Two) hand in
-  let threes = List.filter (fun (num, _) -> num = Three) hand in
-  let fours = List.filter (fun (num, _) -> num = Four) hand in
-  let fives = List.filter (fun (num, _) -> num = Five) hand in
-  let sixes = List.filter (fun (num, _) -> num = Six) hand in
-  let sevens = List.filter (fun (num, _) -> num = Seven) hand in
-  let eights = List.filter (fun (num, _) -> num = Eight) hand in
-  let nines = List.filter (fun (num, _) -> num = Nine) hand in
-  let tens = List.filter (fun (num, _) -> num = Ten) hand in
-  let jacks = List.filter (fun (num, _) -> num = Jack) hand in
-  let queens = List.filter (fun (num, _) -> num = Queen) hand in
-  let kings = List.filter (fun (num, _) -> num = King) hand in
+  let aces = List.filter (fun (rank, _) -> rank = Ace) hand in
+  let twos = List.filter (fun (rank, _) -> rank = Two) hand in
+  let threes = List.filter (fun (rank, _) -> rank = Three) hand in
+  let fours = List.filter (fun (rank, _) -> rank = Four) hand in
+  let fives = List.filter (fun (rank, _) -> rank = Five) hand in
+  let sixes = List.filter (fun (rank, _) -> rank = Six) hand in
+  let sevens = List.filter (fun (rank, _) -> rank = Seven) hand in
+  let eights = List.filter (fun (rank, _) -> rank = Eight) hand in
+  let nines = List.filter (fun (rank, _) -> rank = Nine) hand in
+  let tens = List.filter (fun (rank, _) -> rank = Ten) hand in
+  let jacks = List.filter (fun (rank, _) -> rank = Jack) hand in
+  let queens = List.filter (fun (rank, _) -> rank = Queen) hand in
+  let kings = List.filter (fun (rank, _) -> rank = King) hand in
   let set = [aces; twos; threes; fours; fives; sixes; sevens; eights; nines; 
              tens; jacks; queens; kings] in
   List.filter (fun lst -> List.length lst > 2) set
@@ -331,3 +331,67 @@ let rec string_of_deck deck =
   match deck with
   | [] -> []
   | h :: t -> string_of_card_short h :: string_of_deck t
+
+let card_of_string string = 
+  let str_lst = String.split_on_char ' ' string |> Command.remove_emptys in
+  let fst = List.nth str_lst 0 |> String.lowercase in 
+  let rank = 
+    if fst = "ace" then Ace
+    else if fst = "two" then Two
+    else if fst = "three" then Three
+    else if fst = "four" then Four
+    else if fst = "five" then Five
+    else if fst = "six" then Six
+    else if fst = "seven" then Seven
+    else if fst = "eight" then Eight
+    else if fst = "nine" then Nine
+    else if fst = "ten" then Ten
+    else if fst = "jack" then Jack
+    else if fst = "queen" then Queen
+    else if fst = "king" then King
+    else failwith "invalid rank" 
+  in
+  let snd = List.nth str_lst 2 |> String.lowercase in
+  let suit = 
+    if snd = "clubs" then Clubs
+    else if snd = "diamonds" then Diamonds
+    else if snd = "hearts" then Hearts 
+    else if snd = "spades" then Spades 
+    else failwith "invalid suit"
+  in
+  (rank, suit)
+
+let card_of_string_short string = 
+  let fst = (String.sub string 0 1) in 
+  let suit = 
+    if fst = "♣" then Clubs
+    else if fst = "♦" then Diamonds
+    else if fst = "♥" then Hearts 
+    else if fst = "♠" then Spades 
+    else failwith "invalid suit" in
+  let snd = (String.sub string 1 2) in
+  let rank = 
+    if snd = "A" then Ace
+    else if snd = "2" then Two
+    else if snd = "3" then Three
+    else if snd = "4" then Four
+    else if snd = "5" then Five
+    else if snd = "6" then Six
+    else if snd = "7" then Seven
+    else if snd = "8" then Eight
+    else if snd = "9" then Nine
+    else if snd = "10" then Ten
+    else if snd = "J" then Jack
+    else if snd = "Q" then Queen
+    else if snd = "K" then King
+    else failwith "invalid rank"
+  in
+  (rank, suit)
+
+let deck_of_string string = 
+  let rec deck_of_string_helper lst =
+    match lst with
+    | [] -> []
+    | h::t -> (card_of_string h)::(deck_of_string_helper t) in
+  let cards = String.split_on_char ',' string in
+  deck_of_string_helper cards

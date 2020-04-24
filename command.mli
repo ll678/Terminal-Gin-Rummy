@@ -37,3 +37,8 @@ exception Malformed
 
     Raises: [Malformed] if the command is malformed. *)
 val parse : string -> command
+
+(** [remove_emptys str_list] is the list of non-empty strings in [str_list] 
+    Example: [remove_emptys ["hello";"";"goodbye";"";""]] is ["hello";"goodbye"]
+*)
+val remove_emptys : string list -> string list
