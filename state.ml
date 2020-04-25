@@ -114,23 +114,13 @@ let draw location st =
          | _ -> Legal new_st) 
   else Illegal
 
-let rec print_list lst =
-  match lst with
-  | [] -> ()
-  | h::t -> print_string h; 
-    print_string " "; 
-    print_list t
-
 (** [discard_player card player] is [player] but with [card] removed.
     Precondition: [card] is in [player.hand].
 *)
 let discard_player card player =
-  let new_hand = Deck.remove card player.hand in
-  print_endline ("****DEBUG****: new hand:\n");
-  (new_hand |> Deck.string_of_deck |> print_list);
   {
     name = player.name;
-    hand = new_hand;
+    hand = Deck.remove card player.hand;
     score = player.score;
   }
 
