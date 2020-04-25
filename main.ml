@@ -37,52 +37,52 @@ let handle_score (st : State.t) =
     a player wins and the game ends. *)
 let rec knock (new_st : State.result) (st : State.t) : State.t =
   match new_st with 
-  | Legal t -> 
-    (print_string (t |> State.get_current_player_name); 
-     print_string "'s Hand:\n";
-     print_list (t |> State.get_current_player_hand |> Deck.string_of_deck);
-     (* Print deadwood of current player's hand *)
-     print_string "\nDeadwood:\n";
-     print_list (t |> State.get_current_player_hand |> Deck.deadwood 
-                 |> Deck.string_of_deck);
-     print_endline ("\nPlease list any cards you want to lay off. Separate cards with a single comma.");
-     print_string  "> ";
-     match read_line () with 
-     | exception End_of_file -> 
-       print_string "I don't know what you did, but... try again.\n"; st
-     | read_line-> 
-       match Deck.deck_of_string read_line with
-       | exception Deck.Malformed ->
-         print_endline "You cannot match these. Try again.\n"; 
-         st
-       | valid_deck -> match State.knock_match valid_deck st with
-         | Legal new_st ->
-           let winner_score = State.get_current_player_score new_st in
-           let winner_name = State.get_current_player_name new_st in
-           let loser_score = State.get_opponent_player_score new_st in
-           let loser_name = State.get_opponent_player_name new_st in
-           print_string winner_name; print_string "'s Score: "; 
-           print_endline (winner_score |> string_of_int);
-           print_string loser_name; print_string "'s Score: "; 
-           print_endline (loser_score |> string_of_int);
-           print_endline (winner_name ^ " has won this round!");
-           new_st
-         | Illegal -> print_string "Not all these cards form melds. Try again.\n"; 
-           knock new_st st
-         | Null new_st -> failwith "knock fail"
-         | Win new_st -> 
-           let winner_score = State.get_current_player_score new_st in
-           let winner_name = State.get_current_player_name new_st in
-           let loser_score = State.get_opponent_player_score new_st in
-           let loser_name = State.get_opponent_player_name new_st in
-           print_string winner_name; print_string "'s Final Score: "; 
-           print_endline (winner_score |> string_of_int);
-           print_string loser_name; print_string "'s Final Score: "; 
-           print_endline (loser_score |> string_of_int);
-           print_string ("Congrats, " ^ winner_name ^ ", you've won!"); exit 0)
+  | Legal t -> t
   | Illegal -> print_string "You do not have less than 10 deadwood.\n"; st
   | Null t -> failwith "knock fail: null"
   | Win t -> failwith "knock fail: win"
+
+let rec knock_match (st : State.t) : State.t =
+  print_string (st |> State.get_opponent_player_name); print_string "'s Hand:\n";
+  print_list (st |> State.get_opponent_player_hand |> Deck.string_of_deck);
+  print_string ("\n");
+
+  print_endline ("\nPlease list any cards you want to match. Separate cards with a single comma.");
+  print_string  "> ";
+  match read_line () with 
+  | exception End_of_file -> 
+    print_string "I don't know what you did, but... try again.\n"; st
+  | read_line-> 
+    match Deck.deck_of_string read_line with
+    | exception Deck.Malformed ->
+      print_endline "You cannot match these. Try again.\n"; 
+      st
+    | valid_deck -> match State.knock_match valid_deck st with
+      | Legal new_st ->
+        let winner_score = State.get_current_player_score new_st in
+        let winner_name = State.get_current_player_name new_st in
+        let loser_score = State.get_opponent_player_score new_st in
+        let loser_name = State.get_opponent_player_name new_st in
+        print_string winner_name; print_string "'s Score: "; 
+        print_endline (winner_score |> string_of_int);
+        print_string loser_name; print_string "'s Score: "; 
+        print_endline (loser_score |> string_of_int);
+        print_endline (winner_name ^ " has won this round!");
+        new_st
+      | Illegal -> print_string "Not all these cards form melds. Try again.\n"; 
+        knock_match st
+      | Null new_st -> failwith "knock fail"
+      | Win new_st -> 
+        let winner_score = State.get_current_player_score new_st in
+        let winner_name = State.get_current_player_name new_st in
+        let loser_score = State.get_opponent_player_score new_st in
+        let loser_name = State.get_opponent_player_name new_st in
+        print_string winner_name; print_string "'s Final Score: "; 
+        print_endline (winner_score |> string_of_int);
+        print_string loser_name; print_string "'s Final Score: "; 
+        print_endline (loser_score |> string_of_int);
+        print_string ("Congrats, " ^ winner_name ^ ", you've won!"); exit 0
+
 
 (** [process_command] takes terminal input and executes a command. The command 
     may or may not change state but process_command always returns a state. *)
@@ -96,6 +96,7 @@ let process_command (command : Command.command) (st : State.t) =
         st
       | valid_card -> change (State.discard valid_card st) st)
   | Knock -> knock (State.knock_declare st) st
+  | Match -> knock_match st
   | Pass -> change (State.pass st) st
   | Sort -> change (State.sort st) st
   | Score -> handle_score st; st
@@ -118,7 +119,7 @@ let rec play_game (st : State.t) =
   print_string "'s Turn:\n\n";
 
   print_string "Discard Pile:\n";
-  print_endline (st |> State.get_discard |> Deck.string_of_hd );
+  print_endline (st |> State.get_discard |> Deck.string_of_hd);
   print_string ("\n");
 
   print_string (st |> State.get_current_player_name); print_string "'s Hand:\n";

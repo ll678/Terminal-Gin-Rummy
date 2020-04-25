@@ -4,6 +4,7 @@ type command =
   | Draw of object_phrase
   | Discard of object_phrase
   | Knock
+  | Match
   | Pass
   | Sort
   | Score
@@ -47,10 +48,10 @@ let gen_obj_phrase str_list =
   | "draw" :: x :: xs -> Draw (x :: xs)
   | "discard" :: x :: xs -> Discard (x :: xs)
   | "knock" :: [] | "gin" :: [] -> Knock
+  | "match" :: [] -> Match
   | "pass" :: [] -> Pass
   | "sort" :: [] -> Sort
   | "score" :: [] -> Score
-  (* | "show" :: x :: xs -> Show (x :: xs) *)
   | _ -> raise Malformed
 
 let parse str =

@@ -38,10 +38,13 @@ val get_opponent_player_name : t -> string
 (** [get_current_player_hand st] is the hand of the current player. *)
 val get_current_player_hand : t -> Deck.t
 
-(** [get_current_player_score st] is the hand of the current player. *)
+(** [get_opponent_player_hand st] is the hand of the opponent player. *)
+val get_opponent_player_hand : t -> Deck.t
+
+(** [get_current_player_score st] is the score of the current player. *)
 val get_current_player_score : t -> int
 
-(** [get_opponent_player_score st] is the hand of the current player. *)
+(** [get_opponent_player_score st] is the score of the current player. *)
 val get_opponent_player_score : t -> int
 
 (** [draw location st] is [Illegal] if stock pile<2. It is illegal if draw 

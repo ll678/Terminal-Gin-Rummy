@@ -59,6 +59,9 @@ let get_opponent_player_name st = if st.current_player = 0
 let get_current_player_hand st = if st.current_player = 0
   then (fst (st.players)).hand else (snd (st.players)).hand
 
+let get_opponent_player_hand st = if st.current_player = 0
+  then (snd (st.players)).hand else (fst (st.players)).hand
+
 let get_current_player_score st = if st.current_player = 0
   then (fst (st.players)).score else (snd (st.players)).score
 
@@ -158,52 +161,66 @@ let knock_declare st =
         discard_pile = st.discard_pile;
         players = st.players;
         current_player = (st.current_player + 1) mod 2;
-        last_moves = st.last_moves;
+        last_moves = (Some (Knock, None),fst st.last_moves);
       })
 
 let knock_match match_deck st = 
-  let m_ind = st.current_player in
-  (* 2. Determine whether match_deck is valid *)
-  let k,m = if m_ind = 0
-    then snd st.players, fst st.players
-    else fst st.players, snd st.players in
-  let k_new_hand = Deck.push_deck match_deck k.hand in
-  let match_dead = 
-    Deck.intersect (Deck.deadwood k_new_hand) match_deck in
-  if not (Deck.is_empty match_dead) then Illegal else
-    (* 3. Calculate scores *)
-    let k_ind = (m_ind + 1) mod 2 in
-    let m_new_hand = Deck.remove_deck match_deck m.hand in
-    let p0_deadwood_val,p1_deadwood_val = if m_ind = 0
-      then Deck.deadwood_value m_new_hand,Deck.deadwood_value k_new_hand
-      else Deck.deadwood_value k_new_hand,Deck.deadwood_value m_new_hand
-    in
-    let names = ((fst st.players).name,(snd st.players).name) in
-    let p0_score_orig,p1_score_orig = (fst st.players).score,(snd st.players).score in
-    let deadwood_diff = p0_deadwood_val - p1_deadwood_val in
-    if deadwood_diff < 0 then (
-      if k_ind = 0 then
-        let p0_score = p0_score_orig+(-deadwood_diff) in
-        let next_st = init_state (p0_score_orig+(-deadwood_diff),p1_score_orig) 0 names in
-        if p0_score > 100 then Win next_st
-        else Legal next_st
-      else
-        let p0_score = p0_score_orig+(-deadwood_diff)+10 in
-        let next_st = init_state (p0_score_orig+(-deadwood_diff)+10,p1_score_orig) 0 names in
-        if p0_score > 100 then Win next_st
-        else Legal next_st
-    ) else (
-      if k_ind = 0 then
-        let p1_score = p0_score_orig+deadwood_diff+10 in
-        let next_st = init_state (p0_score_orig,p1_score_orig+(-deadwood_diff)+10) 1 names in
-        if p1_score > 100 then Win next_st
-        else Legal next_st
-      else
-        let p1_score = p0_score_orig+deadwood_diff+10 in
-        let next_st = init_state (p0_score_orig,p1_score_orig+(-deadwood_diff)) 1 names in
-        if p1_score > 100 then Win next_st
-        else Legal next_st
-    )
+  if not (fst st.last_moves = Some (Knock, None)) then Illegal else
+    let m_ind = st.current_player in
+    (* 2. Determine whether match_deck is valid *)
+    let k,m = if m_ind = 0
+      then snd st.players, fst st.players
+      else fst st.players, snd st.players in
+    let k_orig_hand = k.hand in
+    let k_new_hand = Deck.push_deck match_deck k_orig_hand in
+    let match_dead = 
+      Deck.intersect (Deck.deadwood k_new_hand) match_deck in
+    if not (Deck.is_empty match_dead) then Illegal else
+      (* 3. Calculate scores *)
+      let k_ind = (m_ind + 1) mod 2 in
+      let m_new_hand = Deck.remove_deck match_deck m.hand in
+      let p0_deadwood_val,p1_deadwood_val = if m_ind = 0
+        then Deck.deadwood_value m_new_hand,Deck.deadwood_value k_new_hand
+        else Deck.deadwood_value k_new_hand,Deck.deadwood_value m_new_hand
+      in
+      let names = ((fst st.players).name,(snd st.players).name) in
+      let p0_score_orig,p1_score_orig = (fst st.players).score,(snd st.players).score in
+      let deadwood_diff = p0_deadwood_val - p1_deadwood_val in
+      (* If gin, add 20 + deadwood difference to knocker *)
+      if Deck.deadwood_value k_orig_hand = 0 then
+        if k_ind = 0 then
+          let p0_score = (Int.abs deadwood_diff) + 20 in
+          let next_st = init_state (p0_score,p1_score_orig) 0 names in
+          if p0_score > 100 then Win next_st
+          else Legal next_st
+        else
+          let p1_score = (Int.abs deadwood_diff) + 20 in
+          let next_st = init_state (p0_score_orig,p1_score) 0 names in
+          if p1_score > 100 then Win next_st
+          else Legal next_st
+      else if deadwood_diff < 0 then (
+        if k_ind = 0 then
+          let p0_score = p0_score_orig+(-deadwood_diff) in
+          let next_st = init_state (p0_score,p1_score_orig) 0 names in
+          if p0_score > 100 then Win next_st
+          else Legal next_st
+        else
+          let p0_score = p0_score_orig+(-deadwood_diff)+10 in
+          let next_st = init_state (p0_score+10,p1_score_orig) 0 names in
+          if p0_score > 100 then Win next_st
+          else Legal next_st
+      ) else (
+        if k_ind = 0 then
+          let p1_score = p0_score_orig+deadwood_diff+10 in
+          let next_st = init_state (p0_score_orig,p1_score) 1 names in
+          if p1_score > 100 then Win next_st
+          else Legal next_st
+        else
+          let p1_score = p0_score_orig+deadwood_diff+10 in
+          let next_st = init_state (p0_score_orig,p1_score) 1 names in
+          if p1_score > 100 then Win next_st
+          else Legal next_st
+      )
 
 let sort_player_hand current_player players =
   if (current_player = 0) then 

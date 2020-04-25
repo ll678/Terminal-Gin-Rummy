@@ -16,10 +16,10 @@ type command =
   | Draw of object_phrase
   | Discard of object_phrase
   | Knock
+  | Match
   | Pass
   | Sort
   | Score
-  (* | Show of object_phrase *)
   | Quit
 
 (** Raised when an empty command is parsed. *)
