@@ -108,8 +108,8 @@ let get_new_draw_state st location =
 
 let check_first_draw location st=  
   match st.last_moves with
-  | (None, None) -> if location=="Stock" then false else true
-  | ((Some p), None) -> if location=="Stock" then false else true
+  | (None, None) -> if location="Stock" then false else true
+  | ((Some p), None) -> if location="Stock" then false else true
   | _ -> true
 
 let draw location st =
