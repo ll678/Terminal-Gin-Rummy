@@ -68,7 +68,6 @@ let get_opponent_player_score st = if st.current_player = 0
 let get_moves st = 
   st.last_moves
 
-
 let update_player st card =
   if (st.current_player == 0) then 
     let player_hand = Deck.push card ((fst st.players).hand) in 
@@ -78,7 +77,7 @@ let update_player st card =
         hand = player_hand;
         score = (fst st.players).score
       }
-    in (tmp, fst st.players)
+    in (tmp, snd st.players)
   else 
     let player_hand = Deck.push card ((snd st.players).hand) in 
     let tmp =
@@ -87,7 +86,6 @@ let update_player st card =
         hand = player_hand;
         score = (snd st.players).score
       } in (fst st.players, tmp)
-
 
 let get_new_draw_state st location =
   let current_stock  = get_stock st in
@@ -146,13 +144,12 @@ let discard card st =
       else
         let opp_ind = (p_ind + 1) mod 2 in
         let opp = if opp_ind = 0 then fst st.players else snd st.players in
-
         Legal ({
             stock_pile = st.stock_pile;
             discard_pile = Deck.push card st.discard_pile;
             players =
-              if p_ind = 0 then (discard_player card p,opp)
-              else (opp,discard_player card p);
+              if p_ind = 0 then (discard_player card p, opp)
+              else (opp, discard_player card p);
             current_player = opp_ind;
             last_moves = (Some (Discard ["discard"], Some card),fst st.last_moves);
           })
@@ -207,12 +204,12 @@ let knock_match match_deck st =
         else Legal next_st
     ) else (
       if k_ind = 0 then
-        let p1_score = p0_score_orig+(-deadwood_diff)+10 in
+        let p1_score = p0_score_orig+deadwood_diff+10 in
         let next_st = init_state (p0_score_orig,p1_score_orig+(-deadwood_diff)+10) 1 names in
         if p1_score > 100 then Win next_st
         else Legal next_st
       else
-        let p1_score = p0_score_orig+(-deadwood_diff)+10 in
+        let p1_score = p0_score_orig+deadwood_diff+10 in
         let next_st = init_state (p0_score_orig,p1_score_orig+(-deadwood_diff)) 1 names in
         if p1_score > 100 then Win next_st
         else Legal next_st
@@ -250,8 +247,6 @@ let sort st =
     }
 
 (* (Command.command * Deck.card option) option *)
-
-
 
 let pass_valid st = 
   match st.last_moves with

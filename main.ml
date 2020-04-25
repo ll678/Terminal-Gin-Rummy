@@ -1,12 +1,4 @@
-(** This code was inspired by the adventure game we created in p2 and p3 *)
-
-(* Things to do:
-   Implement knocking in state
-   Implement getting current player's hand
-   Functions handling drawing and discarding produce results (Legal/Illegal) and not states
-   so pattern matching needs to be added to handle Legal of st and Illegal
-   If command is invalid, rerun previous state and prompt for command again
-*)
+(** This code was inspired by the adventure game we created in A2 and A3 *)
 
 let rec print_list lst =
   match lst with
@@ -25,13 +17,16 @@ let rec print_melds lst =
 let change (new_st : State.result) (st : State.t) = 
   match new_st with 
   | Legal t -> 
-    print_endline ("\n****DEBUG****: current player:"^string_of_int (State.get_current_player t));
-    print_endline ("\n****DEBUG****: current_player hand: ");
     print_list (t |> State.get_current_player_hand |> Deck.string_of_deck);
     t
-  | Illegal -> print_string "This is an illegal move.\n"; st
-  | Null t -> print_string "Less than two cards in stock. Game is null. New round starting... \n"; st
-  | Win t -> failwith "you shouldnt have won"
+  | Illegal -> 
+    print_string "This is an illegal move.\n"; 
+    st
+  | Null t -> 
+    print_string 
+      "Less than two cards in stock. Game is null. New round starting... \n"; 
+    st
+  | Win t -> failwith "you shouldn't have won"
 
 
 let handle_score (st : State.t) = 
@@ -39,54 +34,66 @@ let handle_score (st : State.t) =
   print_int (State.get_current_player_score st);
   print_endline "\n"
 
-(** After Player 1 knocks, [knock] handles [st], in which Player 2 is the
-    current player and can choose cards to lay off. The resulting *)
-let rec knock (command : State.result) (st : State.t) : State.t =
-  match command with 
+(** After Player 1 knocks in state [st], [knock] handles [new_st], 
+    in which Player 2 is the current player and can choose cards to lay off. 
+    The resulting state is an initialized subsequent round, unless
+    a player wins and the game ends. *)
+let rec knock (new_st : State.result) (st : State.t) : State.t =
+  match new_st with 
   | Legal t -> 
-    (print_endline (st |> State.get_current_player_name); print_string "'s Hand:\n";
-     print_list (st |> State.get_current_player_hand |> Deck.string_of_deck);
+    (print_string (t |> State.get_current_player_name); 
+     print_string "'s Hand:\n";
+     print_list (t |> State.get_current_player_hand |> Deck.string_of_deck);
      (* Print deadwood of current player's hand *)
-     print_string "Deadwood:\n";
-     print_list (st |> State.get_current_player_hand |> Deck.deadwood 
+     print_string "\nDeadwood:\n";
+     print_list (t |> State.get_current_player_hand |> Deck.deadwood 
                  |> Deck.string_of_deck);
-     print_endline ("Please list any cards you want to lay off.");
+     print_endline ("\nPlease list any cards you want to lay off.");
      print_string  "> ";
      match read_line () with 
-     | exception End_of_file -> print_string "I don't know what you did, but... try again.\n"; st
-     | read_line-> let res = State.knock_match (Deck.deck_of_string read_line) st in
+     | exception End_of_file -> 
+       print_string "I don't know what you did, but... try again.\n"; st
+     | read_line-> 
+       let res = State.knock_match (Deck.deck_of_string read_line) st in
        match res with
        | Legal new_st ->
          let winner_score = State.get_current_player_score new_st in
          let winner_name = State.get_current_player_name new_st in
          let loser_score = State.get_opponent_player_score new_st in
          let loser_name = State.get_opponent_player_name new_st in
-         print_string winner_name; print_string "'s Score: "; print_endline (winner_score |> string_of_int);
-         print_string loser_name; print_string "'s Score: "; print_endline (loser_score |> string_of_int);
+         print_string winner_name; print_string "'s Score: "; 
+         print_endline (winner_score |> string_of_int);
+         print_string loser_name; print_string "'s Score: "; 
+         print_endline (loser_score |> string_of_int);
          print_endline (winner_name ^ " has won this round!");
          new_st
-       | Illegal -> print_string "Not all these cards form melds. Try again.\n"; knock command st
+       | Illegal -> print_string "Not all these cards form melds. Try again.\n"; 
+         knock new_st st
        | Null new_st -> failwith "knock fail"
        | Win new_st -> 
          let winner_score = State.get_current_player_score new_st in
          let winner_name = State.get_current_player_name new_st in
          let loser_score = State.get_opponent_player_score new_st in
          let loser_name = State.get_opponent_player_name new_st in
-         print_string winner_name; print_string "'s Final Score: "; print_endline (winner_score |> string_of_int);
-         print_string loser_name; print_string "'s Final Score: "; print_endline (loser_score |> string_of_int);
-         print_string ("Congrats, " ^ winner_name ^ ", you've won!"); exit 0 )
+         print_string winner_name; print_string "'s Final Score: "; 
+         print_endline (winner_score |> string_of_int);
+         print_string loser_name; print_string "'s Final Score: "; 
+         print_endline (loser_score |> string_of_int);
+         print_string ("Congrats, " ^ winner_name ^ ", you've won!"); exit 0)
   | Illegal -> print_string "You do not have less than 10 deadwood.\n"; st
   | Null t -> failwith "knock fail: null"
   | Win t -> failwith "knock fail: win"
 
-(**process_command takes terminal input and executes a command. The command may or
-   may not change state but process_command always returns a state *)
+(** [process_command] takes terminal input and executes a command. The command 
+    may or may not change state but process_command always returns a state. *)
 let process_command (command : Command.command) (st : State.t) =  
   match command with
   | Draw obj_phrase -> change (State.draw (String.concat " " obj_phrase) st) st
   | Discard obj_phrase -> (
-      match String.concat " " obj_phrase |> Deck.card_of_string with 
-      | exception Deck.Malformed -> print_endline "You cannot discard this.\n"; st
+      match (String.concat " " obj_phrase) |> Deck.card_of_string with 
+      | exception Deck.Malformed -> 
+        print_endline "You cannot discard this.\n"; 
+        st
       | valid_card -> change (State.discard valid_card st) st)
   | Knock -> knock (State.knock_declare st) st
   | Pass -> change (State.pass st) st
@@ -114,18 +121,21 @@ let rec play_game (st : State.t) =
   (* TODO: will we want to do this? *)
   (* print_list (State.get_stock st); *)
   (* Print first card in discard pile *)
-  print_string "\n-----------------------------------------------------------\n";
-  print_string "It is "; print_string (st |> State.get_current_player_name); print_string "'s Turn:\n\n";
+  print_string "\n----------------------------------------------------------\n";
+
+  print_string "It is "; print_string (st |> State.get_current_player_name); 
+  print_string "'s Turn:\n\n";
 
   print_string "Discard Pile:\n";
   print_endline (st |> State.get_discard |> Deck.string_of_hd );
+  print_string ("\n");
 
   print_string (st |> State.get_current_player_name); print_string "'s Hand:\n";
   print_list (st |> State.get_current_player_hand |> Deck.string_of_deck);
   print_string ("\n");
 
   (* Print melds of current player's hand *)
-  print_string "Melds:\n";
+  print_string "\nMelds:\n";
   print_melds (st |> State.get_current_player_hand |> Deck.best_meld);
   print_string ("\n");
 
@@ -133,7 +143,7 @@ let rec play_game (st : State.t) =
   print_string "Deadwood:\n";
   print_list (st |> State.get_current_player_hand |> Deck.deadwood 
               |> Deck.string_of_deck);
-  print_string ("\n");
+  print_string ("\n\n");
 
   (* Prompt for player to draw. *)
   print_endline ("Please enter a command.");
@@ -144,7 +154,6 @@ let rec play_game (st : State.t) =
   | exception End_of_file -> ()
   | read_line -> let next_st = process_readline read_line st in 
     (play_game next_st)
-
 
 (** [init_game n1 n2] starts a game of gin rummy with players [n1] and [n2]. *)
 let init_game name1 name2 =

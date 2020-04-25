@@ -256,7 +256,8 @@ let start_cards =
   let fst = get_list 31 temp  in
   let snd = get_list 1 (difference temp fst) in
   let trd = get_list 10 (difference (difference temp fst) snd) in
-  let fth = get_list 10 (difference (difference (difference temp fst) snd) trd) in
+  let fth = 
+    get_list 10 (difference (difference (difference temp fst) snd) trd) in
   [fst; snd; trd; fth]
 
 let push card deck = 
