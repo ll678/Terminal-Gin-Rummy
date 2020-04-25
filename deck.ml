@@ -423,4 +423,4 @@ let deck_of_string string =
 let string_of_hd deck = 
   match deck with
   | [] -> ""
-  | h :: _ -> string_of_card h
+  | h :: _ -> string_of_card_short h

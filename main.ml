@@ -22,8 +22,8 @@ let rec print_melds lst =
     print_string "\n"; 
     print_melds t
 
-let change (command : State.result) (st : State.t) = 
-  match command with 
+let change (new_st : State.result) (st : State.t) = 
+  match new_st with 
   | Legal t -> t
   | Illegal -> print_string "This is an illegal move.\n"; st
   | Null t -> print_string "Less than two cards in stock. Game is null. New round starting... \n"; st
@@ -111,6 +111,8 @@ let rec play_game (st : State.t) =
   (* print_list (State.get_stock st); *)
   (* Print first card in discard pile *)
   print_string "\n-----------------------------------------------------------\n";
+  print_string "It is "; print_string (st |> State.get_current_player_name); print_string "'s Turn:\n\n";
+
   print_string "Discard Pile:\n";
   print_endline (st |> State.get_discard |> Deck.string_of_hd );
 
@@ -136,8 +138,8 @@ let rec play_game (st : State.t) =
   (* match parse (read_line ()) with *)
   match read_line () with 
   | exception End_of_file -> ()
-  | read_line -> let state = process_readline read_line st in 
-    (play_game state )
+  | read_line -> let new_st = process_readline read_line st in 
+    (play_game new_st )
 
 
 (** [init_game n1 n2] starts a game of gin rummy with players [n1] and [n2]. *)
