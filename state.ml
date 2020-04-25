@@ -104,7 +104,16 @@ let get_new_draw_state st location =
     last_moves = (Some (Draw [location], Some card), fst st.last_moves);
   }
 
+
+
+let check_first_draw location st=  
+  match st.last_moves with
+  | (None, None) -> if location=="Stock" then false else true
+  | ((Some p), None) -> if location=="Stock" then false else true
+  | _ -> true
+
 let draw location st =
+  if (not (check_first_draw location st)) then Illegal else 
   if (List.mem location ["Stock"; "Discard"]) then
     if location = "Discard" && (Deck.length st.discard_pile) = 0 then Illegal else
       (let new_st = get_new_draw_state st location in
