@@ -10,7 +10,6 @@ type command =
   | Score
   | Quit
 
-
 exception Empty
 
 exception Malformed
