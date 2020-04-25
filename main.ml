@@ -24,7 +24,11 @@ let rec print_melds lst =
 
 let change (new_st : State.result) (st : State.t) = 
   match new_st with 
-  | Legal t -> t
+  | Legal t -> 
+    print_endline ("\n****DEBUG****: current player:"^string_of_int (State.get_current_player t));
+    print_endline ("\n****DEBUG****: current_player hand: ");
+    print_list (t |> State.get_current_player_hand |> Deck.string_of_deck);
+    t
   | Illegal -> print_string "This is an illegal move.\n"; st
   | Null t -> print_string "Less than two cards in stock. Game is null. New round starting... \n"; st
   | Win t -> failwith "you shouldnt have won"
@@ -72,8 +76,8 @@ let rec knock (command : State.result) (st : State.t) : State.t =
          print_string loser_name; print_string "'s Final Score: "; print_endline (loser_score |> string_of_int);
          print_string ("Congrats, " ^ winner_name ^ ", you've won!"); exit 0 )
   | Illegal -> print_string "You do not have less than 10 deadwood.\n"; st
-  | Null t -> failwith "knock fail"
-  | Win t -> failwith "knock fail"
+  | Null t -> failwith "knock fail: null"
+  | Win t -> failwith "knock fail: win"
 
 (**process_command takes terminal input and executes a command. The command may or
    may not change state but process_command always returns a state *)
@@ -83,7 +87,7 @@ let process_command (command : Command.command) (st : State.t) =
   | Discard obj_phrase -> (
       match String.concat " " obj_phrase |> Deck.card_of_string with 
       | exception Deck.Malformed -> print_endline "You cannot discard this.\n"; st
-      | valid_card -> change (State.discard valid_card st) st )
+      | valid_card -> change (State.discard valid_card st) st)
   | Knock -> knock (State.knock_declare st) st
   | Pass -> change (State.pass st) st
   | Sort -> change (State.sort st) st
@@ -138,8 +142,8 @@ let rec play_game (st : State.t) =
   (* match parse (read_line ()) with *)
   match read_line () with 
   | exception End_of_file -> ()
-  | read_line -> let new_st = process_readline read_line st in 
-    (play_game new_st )
+  | read_line -> let next_st = process_readline read_line st in 
+    (play_game next_st)
 
 
 (** [init_game n1 n2] starts a game of gin rummy with players [n1] and [n2]. *)

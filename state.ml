@@ -100,7 +100,7 @@ let get_new_draw_state st location =
       else current_discard;
     players = update_player st card;
     current_player = st.current_player;
-    last_moves = (Some (Draw ["draw"], Some card),fst st.last_moves);
+    last_moves = (Some (Draw [location], Some card),fst st.last_moves);
   }
 
 let draw location st =
@@ -112,40 +112,51 @@ let draw location st =
                     ((fst st.players).name,(snd st.players).name))
        else match (fst st.last_moves) with
          | None -> Legal new_st
-         | Some (command , card)-> if (command = Draw ["draw"]) then Illegal else
-             Legal new_st) 
+         | Some (Draw _,_) -> Illegal
+         | _ -> Legal new_st) 
   else Illegal
+
+let rec print_list lst =
+  match lst with
+  | [] -> ()
+  | h::t -> print_string h; 
+    print_string " "; 
+    print_list t
 
 (** [discard_player card player] is [player] but with [card] removed.
     Precondition: [card] is in [player.hand].
 *)
 let discard_player card player =
+  let new_hand = Deck.remove card player.hand in
+  print_endline ("****DEBUG****: new hand:\n");
+  (new_hand |> Deck.string_of_deck |> print_list);
   {
     name = player.name;
-    hand = Deck.remove card player.hand;
+    hand = new_hand;
     score = player.score;
   }
 
 let discard card st = 
-  if fst st.last_moves = Some (Draw ["discard"], Some card) then Illegal
-  else
-    let p_ind = st.current_player in
-    let p = if p_ind = 0 then fst st.players else snd st.players in
-    if not (Deck.mem card p.hand) then Illegal
-    else
-      let opp_ind = (p_ind + 1) mod 2 in
-      let opp = if opp_ind = 0 then fst st.players else snd st.players in
-      print_endline ("****DEBUG****: card to be removed: "^Deck.string_of_card card);
-      print_endline ("****DEBUG****: current player:"^string_of_int st.current_player);
-      Legal ({
-          stock_pile = st.stock_pile;
-          discard_pile = Deck.push card st.discard_pile;
-          players =
-            if p_ind = 0 then (discard_player card p,opp)
-            else (opp,discard_player card p);
-          current_player = opp_ind;
-          last_moves = (Some (Discard ["discard"], Some card),fst st.last_moves);
-        })
+  if fst st.last_moves = Some (Draw ["Discard"], Some card) then Illegal
+  else match fst st.last_moves with
+    | Some (Draw _, _) ->
+      let p_ind = st.current_player in
+      let p = if p_ind = 0 then fst st.players else snd st.players in
+      if not (Deck.mem card p.hand) then Illegal
+      else
+        let opp_ind = (p_ind + 1) mod 2 in
+        let opp = if opp_ind = 0 then fst st.players else snd st.players in
+
+        Legal ({
+            stock_pile = st.stock_pile;
+            discard_pile = Deck.push card st.discard_pile;
+            players =
+              if p_ind = 0 then (discard_player card p,opp)
+              else (opp,discard_player card p);
+            current_player = opp_ind;
+            last_moves = (Some (Discard ["discard"], Some card),fst st.last_moves);
+          })
+    | _ -> Illegal
 
 let knock_declare st = 
   (* 1. Determine whether curr_p can knock. *)
