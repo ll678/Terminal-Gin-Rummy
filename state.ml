@@ -101,7 +101,7 @@ let get_new_draw_state st location =
       else current_discard;
     players = update_player st card;
     current_player = st.current_player;
-    last_moves = (Some (Draw [location], Some card),fst st.last_moves);
+    last_moves = (Some (Draw [location], Some card), fst st.last_moves);
   }
 
 let draw location st =
@@ -109,8 +109,8 @@ let draw location st =
     if location = "Discard" && (Deck.length st.discard_pile) = 0 then Illegal else
       (let new_st = get_new_draw_state st location in
        if (Deck.length new_st.stock_pile) <= 2
-       then Null (init_state ((fst st.players).score,(snd st.players).score) 0
-                    ((fst st.players).name,(snd st.players).name))
+       then Null (init_state ((fst st.players).score, (snd st.players).score) 0
+                    ((fst st.players).name, (snd st.players).name))
        else match (fst st.last_moves) with
          | None -> Legal new_st
          | Some (Draw _,_) -> Illegal
@@ -155,7 +155,7 @@ let knock_declare st =
   | _ ->
     let knocker = if st.current_player = 0
       then fst st.players else snd st.players in
-    if Deck.deadwood_value knocker.hand > 10 then Illegal
+    if Deck.knock_deadwood_value knocker.hand > 10 then Illegal
     else Legal ({
         stock_pile = st.stock_pile;
         discard_pile = st.discard_pile;

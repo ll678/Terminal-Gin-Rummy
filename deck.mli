@@ -17,6 +17,9 @@ type card = rank * suit
 (** The abstract type of values representing card decks. *)
 type t
 
+(** The exception of malformed cards. *)
+exception Malformed
+
 (** [init_deck] is the initialized and sorted standard 52-card deck. *)
 val init_deck : t
 
@@ -46,6 +49,10 @@ val deadwood_value : t -> int
 
 (** [meld_value hand] is the total int value of the meld in [hand]. *)
 val meld_value : t -> int
+
+(** [knock_deadwood_value hand] is the int value of the deadwood in [hand]
+    with the implied discard of the highest value card in the deadwood. *)
+val knock_deadwood_value : t -> int
 
 (** [start_cards] creates an initialized and shuffled deck and returns a list
     that contains a list of stock pile cards, a list of discard pile cards, 
@@ -95,8 +102,6 @@ val string_of_card_short : card -> string
 
 (** [string_of_deck deck] is the list of stringified cards in [deck]. *)
 val string_of_deck : t -> string list
-
-exception Malformed
 
 (** [card_of_string string] is the card of [string]. *)
 val card_of_string : string -> card

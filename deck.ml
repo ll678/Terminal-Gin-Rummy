@@ -7,6 +7,8 @@ type card = rank * suit
 
 type t = card list
 
+exception Malformed
+
 let init_deck = 
   [
     (Ace, Clubs); (Ace, Diamonds); (Ace, Hearts); (Ace, Spades);
@@ -24,7 +26,47 @@ let init_deck =
     (King, Clubs); (King, Diamonds); (King, Hearts); (King, Spades);
   ]
 
+let push card deck = 
+  card :: deck
 
+let push_deck from_deck to_deck = 
+  from_deck @ to_deck
+
+let mem card deck = 
+  List.mem card deck
+
+let rec nth deck idx = 
+  match deck with
+  | [] -> failwith "nth failure"
+  | h :: t -> if idx = 0 then h else nth deck (idx-1)
+
+let hd deck = 
+  match deck with
+  | [] -> failwith "no head"
+  | h :: _ -> h
+
+let tl deck = 
+  match deck with
+  | [] -> failwith "no tail"
+  | _ :: t -> t
+
+let rec length deck = 
+  match deck with
+  | [] -> 0
+  | _ :: t -> 1 + length t
+
+let is_empty deck = 
+  deck = []
+
+let rec remove card deck = 
+  match deck with
+  | [] -> failwith "remove failure: card not in deck."
+  | h :: t -> if h = card then t else h :: remove card t
+
+let rec remove_deck rm_deck deck = 
+  match rm_deck with
+  | [] -> deck
+  | h :: t -> remove_deck t (remove h deck)
 
 (** [value_of_card num] returns the int value corresponding to 
     a card of [num]. *)
@@ -222,7 +264,7 @@ let rec calculate_meld_value list acc =
 
 (** [list_traversal i n list] returns the index of [n] in [list]. *)
 let rec list_traversal i n list =
-  if (List.nth list i) = n then i else list_traversal (i+1) n list
+  if (nth list i) = n then i else list_traversal (i+1) n list
 
 let best_meld hand =
   let melds = get_melds hand in
@@ -233,7 +275,7 @@ let best_meld hand =
   in
   let max_val = largest meld_vals in
   let max_index = list_traversal 0 max_val meld_vals in
-  let best_meld = List.nth melds max_index in
+  let best_meld = nth melds max_index in
   List.flatten [fst best_meld; snd best_meld]
 
 let deadwood hand =
@@ -244,6 +286,22 @@ let deadwood_value hand =
 
 let meld_value hand =
   (hand |> value_of_hand) - (hand |> deadwood_value)
+
+let knock_deadwood_value hand =
+  let d = deadwood hand in
+  match d with
+  | [] -> 0
+  | _ ->
+    let vals = List.map (fun (rank, _) -> value_of_card rank) d in
+    let largest = function
+      | [] -> 0
+      | x::xs -> List.fold_left max x xs
+    in
+    let max_val = largest vals in
+    let max_index = list_traversal 0 max_val vals in
+    let max_card = nth d max_index in
+    let final_d = remove max_card d in
+    value_of_hand final_d
 
 let rec get_list n l = 
   if n=0 then [] else
@@ -259,50 +317,6 @@ let start_cards =
   let fth = 
     get_list 10 (difference (difference (difference temp fst) snd) trd) in
   [fst; snd; trd; fth]
-
-let push card deck = 
-  card :: deck
-
-let push_deck from_deck to_deck = 
-  from_deck @ to_deck
-
-let mem card deck = 
-  List.mem card deck
-
-let rec nth deck idx = 
-  match deck with
-  | [] -> failwith "nth failure"
-  | h :: t -> if idx = 0 then h else nth deck (idx-1)
-
-let hd deck = 
-  match deck with
-  | [] -> failwith "no head"
-  | h :: _ -> h
-
-let tl deck = 
-  match deck with
-  | [] -> failwith "no tail"
-  | _ :: t -> t
-
-let rec length deck = 
-  match deck with
-  | [] -> 0
-  | _ :: t -> 1 + length t
-
-let is_empty deck = 
-  deck = []
-
-let rec remove card deck = 
-  match deck with
-  | [] -> failwith "remove failure: card not in deck."
-  | h :: t -> if h = card then t else h :: remove card t
-
-let rec remove_deck rm_deck deck = 
-  match rm_deck with
-  | [] -> deck
-  | h :: t -> remove_deck t (remove h deck)
-
-exception Malformed
 
 let string_of_card card = 
   let suit = match snd card with
@@ -359,7 +373,7 @@ let rec string_of_deck deck =
 
 let card_of_string string = 
   let str_lst = String.split_on_char ' ' string |> Command.remove_emptys in
-  let fst = List.nth str_lst 0 |> String.lowercase_ascii in 
+  let fst = nth str_lst 0 |> String.lowercase_ascii in 
   let rank = 
     if fst = "ace" then Ace
     else if fst = "two" then Two
@@ -376,7 +390,7 @@ let card_of_string string =
     else if fst = "king" then King
     else raise Malformed
   in
-  let snd = List.nth str_lst 2 |> String.lowercase_ascii in
+  let snd = nth str_lst 2 |> String.lowercase_ascii in
   let suit = 
     if snd = "clubs" then Clubs
     else if snd = "diamonds" then Diamonds
