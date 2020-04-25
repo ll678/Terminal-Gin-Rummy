@@ -38,7 +38,7 @@ let mem card deck =
 let rec nth deck idx = 
   match deck with
   | [] -> failwith "nth failure"
-  | h :: t -> if idx = 0 then h else nth deck (idx-1)
+  | h :: t -> if idx = 0 then h else nth t (idx-1)
 
 let hd deck = 
   match deck with

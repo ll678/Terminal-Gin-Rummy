@@ -22,19 +22,19 @@ type result = Legal of t | Illegal | Null of t | Win of t
 let init_players starting_cards starting_scores names = (
   {
     name = fst names;
-    hand = List.nth starting_cards 2;
+    hand = Deck.nth starting_cards 2;
     score = fst starting_scores;
   },{
     name = snd names;
-    hand = List.nth starting_cards 3;
+    hand = Deck.nth starting_cards 3;
     score = snd starting_scores;
   })
 
 let init_state players_starting_scores start_player names = 
   let starting_cards = Deck.start_cards in
   {
-    stock_pile = List.nth starting_cards 0;
-    discard_pile = List.nth starting_cards 1;
+    stock_pile = Deck.nth starting_cards 0;
+    discard_pile = Deck.nth starting_cards 1;
     players = init_players starting_cards players_starting_scores names;
     current_player = start_player;
     last_moves = (None, None);

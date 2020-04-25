@@ -70,7 +70,7 @@ val push_deck : t -> t -> t
 val mem : card -> t -> bool
 
 (** [nth deck idx] is the element in [deck] with index [idx]. *)
-val nth : t -> int -> card
+val nth : 'a list -> int -> 'a
 
 (** [hd deck] is the first card in [deck]. *)
 val hd : t -> card
