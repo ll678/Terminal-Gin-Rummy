@@ -24,6 +24,8 @@ let init_deck =
     (King, Clubs); (King, Diamonds); (King, Hearts); (King, Spades);
   ]
 
+
+
 (** [value_of_card num] returns the int value corresponding to 
     a card of [num]. *)
 let value_of_card rank =
@@ -266,6 +268,26 @@ let push_deck from_deck to_deck =
 let mem card deck = 
   List.mem card deck
 
+let rec nth deck idx = 
+  match deck with
+  | [] -> failwith "nth failure"
+  | h :: t -> if idx = 0 then h else nth deck (idx-1)
+
+let hd deck = 
+  match deck with
+  | [] -> failwith "no head"
+  | h :: _ -> h
+
+let tl deck = 
+  match deck with
+  | [] -> failwith "no tail"
+  | _ :: t -> t
+
+let rec length deck = 
+  match deck with
+  | [] -> 0
+  | _ :: t -> 1 + length t
+
 let is_empty deck = 
   deck = []
 
@@ -278,6 +300,8 @@ let rec remove_deck rm_deck deck =
   match rm_deck with
   | [] -> deck
   | h :: t -> remove_deck t (remove h deck)
+
+exception Malformed
 
 let string_of_card card = 
   let suit = match snd card with
@@ -349,7 +373,7 @@ let card_of_string string =
     else if fst = "jack" then Jack
     else if fst = "queen" then Queen
     else if fst = "king" then King
-    else failwith "invalid rank" 
+    else raise Malformed
   in
   let snd = List.nth str_lst 2 |> String.lowercase_ascii in
   let suit = 
@@ -357,7 +381,7 @@ let card_of_string string =
     else if snd = "diamonds" then Diamonds
     else if snd = "hearts" then Hearts 
     else if snd = "spades" then Spades 
-    else failwith "invalid suit"
+    else raise Malformed
   in
   (rank, suit)
 
@@ -368,7 +392,7 @@ let card_of_string_short string =
     else if fst = "♦" then Diamonds
     else if fst = "♥" then Hearts 
     else if fst = "♠" then Spades 
-    else failwith "invalid suit" in
+    else raise Malformed in
   let snd = (String.sub string 1 2) in
   let rank = 
     if snd = "A" then Ace
@@ -384,7 +408,7 @@ let card_of_string_short string =
     else if snd = "J" then Jack
     else if snd = "Q" then Queen
     else if snd = "K" then King
-    else failwith "invalid rank"
+    else raise Malformed
   in
   (rank, suit)
 
@@ -395,3 +419,8 @@ let deck_of_string string =
     | h::t -> (card_of_string h)::(deck_of_string_helper t) in
   let cards = String.split_on_char ',' string in
   deck_of_string_helper cards
+
+let string_of_hd deck = 
+  match deck with
+  | [] -> ""
+  | h :: _ -> string_of_card h

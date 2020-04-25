@@ -55,3 +55,4 @@ let gen_obj_phrase str_list =
 
 let parse str =
   str |> String.split_on_char ' ' |> remove_emptys |> gen_obj_phrase
+

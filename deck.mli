@@ -15,7 +15,7 @@ type rank
 type card = rank * suit
 
 (** The abstract type of values representing card decks. *)
-type t = card list
+type t
 
 (** [init_deck] is the initialized and sorted standard 52-card deck. *)
 val init_deck : t
@@ -62,6 +62,18 @@ val push_deck : t -> t -> t
 (** [mem card deck] is true when [card] is in [deck], else false. *)
 val mem : card -> t -> bool
 
+(** [nth deck idx] is the element in [deck] with index [idx]. *)
+val nth : t -> int -> card
+
+(** [hd deck] is the first card in [deck]. *)
+val hd : t -> card
+
+(** [tl deck] is the tail of [deck]. *)
+val tl : t -> t
+
+(** [length deck] is the length of [deck]. *)
+val length : t -> int
+
 (** [is_empty deck] is true when [deck] is empty, else false. *)
 val is_empty : t -> bool
 
@@ -84,8 +96,13 @@ val string_of_card_short : card -> string
 (** [string_of_deck deck] is the list of stringified cards in [deck]. *)
 val string_of_deck : t -> string list
 
+exception Malformed
+
 (** [card_of_string string] is the card of [string]. *)
 val card_of_string : string -> card
 
 (** [deck_of_string string] is deck of a string of cards [string]. *)
 val deck_of_string : string -> t
+
+(** [string_of_hd deck] is a string of the hd of [deck]. *)
+val string_of_hd : t -> string

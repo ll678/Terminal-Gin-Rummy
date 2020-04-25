@@ -13,7 +13,7 @@ type p
 type t 
 
 (** The result of a new game state. *)
-type result = Legal of t | Illegal | Null of t | Win
+type result = Legal of t | Illegal | Null of t | Win of t
 
 (** [init_state s p n] is the initial state of the game when playing Terminal 
     Gin Runnmy. In that state the player p starts. Players have the names n and
@@ -32,12 +32,17 @@ val get_current_player : t -> int
 (** [get_current_player_name st] is the name of the current player. *)
 val get_current_player_name : t -> string
 
+(** [get_opponent_player_name st] is the name of the current player. *)
+val get_opponent_player_name : t -> string
+
 (** [get_current_player_hand st] is the hand of the current player. *)
 val get_current_player_hand : t -> Deck.t
 
 (** [get_current_player_score st] is the hand of the current player. *)
 val get_current_player_score : t -> int
 
+(** [get_opponent_player_score st] is the hand of the current player. *)
+val get_opponent_player_score : t -> int
 
 (** [draw location st] is [Illegal] if stock pile<2. It is illegal if draw 
     location is not "Stock" or "Discard". Otherwise result is [Legal st'], where
