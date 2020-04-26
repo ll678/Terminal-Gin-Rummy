@@ -310,8 +310,7 @@ let rec get_list n l =
     | h::t ->  h::(get_list (n-1) t)
 
 let start_cards =
-  (* let temp = shuffle init_deck in   *)
-  let temp = init_deck in
+  let temp = shuffle init_deck in  
   let fst = get_list 31 temp  in
   let snd = get_list 1 (difference temp fst) in
   let trd = get_list 10 (difference (difference temp fst) snd) in
