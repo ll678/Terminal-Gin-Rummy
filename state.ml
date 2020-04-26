@@ -95,9 +95,9 @@ let get_new_draw_state st location =
   let current_discard = get_discard st in
   let card = if (location = "Stock") then Deck.hd current_stock else Deck.hd current_discard in
   {
-    stock_pile = if (location="Stock") then (Deck.tl current_stock) 
+    stock_pile = if (location = "Stock") then (Deck.tl current_stock) 
       else current_stock;
-    discard_pile = if (location="Discard") then (Deck.tl current_discard)
+    discard_pile = if (location = "Discard") then (Deck.tl current_discard)
       else current_discard;
     players = update_player st card;
     current_player = st.current_player;
