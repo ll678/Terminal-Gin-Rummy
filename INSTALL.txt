@@ -2,7 +2,10 @@ TERMINAL GIN RUMMY
 
 This is the install file for running TerminalGinRummy. 
 
-To play Gin Rummy, navigate to the TerminalGinRummy folder in the command shell and run "make play". The game will prompt for Player 1’s name and Player 2’s name, and then the game will begin. Each turn will consist of a draw and a discard command.
+To play Gin Rummy, navigate to the TerminalGinRummy folder in the command shell 
+and run "make play". The game will prompt for Player 1’s name and Player 2’s 
+name, and then the game will begin. Each turn will consist of a draw and a 
+discard command.
 
 To build the source files, run "make build".
 
@@ -10,9 +13,28 @@ To delete files generated from your source code, run "make clean".
 
 EXPLANATION:
 
-Gin Rummy is a turn-based card game that is typically played between two players. To start, each player is dealt ten cards from a shuffled standard 52-card deck. The 21st card from the deck is placed face up in the center of the table to start the discard pile, and the rest of the deck is placed face down next to it. During a normal turn, each player is allowed to first draw a card from either the stock or the discard pile and then discard a card of their choosing from their hand. The object of the game is to collect a hand where most or all of the cards can be combined into sets and runs (see Terminology for definitions) and the point value of the remaining unmatched cards is low. Number cards have point values equivalent to their rank, while Aces have point values of one and Jack, Queen, and King cards have point values of ten. Players take turns making moves until someone knocks following a draw on their turn. After knocking, the round is over and each player’s score is totaled. A new round begins with a new deck and new hands. A player has won when they accumulate a score of over 100.
+Gin Rummy is a turn-based card game that is typically played between two 
+players. To start, each player is dealt ten cards from a shuffled standard 
+52-card deck. The 21st card from the deck is placed face up in the center of 
+the table to start the discard pile, and the rest of the deck is placed face 
+down next to it. During a normal turn, each player is allowed to first draw a 
+card from either the stock or the discard pile and then discard a card of their 
+choosing from their hand. The object of the game is to collect a hand where most 
+or all of the cards can be combined into sets and runs (see Terminology for 
+definitions) and the point value of the remaining unmatched cards is low. 
+Number cards have point values equivalent to their rank, while Aces have point 
+values of one and Jack, Queen, and King cards have point values of ten. Players 
+take turns making moves until someone knocks following a draw on their turn. 
+After knocking, the round is over and each player’s score is totaled. A new 
+round begins with a new deck and new hands. A player has won when they 
+accumulate a score of over 100.
 
-In our version of Gin Rummy, players enter commands in the terminal to make certain moves. When the game starts, it will prompt for both players’ names, and then the first player’s turn will start. After Player 1 has run their commands and has finished their turn, the game will naturally switch over the second player’s turn. These turns are indicated by whose hand is currently being shown. The game includes unique terminology that we’ve defined below.
+In our version of Gin Rummy, players enter commands in the terminal to make 
+certain moves. When the game starts, it will prompt for both players’ names, 
+and then the first player’s turn will start. After Player 1 has run their 
+commands and has finished their turn, the game will naturally switch over the 
+second player’s turn. These turns are indicated by whose hand is currently 
+being shown. The game includes unique terminology that we’ve defined below.
 
 TERMINOLOGY:
 
@@ -20,42 +42,107 @@ Meld: Either a set or a run. A card can only belong to one set or rank at a time
 
 Set: Three or more cards of the same rank. 
 
-Run: Three or more cards of the same suit in consecutive order. In Gin Rummy, the Ace is low, so A-2-3 is a valid run, but Q-K-A is not.
+Run: Three or more cards of the same suit in consecutive order. In Gin Rummy, 
+     the Ace is low, so A-2-3 is a valid run, but Q-K-A is not.
 
 Deadwood: The set of cards in a player’s hand that do not form melds.
 
-Additionally Gin Rummy involves a series of different commands. The commands that players can use in the terminal and the restrictions for these commands are listed below:
+Additionally Gin Rummy involves a series of different commands. The commands 
+that players can use in the terminal and the restrictions for these commands 
+are listed below:
 
 COMMANDS:
 
-Draw: Draw is used to draw a new card from either the stock pile or discard pile. If the draw command was successful this command will show the drawn card in the current player’s hand and it will be taken away from whatever pile the card was called from. Drawing from the discard pile will add the top card of the discard pile, which is faced up, to your hand. Drawing from the stock pile will add the top card of the shuffled stock deck, which is faced down, to your hand. To draw a card, you must type “draw”, a space, and then the name of the pile you wish to draw from. Ex. “draw Stock” or “draw Discard” are valid commands. Note that capitalization is important. Ex. “Draw stock” is not valid. The rules for when you can draw are listed below:
-You cannot draw from the stock pile during your first turn
-You can only draw once per turn
-You cannot draw when the stock pile has fewer than 2 cards; this leads to a null game and the round is reset
+Draw: Draw is used to draw a new card from either the stock pile or discard 
+pile. If the draw command was successful this command will show the drawn card 
+in the current player’s hand and it will be taken away from whatever pile the 
+card was called from. Drawing from the discard pile will add the top card of 
+the discard pile, which is faced up, to your hand. Drawing from the stock pile 
+will add the top card of the shuffled stock deck, which is faced down, to your 
+hand. To draw a card, you must type “draw”, a space, and then the name of the 
+pile you wish to draw from. 
+Ex. “draw Stock” or “draw Discard” are valid commands. 
+Note that capitalization is important. 
+Ex. “Draw stock” is not valid. 
+The rules for when you can draw are listed below:
+    You cannot draw from the stock pile during your first turn
+    You can only draw once per turn
+    You cannot draw when the stock pile has fewer than 2 cards; 
+      this leads to a null game and the round is reset
 
-Discard: Discard is used to discard a card from your hand. To discard a card, you must type “discard”, a space and then the name of the card you wish to discard. Ex. “discard ace of spades” or “discard king of hearts” are valid commands. Note that capitalization is important for the command, but not the card. Ex. “discard King Of Hearts” is valid, but “Discard King Of Hearts” is not. Additionally the card that you are discarding must be a card in your hand. If the card is not present in your hand, it is not a valid command.
+Discard: Discard is used to discard a card from your hand. To discard a card, 
+you must type “discard”, a space and then the name of the card you wish to 
+discard. 
+Ex. “discard ace of spades” or “discard king of hearts” are valid 
+commands. 
+Note that capitalization is important for the command, but not the card. 
+Ex. “discard King Of Hearts” is valid, but “Discard King Of Hearts” is not. 
+Additionally the card that you are discarding must be a card in your hand. 
+If the card is not present in your hand, it is not a valid command.
 The rules for when you can discard are listed below:
-You can only discard a card after you have drawn a card during this turn
-If you just drew a card from the discard pile, you cannot discard that card
-You can only discard once per turn
+    You can only discard a card after you have drawn a card during this turn
+    If you just drew a card from the discard pile, you cannot discard that card
+    You can only discard once per turn
 
-Pass: Pass is used to skip your turn in the beginning of the game, when the only other option is to draw the face-up card in the discard pile. After the first player passes, the second player can also either pass or draw the card in the discard pile. Following this, a normal turn begins. To pass, you must type “pass”. Ex. “pass” is a valid command. Note that capitalization is important. Ex. “Pass” is not valid. The rules for when you can pass are listed below:
-If you are the first player, you can only pass if it is your first turn of the beginning of a round
-If you are the second player, you can only pass if it is your first turn of the beginning of a round and the first player also passed
+Pass: Pass is used to skip your turn in the beginning of the game, when the only 
+other option is to draw the face-up card in the discard pile. After the first 
+player passes, the second player can also either pass or draw the card in the 
+discard pile. Following this, a normal turn begins. To pass, you must type “pass”. 
+Ex. “pass” is a valid command. 
+Note that capitalization is important. 
+Ex. “Pass” is not valid. The rules for when you can pass are listed below:
+    If you are the first player, you can only pass if it is your first turn of 
+      the beginning of a round
+    If you are the second player, you can only pass if it is your first turn of 
+      the beginning of a round and the first player also passed
 
-Score: Score is used to get your current score. When this command is used, the current player’s score will be shown in the terminal. Each player’s score is only recalculated at the end of each round. To get your score, you must type “score”. Ex. “score” is a valid command. Note that capitalization is important. Ex. “Score” is not valid. You can always use the score command.
+Score: Score is used to get your current score. When this command is used, the 
+current player’s score will be shown in the terminal. Each player’s score is 
+only recalculated at the end of each round. To get your score, you must 
+type “score”. 
+Ex. “score” is a valid command. 
+Note that capitalization is important. 
+Ex. “Score” is not valid. You can always use the score command.
 
-Sort: Sort is used to sort your current hand. To sort, you must type “sort”. Ex. “sort” is a valid command. Note that capitalization is important. Ex. “Sort” is not valid. You can always use the sort command.
+Sort: Sort is used to sort your current hand. To sort, you must type “sort”. 
+Ex. “sort” is a valid command. 
+Note that capitalization is important. 
+Ex. “Sort” is not valid. You can always use the sort command.
 
-Quit: Quit is used to terminate the game. To quit, you must type “quit” in the terminal. Ex. “quit” is a valid command. Note that capitalization is important. Ex. “Quit” is not valid. You can always use the quit command.
+Quit: Quit is used to terminate the game. To quit, you must type “quit”. 
+Ex. “quit” is a valid command. 
+Note that capitalization is important. 
+Ex. “Quit” is not valid. You can always use the quit command.
 
-Knock: Knock is used to end the current round when a player believes the value of their deadwood is less than that of their opponent’s. When a player knocks, the opposing player will be prompted to lay off their deadwood (see match below). After the opposing player matches, the current scores will be calculated based on the value of deadwood each player has remaining. The game will determine who won the round and a new round will begin. The winner and the scores will be outputted in the terminal. To knock, you must type “knock”. Ex. “knock” is a valid command. Note that capitalization is important. Ex. “Knock” is not valid. The rules for when you can knock are listed below:
-You can only knock after you have drawn a card during this turn
-You can only knock if the value of your deadwood is less than 10
-After drawing a card, your hand will have eleven cards, so the deadwood card with the highest value is assumed to be automatically discarded during a knock. Therefore, this card will not factor into the value of your deadwood.
+Knock: Knock is used to end the current round when a player believes the value 
+of their deadwood is less than that of their opponent’s. When a player knocks, 
+the opposing player will be prompted to lay off their deadwood (see match below). 
+After the opposing player matches, the current scores will be calculated based 
+on the value of deadwood each player has remaining. The game will determine who 
+won the round and a new round will begin. The winner and the scores will be 
+outputted in the terminal. To knock, you must type “knock”. 
+Ex. “knock” is a valid command. 
+Note that capitalization is important. 
+Ex. “Knock” is not valid. 
+The rules for when you can knock are listed below:
+    You can only knock after you have drawn a card during this turn
+    You can only knock if the value of your deadwood is less than 10
+      (After drawing a card, your hand will have eleven cards, so the deadwood 
+      card with the highest value is assumed to be automatically discarded 
+      during a knock. Therefore, this card will not factor into the value of 
+      your deadwood)
 
-Match: Match is used following your opponent’s knock if your opponent does not go gin. This involves laying off any unmatched cards in your hand to extend the runs and sets laid down by your opponent. To lay off your cards, you must type “match”. The terminal will then prompt for a list of cards to lay off. The cards that you wish to lay off must be a part of your deadwood. Ex. “ace of hearts,two of diamonds” is a valid lay off list if an Ace of Hearts and a Two of Diamonds can be added to the melds of your opponent. Note that capitalization is important for the command, but not the cards. Ex. “match” is valid, but “Match” is not valid. The rules for when you can match are listed below:
-You can only match directly after your opponent has knocked
+Match: Match is used following your opponent’s knock if your opponent does not 
+go gin. This involves laying off any unmatched cards in your hand to extend the 
+runs and sets laid down by your opponent. To lay off your cards, you must 
+type “match”. The terminal will then prompt for a list of cards to lay off. 
+The cards that you wish to lay off must be a part of your deadwood. 
+Ex. “ace of hearts,two of diamonds” is a valid lay off list if an 
+Ace of Hearts and a Two of Diamonds can be added to the melds of your opponent. 
+Note that capitalization is important for the command, but not the cards. 
+Ex. “match” is valid, but “Match” is not valid. 
+The rules for when you can match are listed below:
+    You can only match directly after your opponent has knocked
 
 
 
