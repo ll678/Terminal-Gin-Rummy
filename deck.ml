@@ -373,32 +373,33 @@ let rec string_of_deck deck =
 
 let card_of_string string = 
   let str_lst = String.split_on_char ' ' string |> Command.remove_emptys in
-  let fst = nth str_lst 0 |> String.lowercase_ascii in 
-  let rank = 
-    if fst = "ace" then Ace
-    else if fst = "two" then Two
-    else if fst = "three" then Three
-    else if fst = "four" then Four
-    else if fst = "five" then Five
-    else if fst = "six" then Six
-    else if fst = "seven" then Seven
-    else if fst = "eight" then Eight
-    else if fst = "nine" then Nine
-    else if fst = "ten" then Ten
-    else if fst = "jack" then Jack
-    else if fst = "queen" then Queen
-    else if fst = "king" then King
-    else raise Malformed
-  in
-  let snd = nth str_lst 2 |> String.lowercase_ascii in
-  let suit = 
-    if snd = "clubs" then Clubs
-    else if snd = "diamonds" then Diamonds
-    else if snd = "hearts" then Hearts 
-    else if snd = "spades" then Spades 
-    else raise Malformed
-  in
-  (rank, suit)
+  if length str_lst < 3 then raise Malformed else
+    let fst = nth str_lst 0 |> String.lowercase_ascii in 
+    let rank = 
+      if fst = "ace" then Ace
+      else if fst = "two" then Two
+      else if fst = "three" then Three
+      else if fst = "four" then Four
+      else if fst = "five" then Five
+      else if fst = "six" then Six
+      else if fst = "seven" then Seven
+      else if fst = "eight" then Eight
+      else if fst = "nine" then Nine
+      else if fst = "ten" then Ten
+      else if fst = "jack" then Jack
+      else if fst = "queen" then Queen
+      else if fst = "king" then King
+      else raise Malformed
+    in
+    let snd = nth str_lst 2 |> String.lowercase_ascii in
+    let suit = 
+      if snd = "clubs" then Clubs
+      else if snd = "diamonds" then Diamonds
+      else if snd = "hearts" then Hearts 
+      else if snd = "spades" then Spades 
+      else raise Malformed
+    in
+    (rank, suit)
 
 let card_of_string_short string = 
   let fst = (String.sub string 0 1) in 

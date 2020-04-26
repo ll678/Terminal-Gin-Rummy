@@ -72,7 +72,7 @@ let get_moves st =
   st.last_moves
 
 let update_player st card =
-  if (st.current_player == 0) then 
+  if (st.current_player = 0) then 
     let player_hand = Deck.push card ((fst st.players).hand) in 
     let tmp = 
       {
@@ -104,12 +104,10 @@ let get_new_draw_state st location =
     last_moves = (Some (Draw [location], Some card), fst st.last_moves);
   }
 
-
-
 let check_first_draw location st=  
   match st.last_moves with
-  | (None, None) -> if location=="Stock" then false else true
-  | ((Some p), None) -> if location=="Stock" then false else true
+  | (None, None) -> if location = "Stock" then false else true
+  | ((Some p), None) -> if location = "Stock" then false else true
   | _ -> true
 
 let draw location st =

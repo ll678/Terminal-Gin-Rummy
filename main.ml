@@ -83,7 +83,6 @@ let rec knock_match (st : State.t) : State.t =
         print_endline (loser_score |> string_of_int);
         print_string ("Congrats, " ^ winner_name ^ ", you've won!"); exit 0
 
-
 (** [process_command] takes terminal input and executes a command. The command 
     may or may not change state but process_command always returns a state. *)
 let process_command (command : Command.command) (st : State.t) =  
