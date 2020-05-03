@@ -103,11 +103,24 @@ val string_of_card_short : card -> string
 (** [string_of_deck deck] is the list of stringified cards in [deck]. *)
 val string_of_deck : t -> string list
 
+(** [string_of_deck_short deck] is the list of stringified cards in [deck]
+    with shortened representations of suit and rank. *)
+val string_of_deck_short : t -> string list
+
 (** [card_of_string string] is the card of [string]. *)
 val card_of_string : string -> card
 
 (** [deck_of_string string] is deck of a string of cards [string]. *)
 val deck_of_string : string -> t
 
-(** [string_of_hd deck] is a string of the hd of [deck]. *)
-val string_of_hd : t -> string
+(** [rankstring_of_string string] is the shortened string representation
+    of the string card rank [string]. *) 
+val rankstring_of_string : string -> string
+
+(** [suitstring_of_string string] is the shortened string representation
+    of the string card suit [string]. *) 
+val suitstring_of_string : string -> string
+
+(** [string_of_hd deck] is a string list of the hd of [deck]. If
+    the deck is empty, the empty list is returned. *)
+val string_of_hd : t -> string list

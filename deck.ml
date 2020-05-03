@@ -81,7 +81,8 @@ let value_of_hand hand =
   List.fold_right (fun (rank, _) -> (+) (value_of_card rank)) hand 0
 
 let shuffle deck =
-  let int_dict = List.map (fun c -> (Random.bits (), c)) deck in
+  let int_dict = List.map (fun c -> (Random.self_init(); 
+                                     Random.int (length deck), c)) deck in
   let sort_dict = List.sort compare int_dict in
   sort_dict |> List.split |> snd
 
@@ -369,7 +370,12 @@ let string_of_card_short card =
 let rec string_of_deck deck = 
   match deck with
   | [] -> []
-  | h :: t -> string_of_card_short h :: string_of_deck t
+  | h :: t -> string_of_card h :: string_of_deck t
+
+let rec string_of_deck_short deck = 
+  match deck with
+  | [] -> []
+  | h :: t -> string_of_card_short h :: string_of_deck_short t
 
 let card_of_string string = 
   let str_lst = String.split_on_char ' ' string |> Command.remove_emptys in
@@ -401,32 +407,30 @@ let card_of_string string =
     in
     (rank, suit)
 
-let card_of_string_short string = 
-  let fst = (String.sub string 0 1) in 
-  let suit = 
-    if fst = "♣" then Clubs
-    else if fst = "♦" then Diamonds
-    else if fst = "♥" then Hearts 
-    else if fst = "♠" then Spades 
-    else raise Malformed in
-  let snd = (String.sub string 1 2) in
-  let rank = 
-    if snd = "A" then Ace
-    else if snd = "2" then Two
-    else if snd = "3" then Three
-    else if snd = "4" then Four
-    else if snd = "5" then Five
-    else if snd = "6" then Six
-    else if snd = "7" then Seven
-    else if snd = "8" then Eight
-    else if snd = "9" then Nine
-    else if snd = "10" then Ten
-    else if snd = "J" then Jack
-    else if snd = "Q" then Queen
-    else if snd = "K" then King
-    else raise Malformed
-  in
-  (rank, suit)
+let rankstring_of_string string = 
+  match string with
+  | "Ace" -> "A"
+  | "Two" -> "2"
+  | "Three" -> "3"
+  | "Four" -> "4"
+  | "Five" -> "5"
+  | "Six" -> "6"
+  | "Seven" -> "7"
+  | "Eight" -> "8"
+  | "Nine" -> "9"
+  | "Ten" -> "10"
+  | "Jack" -> "J"
+  | "Queen" -> "Q"
+  | "King" -> "K"
+  | _ -> ""
+
+let suitstring_of_string string = 
+  match string with
+  | "Clubs" -> "♣"
+  | "Diamonds" -> "♦"
+  | "Hearts" -> "♥"
+  | "Spades" -> "♠"
+  | _ -> ""
 
 let deck_of_string string = 
   let rec deck_of_string_helper lst =
@@ -438,5 +442,5 @@ let deck_of_string string =
 
 let string_of_hd deck = 
   match deck with
-  | [] -> ""
-  | h :: _ -> string_of_card_short h
+  | [] -> []
+  | h :: _ -> [string_of_card h]

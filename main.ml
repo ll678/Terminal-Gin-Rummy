@@ -10,9 +10,68 @@ let rec print_list lst =
 let rec print_melds lst =
   match lst with
   | [] -> ()
-  | h::t -> print_list (Deck.string_of_deck h); 
+  | h::t -> print_list (Deck.string_of_deck_short h); 
     print_string "\n"; 
     print_melds t
+
+let rec print_cards_top lst =
+  match lst with
+  | [] -> print_string ""
+  | h::t -> print_string " ___   "; print_cards_top t
+
+let rec print_cards_rank1 lst = 
+  match lst with
+  | [] -> print_string ""
+  | h::t -> let rank = Deck.nth (String.split_on_char ' ' h) 0 in
+    if rank = "Ten" then
+      (print_string ("|" ^ Deck.rankstring_of_string rank ^ " |  "); 
+       print_cards_rank1 t)
+    else
+      (print_string ("|" ^ Deck.rankstring_of_string rank ^ "  |  "); 
+       print_cards_rank1 t)
+
+let rec print_cards_suit lst = 
+  match lst with
+  | [] -> print_string ""
+  | h::t -> let suit = Deck.nth (String.split_on_char ' ' h) 2 in
+    print_string ("| " ^ Deck.suitstring_of_string suit ^ " |  "); print_cards_suit t
+
+let rec print_cards_rank2 lst = 
+  match lst with
+  | [] -> print_string ""
+  | h::t -> let rank = Deck.nth (String.split_on_char ' ' h) 0 in
+    if rank = "Ten" then
+      (print_string ("| " ^ Deck.rankstring_of_string rank ^ "|  "); 
+       print_cards_rank2 t)
+    else
+      (print_string ("|  " ^ Deck.rankstring_of_string rank ^ "|  "); 
+       print_cards_rank2 t)
+
+let rec print_cards_bottom lst = 
+  match lst with
+  | [] -> print_string ""
+  | h::t -> print_string " ¯¯¯   "; print_cards_bottom t
+
+let print_cards lst =
+  print_cards_top lst; print_string "\n";
+  print_cards_rank1 lst; print_string "\n";
+  print_cards_suit lst; print_string "\n";
+  print_cards_rank2 lst; print_string "\n";
+  print_cards_bottom lst; print_string "\n"
+
+let print_piles lst =
+  if List.length lst = 0 then
+    (print_string "                           ___ \n";
+     print_string "                          |░░░| \n";
+     print_string "                          |░░░| \n";
+     print_string "                          |░░░| \n";
+     print_string "                           ¯¯¯ \n")
+  else
+    (print_cards_top lst; print_string "                    ___ \n";
+     print_cards_rank1 lst; print_string "                   |░░░| \n";
+     print_cards_suit lst; print_string "                   |░░░| \n";
+     print_cards_rank2 lst; print_string "                   |░░░| \n";
+     print_cards_bottom lst; print_string "                    ¯¯¯ \n")
 
 let change (new_st : State.result) (st : State.t) = 
   match new_st with 
@@ -29,6 +88,11 @@ let change (new_st : State.result) (st : State.t) =
 let handle_score (st : State.t) = 
   print_string "Your score is: " ; 
   print_int (State.get_current_player_score st);
+  print_endline "\n"
+
+let print_help st = 
+  print_string "How to play Gin Rummy:";
+  (* Rules of Gin Rummy *)
   print_endline "\n"
 
 (** After Player 1 knocks in state [st], [knock] handles [new_st], 
@@ -99,6 +163,7 @@ let process_command (command : Command.command) (st : State.t) =
   | Pass -> change (State.pass st) st
   | Sort -> change (State.sort st) st
   | Score -> handle_score st; st
+  | Help -> print_help st; st
   | Quit -> exit 0
 
 (*A function that either quits or executes a command based on input*)
@@ -117,12 +182,12 @@ let rec play_game (st : State.t) =
   print_string "It is "; print_string (st |> State.get_current_player_name); 
   print_string "'s Turn:\n\n";
 
-  print_string "Discard Pile:\n";
-  print_endline (st |> State.get_discard |> Deck.string_of_hd);
+  print_string "Discard Pile:             Stock Pile:\n";
+  print_piles (st |> State.get_discard |> Deck.string_of_hd);
   print_string ("\n");
 
   print_string (st |> State.get_current_player_name); print_string "'s Hand:\n";
-  print_list (st |> State.get_current_player_hand |> Deck.string_of_deck);
+  print_cards (st |> State.get_current_player_hand |> Deck.string_of_deck);
   print_string ("\n");
 
   (* Print melds of current player's hand *)
@@ -133,7 +198,7 @@ let rec play_game (st : State.t) =
   (* Print deadwood of current player's hand *)
   print_string "Deadwood:\n";
   print_list (st |> State.get_current_player_hand |> Deck.deadwood 
-              |> Deck.string_of_deck);
+              |> Deck.string_of_deck_short);
   print_string ("\n\n");
 
   (* Prompt for player to draw. *)

@@ -8,6 +8,7 @@ type command =
   | Pass
   | Sort
   | Score
+  | Help
   | Quit
 
 exception Empty
@@ -51,6 +52,7 @@ let gen_obj_phrase str_list =
   | "pass" :: [] -> Pass
   | "sort" :: [] -> Sort
   | "score" :: [] -> Score
+  | "help" :: [] -> Help
   | _ -> raise Malformed
 
 let parse str =

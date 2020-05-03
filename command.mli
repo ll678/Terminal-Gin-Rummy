@@ -20,6 +20,7 @@ type command =
   | Pass
   | Sort
   | Score
+  | Help
   | Quit
 
 (** Raised when an empty command is parsed. *)
