@@ -444,3 +444,44 @@ let string_of_hd deck =
   match deck with
   | [] -> []
   | h :: _ -> [string_of_card h]
+
+
+(* The values below are used strictly for testing Deck functions. *)
+
+let test_hand_empty = []
+
+let test_hand = [(Queen, Hearts);(Six, Clubs); (Four, Hearts); 
+                 (Four, Clubs); (Four, Spades); (Two, Clubs); (Two, Hearts); 
+                 (Ace, Spades); (Three, Spades); (Two, Spades)]
+
+let test_hand2 = [(Five, Spades); (Six, Diamonds); (Three, Spades); 
+                  (Four, Diamonds); (Six, Spades); (Five, Diamonds); 
+                  (Two, Spades); (Five, Clubs); (Four, Spades); (Six, Clubs)]
+
+let test_hand3 = [(Five, Spades); (Six, Diamonds); (Three, Spades); 
+                  (Four, Diamonds); (Five, Diamonds); (Two, Spades); 
+                  (Five, Clubs); (Four, Spades); (Six, Clubs)]
+
+let test_hand4 = [(King, Hearts); (Five, Spades); (Six, Diamonds); 
+                  (Three, Spades); (Four, Diamonds); (Five, Diamonds); 
+                  (Two, Spades); (Five, Clubs); (Four, Spades); (Six, Clubs)]
+
+let test_meld = [
+  [(Ace, Spades); (Two, Spades); (Three, Spades)];
+  [(Four, Spades); (Four, Hearts); (Four, Clubs)]; 
+]
+
+let test_meld2 = [
+  [(Two, Spades); (Three, Spades); (Four, Spades)];
+  [(Five, Spades); (Five, Diamonds); (Five, Clubs)];
+  [(Six, Diamonds); (Six, Spades); (Six, Clubs)]
+]
+
+let sorted_test_hand2 = [(Five, Clubs); (Six, Clubs); (Four, Diamonds); 
+                         (Five, Diamonds); (Six, Diamonds); (Two, Spades); 
+                         (Three, Spades); (Four, Spades);(Five, Spades); 
+                         (Six, Spades)]
+
+let test_deadwood = [(Queen, Hearts); (Six, Clubs); (Two, Clubs); (Two, Hearts)]
+
+let test_deadwood2 = [(Four, Diamonds)]

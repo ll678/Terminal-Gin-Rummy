@@ -7,13 +7,6 @@ let rec print_list lst =
     print_string " "; 
     print_list t
 
-let rec print_melds lst =
-  match lst with
-  | [] -> ()
-  | h::t -> print_list (Deck.string_of_deck_short h); 
-    print_string "\n"; 
-    print_melds t
-
 let rec print_cards_top lst =
   match lst with
   | [] -> print_string ""
@@ -34,7 +27,17 @@ let rec print_cards_suit lst =
   match lst with
   | [] -> print_string ""
   | h::t -> let suit = Deck.nth (String.split_on_char ' ' h) 2 in
-    print_string ("| " ^ Deck.suitstring_of_string suit ^ " |  "); print_cards_suit t
+    if suit = "Hearts" || suit = "Diamonds" then
+      (print_string ("| ");
+       ANSITerminal.(print_string [red] (Deck.suitstring_of_string suit));
+       print_string (" |  ");
+       print_cards_suit t)
+    else 
+      (print_string ("| ");
+       print_string (Deck.suitstring_of_string suit);
+       (* ANSITerminal.(print_string [black] (Deck.suitstring_of_string suit)); *)
+       print_string (" |  ");
+       print_cards_suit t)
 
 let rec print_cards_rank2 lst = 
   match lst with
@@ -50,7 +53,7 @@ let rec print_cards_rank2 lst =
 let rec print_cards_bottom lst = 
   match lst with
   | [] -> print_string ""
-  | h::t -> print_string " ¯¯¯   "; print_cards_bottom t
+  | h::t -> print_string " ‾‾‾   "; print_cards_bottom t
 
 let print_cards lst =
   print_cards_top lst; print_string "\n";
@@ -61,17 +64,24 @@ let print_cards lst =
 
 let print_piles lst =
   if List.length lst = 0 then
-    (print_string "                           ___ \n";
+    (print_string "                           ___  \n";
      print_string "                          |░░░| \n";
      print_string "                          |░░░| \n";
      print_string "                          |░░░| \n";
-     print_string "                           ¯¯¯ \n")
+     print_string "                           ‾‾‾  \n")
   else
     (print_cards_top lst; print_string "                    ___ \n";
      print_cards_rank1 lst; print_string "                   |░░░| \n";
      print_cards_suit lst; print_string "                   |░░░| \n";
      print_cards_rank2 lst; print_string "                   |░░░| \n";
-     print_cards_bottom lst; print_string "                    ¯¯¯ \n")
+     print_cards_bottom lst; print_string "                    ‾‾‾ \n")
+
+let rec print_melds lst =
+  match lst with
+  | [] -> ()
+  | h::t -> print_cards (Deck.string_of_deck h);
+    print_string "\n"; 
+    print_melds t
 
 let change (new_st : State.result) (st : State.t) = 
   match new_st with 

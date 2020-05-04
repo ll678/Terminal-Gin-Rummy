@@ -124,3 +124,36 @@ val suitstring_of_string : string -> string
 (** [string_of_hd deck] is a string list of the hd of [deck]. If
     the deck is empty, the empty list is returned. *)
 val string_of_hd : t -> string list
+
+(** [test_empty_hand] is an empty hand of cards used strictly for testing. *)
+val test_hand_empty : t
+
+(** [test_hand] and [test_hand2] are hands of cards used strictly for 
+    testing. *)
+val test_hand : t
+
+val test_hand2 : t
+
+(** [test_hand3] is [test_hand2] with the six of spades removed, used
+    strictly for testing. *)
+val test_hand3 : t
+
+(** [test_hand4] is [test_hand3] with the king of hearts pushed on top, used
+    strictly for testing. *)
+val test_hand4 : t
+
+(** [test_meld] and [test_meld2] are lists of the melds of [test_hand] and
+    [test_hand2], respectively, used strictly for testing. *)
+val test_meld : t list
+
+val test_meld2 : t list
+
+(** [sorted_test_hand2] is [test_hand2] sorted by suit first, then rank, 
+    used strictly for testing. *) 
+val sorted_test_hand2 : t
+
+(** [test_deadwood] and [test_deadwood2] are lists of the deadwood of 
+    [test_hand] and [test_hand2], respectively, used strictly for testing. *)
+val test_deadwood : t
+
+val test_deadwood2 : t
