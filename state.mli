@@ -68,6 +68,7 @@ val draw : string -> t -> result
 (** [sort st] is [r] Legal of [st'] where the current player's deck is sorted *)
 val sort : t -> result
 
+val get_last_move_type : t -> Command.command option
 
 (** [pass st] is [Illegal] if one of the last moves isn't None otherwise
     Legal of [st'] where the current player's is swapped *)

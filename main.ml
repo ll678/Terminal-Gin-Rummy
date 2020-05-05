@@ -102,8 +102,12 @@ let handle_score (st : State.t) =
 
 let handle_hint (new_move : Optimal.move) (st : State.t) = 
   match new_move with
-  | Discard t -> failwith "Unimplemented"
-  | Draw t -> failwith "Unimplemented"
+  | Discard t -> print_string "Discard: " ; 
+    print_string (Deck.string_of_card t);
+    print_endline "\n"
+  | Draw t -> print_string "Draw from: " ; 
+    print_string t;
+    print_endline "\n"
   | Knock -> failwith "Unimplemented"
 
 let print_help st = 
@@ -178,7 +182,7 @@ let process_command (command : Command.command) (st : State.t) =
   | Match -> knock_match st
   | Pass -> change (State.pass st) st
   | Sort -> change (State.sort st) st
-  | Hint -> handle_hint (Optimal.get_optimal st) st
+  | Hint -> handle_hint (Optimal.get_optimal st) st; st
   | Score -> handle_score st; st
   | Help -> print_help st; st
   | Quit -> exit 0

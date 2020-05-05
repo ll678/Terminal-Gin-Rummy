@@ -50,6 +50,16 @@ let get_discard st =
 let get_current_player st = 
   st.current_player
 
+let get_last_move_type st  : Command.command option =
+  let last_move =  fst (st.last_moves) in 
+  match last_move with 
+  | None -> None
+  |(Some (Draw x, b)) -> Some (Draw x)
+  |(Some (Discard x, b)) -> Some (Discard x)
+  |(Some (Knock, b))-> Some (Knock)
+  |(Some (Pass, b)) -> Some (Pass)
+  | _ -> failwith "Not sure how you got here"
+
 let get_current_player_name st = if st.current_player = 0
   then (fst (st.players)).name else (snd (st.players)).name
 

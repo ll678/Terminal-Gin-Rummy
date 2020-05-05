@@ -2,13 +2,9 @@
 
 type move = Discard of Deck.card | Draw of string | Knock 
 
-
-let traverse deadwood = 
-  failwith "unimplemented"
-
 let optimal_sort hand =
   let deadwood = Deck.deadwood hand in 
-  deadwood
+  Deck.get_values deadwood 0 []
 
 let optimal_discard st =
   let hand = State.get_current_player_hand st in 
@@ -29,5 +25,11 @@ let optimal_draw st =
   let hand = State.get_current_player_hand st in 
   optimal (Deck.hd stock) (Deck.hd discard) hand
 
+
 let get_optimal st =
-  failwith "Unimpemented"
+  match State.get_last_move_type st with
+  | None -> optimal_draw st
+  | Some Draw x -> optimal_discard st
+  | Some Discard x -> optimal_draw st
+  | Some Pass -> optimal_draw st
+  | _ -> failwith "Not sure how you got here"

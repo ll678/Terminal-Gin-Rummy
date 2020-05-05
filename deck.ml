@@ -282,6 +282,44 @@ let best_meld hand =
 let deadwood hand =
   difference hand (List.flatten (best_meld hand))
 
+
+let rec card_score (card:card) (hand:t) (acc:int) =
+  match hand with 
+  | [] -> acc
+  | h::t -> 
+
+    (* let acc = if fst h = fst card then acc +1 else acc in 
+       let acc = if 
+
+
+    *)
+
+    (* if fst h = fst card then
+       card_score card t (acc +1) 
+
+       else  card_score card t (acc) *)
+
+    failwith "unfinished"
+
+
+let get_value (card:card) (hand:t) =
+  let dif = difference hand [card] in 
+  (card, card_score card hand 0)
+
+let rec least (lst:((card*int) list)) (acc) =
+  match lst with 
+  | [] -> acc
+  | h::t -> if snd h < snd acc then (least t h) else least t acc
+
+let rec get_values deadwood i acc =
+  if i >= List.length deadwood then acc else
+    let value = (get_value (nth deadwood i) deadwood) in
+    get_values deadwood (i-1) ((value)::acc)  
+
+let get_worst deadwood =
+  let vals = get_values deadwood 0 [] in 
+  least vals (hd vals)
+
 let deadwood_value hand =
   hand |> deadwood |> value_of_hand
 
