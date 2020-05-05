@@ -100,6 +100,12 @@ let handle_score (st : State.t) =
   print_int (State.get_current_player_score st);
   print_endline "\n"
 
+let handle_hint (new_move : Optimal.move) (st : State.t) = 
+  match new_move with
+  | Discard t -> failwith "Unimplemented"
+  | Draw t -> failwith "Unimplemented"
+  | Knock -> failwith "Unimplemented"
+
 let print_help st = 
   print_string "How to play Gin Rummy:";
   (* Rules of Gin Rummy *)
@@ -172,6 +178,7 @@ let process_command (command : Command.command) (st : State.t) =
   | Match -> knock_match st
   | Pass -> change (State.pass st) st
   | Sort -> change (State.sort st) st
+  | Hint -> handle_hint (Optimal.get_optimal st) st
   | Score -> handle_score st; st
   | Help -> print_help st; st
   | Quit -> exit 0

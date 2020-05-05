@@ -7,6 +7,7 @@ type command =
   | Match
   | Pass
   | Sort
+  | Hint
   | Score
   | Help
   | Quit
@@ -53,6 +54,7 @@ let gen_obj_phrase str_list =
   | "sort" :: [] -> Sort
   | "score" :: [] -> Score
   | "help" :: [] -> Help
+  | "hint" :: [] -> Hint
   | _ -> raise Malformed
 
 let parse str =

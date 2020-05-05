@@ -23,6 +23,13 @@ exception Malformed
 (** [init_deck] is the initialized and sorted standard 52-card deck. *)
 val init_deck : t
 
+(** [get_list n l] is the first n cards in the deck l *)
+val get_list : int -> t -> t
+
+(** [difference l1 l2] contains only the elements that are elements of [l1]
+    but not elements of [l2]. *)
+val difference : t -> t -> t
+
 (** [shuffle deck] randomizes the order of [deck]. *)
 val shuffle : t -> t
 

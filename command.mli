@@ -19,6 +19,7 @@ type command =
   | Match
   | Pass
   | Sort
+  | Hint
   | Score
   | Help
   | Quit

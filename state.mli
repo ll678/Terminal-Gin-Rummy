@@ -12,8 +12,12 @@ type p
 (** The abstract type of values representing the game state. *)
 type t 
 
+(** The abstract type of representing a move in the game. *)
+type move
+
 (** The result of a new game state. *)
 type result = Legal of t | Illegal | Null of t | Win of t
+
 
 (** [init_state s p n] is the initial state of the game when playing Terminal 
     Gin Runnmy. In that state the player p starts. Players have the names n and
@@ -46,6 +50,9 @@ val get_current_player_score : t -> int
 
 (** [get_opponent_player_score st] is the score of the current player. *)
 val get_opponent_player_score : t -> int
+
+(** [get_moves st] is the last two moves of the current player. *)
+val get_moves : t -> (move*move)
 
 (** [draw location st] is [Illegal] if stock pile<2. It is illegal if draw 
     location is not "Stock" or "Discard". Otherwise result is [Legal st'], where
