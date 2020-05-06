@@ -152,8 +152,8 @@ let handle_hint (new_move : Optimal.move) (st : State.t) =
 
 let rec do_nothing st =
   print_string "> ";
-  match read_line () with 
-  | "resume" | "Resume" -> st
+  match String.lowercase_ascii (read_line ()) with   
+  | "resume" -> st
   | _ -> print_endline "Invalid command. Please type \"resume\""; do_nothing st
 
 let print_help st = 
@@ -162,8 +162,8 @@ let print_help st =
     "Basic Gameplay
 
      It is your turn to make a move. Each turn consists of a draw and a discard.
-     Enter \"draw Discard\" to draw the card on top of the Discard pile, or 
-     \"draw Stock\" to draw a random card from the Stock pile. Then enter 
+     Enter \"draw discard\" to draw the card on top of the discard pile, or 
+     \"draw stock\" to draw a random card from the stock pile. Then enter 
      \"discard\" and the name of the card that you wish to discard from your 
      hand (ex. \"three of hearts\"). By drawing new cards, you will try to form 
      as many melds as you can in your hand.
@@ -208,8 +208,8 @@ let print_help st =
     Type \"resume\" to resume playing";
   print_string "\n";
   print_string "> ";
-  match read_line () with 
-  | "resume" | "Resume" -> st
+  match String.lowercase_ascii (read_line ()) with 
+  | "resume" -> st
   | _ -> print_endline "Invalid command. Please type \"resume\"."; do_nothing st
 
 (** After Player 1 knocks in state [st], [knock] handles [new_st], 

@@ -352,7 +352,7 @@ let pass st =
 let prompt_command st =
   match (get_moves st) with
   | (None, None) | (Some (Pass, _), None) -> 
-    "You can either draw from Discard or pass your turn." 
+    "You can either draw from the discard pile or pass your turn." 
   | Some (Draw _, _), _ -> 
     (match (knock_declare st) with 
      | Illegal _ -> "It is your turn to discard."
