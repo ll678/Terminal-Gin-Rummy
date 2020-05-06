@@ -223,11 +223,13 @@ let knock_match match_deck st =
       let p0_deadwood_val,p1_deadwood_val = 
         Deck.deadwood_value p0_new_hand,Deck.deadwood_value p1_new_hand
       in
+      print_string ("***DEBUG: deadwood value p0: "^string_of_int p0_deadwood_val^"\n");
+      print_string ("***DEBUG: deadwood value p1: "^string_of_int p1_deadwood_val^"\n");
       let names = ((fst st.players).name,(snd st.players).name) in
       let p0_score_orig,p1_score_orig = (fst st.players).score,(snd st.players).score in
       let deadwood_diff = p0_deadwood_val - p1_deadwood_val in
       (* If gin, add 20 + deadwood difference to knocker *)
-      if Deck.deadwood_value k_orig_hand = 0 then
+      if Deck.deadwood_value k_orig_hand = 0 then (
         if k_ind = 0 then
           let p0_score = (Int.abs deadwood_diff) + 20 in
           let next_st = init_state (p0_score,p1_score_orig) 0 names in
@@ -238,30 +240,46 @@ let knock_match match_deck st =
           let next_st = init_state (p0_score_orig,p1_score) 0 names in
           if p1_score > 100 then Win next_st
           else Legal next_st
-      else if deadwood_diff < 0 then (
+      ) else if deadwood_diff < 0 then (
         if k_ind = 0 then
           let p0_score = p0_score_orig+(-deadwood_diff) in
+          print_string("1: p0_score: "^(string_of_int p0_score)^"\n");
           let next_st = init_state (p0_score,p1_score_orig) 0 names in
           if p0_score > 100 then Win next_st
           else Legal next_st
         else
           let p0_score = p0_score_orig+(-deadwood_diff)+10 in
+          print_string("2: p0_score: "^(string_of_int p0_score)^"\n");
           let next_st = init_state (p0_score+10,p1_score_orig) 0 names in
           if p0_score > 100 then Win next_st
           else Legal next_st
-      ) else (
+      ) else if deadwood_diff > 0 then (
         if k_ind = 0 then
-          let p1_score = p0_score_orig+deadwood_diff+10 in
+          let p1_score = p1_score_orig+deadwood_diff+10 in
+          print_string("3: p1_score: "^(string_of_int p1_score)^"\n");
           let next_st = init_state (p0_score_orig,p1_score) 1 names in
           if p1_score > 100 then Win next_st
           else Legal next_st
         else
-          let p1_score = p0_score_orig+deadwood_diff+10 in
+          let p1_score = p1_score_orig+deadwood_diff+10 in
+          print_string("4: p1_score: "^(string_of_int p1_score)^"\n");
           let next_st = init_state (p0_score_orig,p1_score) 1 names in
           if p1_score > 100 then Win next_st
           else Legal next_st
+      ) else (
+        if k_ind = 0 then
+          let p1_score = p1_score_orig+deadwood_diff+10 in
+          print_string("5: p1_score: "^(string_of_int p1_score)^"\n");
+          let next_st = init_state (p0_score_orig,p1_score) 1 names in
+          if p1_score > 100 then Win next_st
+          else Legal next_st
+        else
+          let p0_score = p0_score_orig+deadwood_diff+10 in
+          print_string("6: p0_score: "^(string_of_int p0_score)^"\n");
+          let next_st = init_state (p0_score_orig,p0_score) 1 names in
+          if p0_score > 100 then Win next_st
+          else Legal next_st
       )
-
 
 let pass st =
   match st.last_moves with
