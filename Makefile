@@ -1,4 +1,4 @@
-MODULES= deck command state main authors
+MODULES= deck command state main authors optimal
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
