@@ -86,7 +86,8 @@ val discard : Deck.card -> t -> result
     - This function is mainly for checking legality of Knock
     - 
 *)
-val knock_declare : t -> (result * Deck.t * Deck.t * int * int * int)
+(* val knock_declare : t -> (result * Deck.t * Deck.t * int) *)
+val knock_declare : t -> result
 
 (** [knock_match st] is [r] if an attempt by the current player in [st] to
     match their selected deadwood with opponent's cards results in [r]. It is
