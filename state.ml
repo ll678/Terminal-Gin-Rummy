@@ -106,20 +106,20 @@ let get_new_draw_state st location =
   }
 
 let draw location st =
-  match st.last_moves,location with
-  | (None,None),"discard" | (Some (Pass,_),None),"discard"
-  | (Some (Discard _,_),_),_ | (Some (Pass,_),Some (Pass,_)),_-> 
-    if not (List.mem location ["stock"; "discard"]) then Illegal "You can only draw from \"stock\" or \"discard\". Try again."
-    else if location = "discard" && (Deck.length st.discard_pile) = 0 then Illegal "The discard pile is empty. Try again."
-    else
-      (let new_st = get_new_draw_state st location in
-       if (Deck.length new_st.stock_pile) <= 2
-       then Null (init_state ((fst st.players).score, (snd st.players).score) 0
-                    ((fst st.players).name, (snd st.players).name))
-       else Legal new_st)
-  | (None,None),"stock" | (Some (Pass,_),None),"stock" -> Illegal "You cannot draw from stock now; type \"draw discard\" or \"pass\"."
-  | (Some (Knock,_),_),_ -> Illegal "You cannot draw now; type \"match\" or \"help\"."
-  | _ -> Illegal "You cannot draw now."
+  if not (List.mem location ["stock"; "discard"]) then Illegal "You can only draw from \"stock\" or \"discard\". Try again."
+  else match st.last_moves,location with
+    | (None,None),"discard" | (Some (Pass,_),None),"discard"
+    | (Some (Discard _,_),_),_ | (Some (Pass,_),Some (Pass,_)),_-> 
+      if location = "discard" && (Deck.length st.discard_pile) = 0 then Illegal "The discard pile is empty. Try again."
+      else
+        (let new_st = get_new_draw_state st location in
+         if (Deck.length new_st.stock_pile) <= 2
+         then Null (init_state ((fst st.players).score, (snd st.players).score) 0
+                      ((fst st.players).name, (snd st.players).name))
+         else Legal new_st)
+    | (None,None),"stock" | (Some (Pass,_),None),"stock" -> Illegal "You cannot draw from stock now; type \"draw discard\" or \"pass\"."
+    | (Some (Knock,_),_),_ -> Illegal "You cannot draw now; type \"match\" or \"help\"."
+    | _ -> Illegal "You cannot draw now."
 
 (** [discard_player card player] is [player] but with [card] removed.
     Precondition: [card] is in [player.hand].
@@ -248,7 +248,7 @@ let knock_match match_deck st =
         else
           let p0_score = p0_score_orig+(-deadwood_diff)+10 in
           print_string("2: p0_score: "^(string_of_int p0_score)^"\n");
-          let next_st = init_state (p0_score+10,p1_score_orig) 0 names in
+          let next_st = init_state (p0_score,p1_score_orig) 0 names in
           if p0_score > 100 then Win next_st
           else Legal next_st
       ) else if deadwood_diff > 0 then (

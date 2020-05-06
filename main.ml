@@ -264,7 +264,7 @@ let rec knock_match (st : State.t) : State.t =
             print_endline (winner_score |> string_of_int);
             print_string loser_name; print_string "'s Final Score: "; 
             print_endline (loser_score |> string_of_int);
-            print_string ("Congrats, " ^ winner_name ^ ", you've won!"); exit 0
+            print_string ("Congrats " ^ winner_name ^ ", you've won!"); exit 0
     end
   | Illegal str -> print_string (str^"\n"); st
   | _ -> failwith "knock_match: something went wrong."
@@ -294,7 +294,7 @@ let process_readline read_line (st : State.t) =
   | exception Command.Empty ->
     print_endline "This is an invalid command.\n"; st
   | exception Command.Malformed ->
-    print_endline "This is an malformed command.\n"; st
+    print_endline "This is a malformed command.\n"; st
   | command -> (process_command command st)
 
 (* Should initalize game but not initiate state transitions *)
