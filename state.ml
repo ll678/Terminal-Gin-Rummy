@@ -198,8 +198,6 @@ let knock_state_update st new_hands new_scores winner =
     last_moves = (None,None);
   }
 
-
-
 let knock_match match_deck st = 
   if not (fst st.last_moves = Some (Knock, None)) then failwith "something went wrong."
   else
@@ -326,3 +324,30 @@ let sort st =
       last_moves = st.last_moves;
     }
 
+(* (Command.command * Deck.card option) option *)
+
+let pass st =
+  match st.last_moves with
+  | (None,None) | (Some (Pass,_),None) ->
+    Legal
+      {
+        stock_pile = st.stock_pile;
+        discard_pile = st.discard_pile;
+        players = st.players;
+        current_player = if (st.current_player = 0) then 1 else 0;
+        last_moves =  (Some (Pass,None),fst st.last_moves);
+      }
+  | _ -> Illegal "You can only pass in the beginning of the round."
+
+let prompt_command st =
+  match (get_moves st) with
+  | (None, None) | (Some (Pass, _), None) -> 
+    "You can either draw from Discard or pass your turn." 
+  | Some (Draw _, _), _ -> 
+    (match (knock_declare st) with 
+     | Illegal _ -> "It is your turn to discard."
+     | Legal _ -> "You can either discard or knock."
+     | _ -> "")
+  | Some (Discard _, _), _ | Some (Pass, _ ), _ -> "It is your turn to draw."
+  | Some (Knock, _), _ -> "Please type \"match\" to begin laying off cards."
+  | _ -> "Please enter a command."

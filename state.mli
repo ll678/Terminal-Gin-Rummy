@@ -104,3 +104,7 @@ val knock_match_declare : t -> result
     - Initialize new state
 *)
 val knock_match : Deck.t -> t -> result
+
+(** [prompt_command st] returns a string to prompt for the appropriate command
+    based on the current [st]. *)
+val prompt_command : t -> string
