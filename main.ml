@@ -134,7 +134,6 @@ let change (new_st : State.result) (st : State.t) =
     print_string 
       "Less than two cards in stock. Game is null. New round starting... \n"; 
     st
-  | Win t -> failwith "you shouldn't have won"
 
 let handle_score (st : State.t) = 
   print_string "Your score is: " ; 
@@ -212,7 +211,40 @@ let rec knock (new_st : State.result) (st : State.t) : State.t =
   | Legal t -> t
   | Illegal str -> print_string (str^"\n"); st
   | Null t -> failwith "knock fail: null"
-  | Win t -> failwith "knock fail: win"
+
+let conclude_round st winner_deck loser_deck round_score = 
+  let winner_name = State.get_current_player_name st in
+  let loser_name = State.get_opponent_player_name st in
+
+  print_string (winner_name); 
+  print_string "'s Ending Deadwood:\n";
+  print_cards (winner_deck |> Deck.deadwood |> Deck.string_of_deck);
+  print_string ("\n");
+  print_string (loser_name); 
+  print_string "'s Ending Deadwood:\n";
+  print_cards (loser_deck |> Deck.deadwood |> Deck.string_of_deck);
+
+  print_string ("\n\n");
+  print_string (winner_name ^ " has won this round, gaining ");
+  print_string ((string_of_int round_score) ^ " points!\n");
+
+  let winner_score = State.get_current_player_score st in
+  let loser_score = State.get_opponent_player_score st in
+  print_string winner_name; print_string "'s Score: "; 
+  print_endline (winner_score |> string_of_int);
+  print_string loser_name; print_string "'s Score: "; 
+  print_endline (loser_score |> string_of_int);
+
+  print_endline ("\nPress enter to continue.");
+  print_string  "> ";
+  match read_line () with 
+  | exception End_of_file -> 
+    print_string "I don't know what you did, but... try again.\n"; st
+  | _ ->
+    if winner_score > 100 then (
+      print_string ("\nCongrats " ^ winner_name ^ ", you've won!");
+      exit 0
+    ) else print_endline ("\nStarting new round..."); st 
 
 let rec knock_match (st : State.t) : State.t =
   match State.knock_match_declare st with
@@ -238,33 +270,10 @@ let rec knock_match (st : State.t) : State.t =
           print_endline "You cannot match these. Try again.\n"; 
           st
         | valid_deck -> match State.knock_match valid_deck st with
-          | Legal new_st ->
-            (* | Legal new_st,end_hand_p1,end_hand_p2,winner_bonus -> *)
-            (* TODO: want to print ending deadwoods, score added before next round *)
-            let winner_score = State.get_current_player_score new_st in
-            let winner_name = State.get_current_player_name new_st in
-            let loser_score = State.get_opponent_player_score new_st in
-            let loser_name = State.get_opponent_player_name new_st in
-            print_string winner_name; print_string "'s Score: "; 
-            print_endline (winner_score |> string_of_int);
-            print_string loser_name; print_string "'s Score: "; 
-            print_endline (loser_score |> string_of_int);
-            print_endline (winner_name ^ " has won this round!");
-            new_st 
-          (* TODO: prompt for continue to next round... new function *)
-          | Illegal _ -> print_string "Not all these cards form melds. Try again.\n"; 
-            knock_match st
-          | Null new_st -> failwith "knock fail (shouldnt happen)"
-          | Win new_st -> 
-            let winner_score = State.get_current_player_score new_st in
-            let winner_name = State.get_current_player_name new_st in
-            let loser_score = State.get_opponent_player_score new_st in
-            let loser_name = State.get_opponent_player_name new_st in
-            print_string winner_name; print_string "'s Final Score: "; 
-            print_endline (winner_score |> string_of_int);
-            print_string loser_name; print_string "'s Final Score: "; 
-            print_endline (loser_score |> string_of_int);
-            print_string ("Congrats " ^ winner_name ^ ", you've won!"); exit 0
+          | (Legal new_st,winner_deck,loser_deck,round_score) ->
+            conclude_round new_st winner_deck loser_deck round_score
+          | (Illegal str,_,_,_) -> print_string (str^"\n"); knock_match st
+          | _ -> failwith "knock_match fail (shouldnt happen)"
     end
   | Illegal str -> print_string (str^"\n"); st
   | _ -> failwith "knock_match: something went wrong."
