@@ -4,7 +4,8 @@ type move = Discard of Deck.card | Draw of string | Knock
 
 let optimal_sort hand =
   let deadwood = Deck.deadwood hand in 
-  Deck.get_values deadwood 0 []
+  let tmp = Deck.get_worst deadwood in 
+  Discard (fst tmp)
 
 let optimal_discard st =
   let hand = State.get_current_player_hand st in 

@@ -149,6 +149,8 @@ val test_hand3 : t
     strictly for testing. *)
 val test_hand4 : t
 
+val get_worst : t -> card * int
+
 (** [test_meld] and [test_meld2] are lists of the melds of [test_hand] and
     [test_hand2], respectively, used strictly for testing. *)
 val test_meld : t list
