@@ -16,7 +16,7 @@ type t
 type move
 
 (** The result of a new game state. *)
-type result = Legal of t | Illegal | Null of t | Win of t
+type result = Legal of t | Illegal of string | Null of t
 
 
 (** [init_state s p n] is the initial state of the game when playing Terminal 
@@ -85,13 +85,21 @@ val pass : t -> result
 *)
 val discard : Deck.card -> t -> result
 
-(** [knock_declare st] is [r] if an attempt to knock by the current player in [st]
+(** [knock_declare st] is [(r,winner's deadwood, loser's deadwood, winner's
+    deadwood value, loser's deadwood value, winner's points gained)] if an
+    attempt to knock by the current player in [st]
     results in [r]. If the current player has less than 10 in deadwood,
     [r] is [Legal st']. Otherwise, the result is [Illegal]. 
     - Switches current player.
     - This function is mainly for checking legality of Knock
+    - 
 *)
+(* val knock_declare : t -> (result * Deck.t * Deck.t * int) *)
 val knock_declare : t -> result
+
+
+val knock_match_declare : t -> result
+
 
 (** [knock_match st] is [r] if an attempt by the current player in [st] to
     match their selected deadwood with opponent's cards results in [r]. It is
@@ -103,4 +111,8 @@ val knock_declare : t -> result
     - Determine winner and calculate scores accordingly
     - Initialize new state
 *)
-val knock_match : Deck.t -> t -> result
+val knock_match : Deck.t -> t -> (result * Deck.t * Deck.t * int)
+
+(** [prompt_command st] returns a string to prompt for the appropriate command
+    based on the current [st]. *)
+val prompt_command : t -> string

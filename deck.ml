@@ -349,7 +349,9 @@ let rec get_list n l =
     | h::t ->  h::(get_list (n-1) t)
 
 let start_cards =
-  let temp = shuffle init_deck in  
+  (* let temp = shuffle init_deck in   *)
+  let temp = init_deck in
+
   let fst = get_list 31 temp  in
   let snd = get_list 1 (difference temp fst) in
   let trd = get_list 10 (difference (difference temp fst) snd) in
@@ -416,9 +418,10 @@ let rec string_of_deck_short deck =
   | h :: t -> string_of_card_short h :: string_of_deck_short t
 
 let card_of_string string = 
-  let str_lst = String.split_on_char ' ' string |> Command.remove_emptys in
+  let str_lst = String.split_on_char ' ' string |> Command.remove_emptys_lower
+  in
   if length str_lst < 3 then raise Malformed else
-    let fst = nth str_lst 0 |> String.lowercase_ascii in 
+    let fst = nth str_lst 0 in 
     let rank = 
       if fst = "ace" then Ace
       else if fst = "two" then Two
@@ -435,7 +438,7 @@ let card_of_string string =
       else if fst = "king" then King
       else raise Malformed
     in
-    let snd = nth str_lst 2 |> String.lowercase_ascii in
+    let snd = nth str_lst 2 in
     let suit = 
       if snd = "clubs" then Clubs
       else if snd = "diamonds" then Diamonds
@@ -471,12 +474,13 @@ let suitstring_of_string string =
   | _ -> ""
 
 let deck_of_string string = 
-  let rec deck_of_string_helper lst =
-    match lst with
-    | [] -> []
-    | h::t -> (card_of_string h)::(deck_of_string_helper t) in
-  let cards = String.split_on_char ',' string in
-  deck_of_string_helper cards
+  if string = "" then [] else
+    let rec deck_of_string_helper lst =
+      match lst with
+      | [] -> []
+      | h::t -> (card_of_string h)::(deck_of_string_helper t) in
+    let cards = List.map (String.trim) (String.split_on_char ',' string) in
+    deck_of_string_helper cards
 
 let string_of_hd deck = 
   match deck with
