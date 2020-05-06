@@ -18,7 +18,7 @@ type t = {
 }
 
 (* TODO: Illegal could be of string to display a helpful message *)
-type result = Legal of t | Illegal | Null of t | Win of t
+type result = Legal of t | Illegal of string | Null of t | Win of t
 
 let init_players starting_cards starting_scores names = (
   {
@@ -105,24 +105,21 @@ let get_new_draw_state st location =
     last_moves = (Some (Draw [location], Some card), fst st.last_moves);
   }
 
-let draw_allowed location st=  
-  match fst st.last_moves with
-  | None -> if location = "discard" then true else false
-  | Some (Pass,_) -> if location = "discard" then true else false
-  | Some (Discard _,_) -> true
-  | _ -> false
-
 let draw location st =
-  if (not (draw_allowed location st)) then Illegal
-  else if (List.mem location ["stock"; "discard"]) then
-    if location = "discard" && (Deck.length st.discard_pile) = 0 then Illegal
+  match st.last_moves,location with
+  | (None,None),"discard" | (Some (Pass,_),None),"discard"
+  | (Some (Discard _,_),_),_ | (Some (Pass,_),Some (Pass,_)),_-> 
+    if not (List.mem location ["stock"; "discard"]) then Illegal "You can only draw from \"stock\" or \"discard\". Try again."
+    else if location = "discard" && (Deck.length st.discard_pile) = 0 then Illegal "The discard pile is empty. Try again."
     else
       (let new_st = get_new_draw_state st location in
        if (Deck.length new_st.stock_pile) <= 2
        then Null (init_state ((fst st.players).score, (snd st.players).score) 0
                     ((fst st.players).name, (snd st.players).name))
-       else Legal new_st) 
-  else Illegal
+       else Legal new_st)
+  | (None,None),"stock" | (Some (Pass,_),None),"stock" -> Illegal "You cannot draw from stock now; type \"draw discard\" or \"pass\"."
+  | (Some (Knock,_),_),_ -> Illegal "You cannot draw now; type \"match\" or \"help\"."
+  | _ -> Illegal "You cannot draw now."
 
 (** [discard_player card player] is [player] but with [card] removed.
     Precondition: [card] is in [player.hand].
@@ -135,12 +132,12 @@ let discard_player card player =
   }
 
 let discard card st = 
-  if fst st.last_moves = Some (Draw ["discard"], Some card) then Illegal
+  if fst st.last_moves = Some (Draw ["discard"], Some card) then Illegal "You cannot discard the card you just drew from the discard pile. Try another one."
   else match fst st.last_moves with
     | Some (Draw _, _) ->
       let p_ind = st.current_player in
       let p = if p_ind = 0 then fst st.players else snd st.players in
-      if not (Deck.mem card p.hand) then Illegal
+      if not (Deck.mem card p.hand) then Illegal "You do not have this card. Try again."
       else
         let opp_ind = (p_ind + 1) mod 2 in
         let opp = if opp_ind = 0 then fst st.players else snd st.players in
@@ -153,16 +150,16 @@ let discard card st =
             current_player = opp_ind;
             last_moves = (Some (Discard ["discard"], Some card),fst st.last_moves);
           })
-    | _ -> Illegal
+    | Some (Knock,_) -> Illegal "You cannot discard now; type \"match\" or \"help\"."
+    | _ -> Illegal "You cannot discard now."
 
 let knock_declare st = 
   (* 1. Determine whether curr_p can knock. *)
   match fst st.last_moves with
-  | Some (Discard _,_) | Some (Pass,_) -> Illegal
-  | _ ->
+  | Some (Draw _,_) ->
     let knocker = if st.current_player = 0
       then fst st.players else snd st.players in
-    if Deck.knock_deadwood_value knocker.hand > 10 then Illegal
+    if Deck.knock_deadwood_value knocker.hand > 10 then Illegal "You do not have less than 10 deadwood."
     else Legal ({
         stock_pile = st.stock_pile;
         discard_pile = st.discard_pile;
@@ -170,6 +167,15 @@ let knock_declare st =
         current_player = (st.current_player + 1) mod 2;
         last_moves = (Some (Knock, None),fst st.last_moves);
       })
+  | Some (Knock,_) -> Illegal "You cannot knock now; type \"match\" or \"help\"."
+  | _ -> Illegal "You cannot knock now; try again after a draw."
+
+
+let knock_match_declare st = 
+  match fst st.last_moves with
+  | Some (Knock,None) -> Legal st
+  | _ -> Illegal "You cannot match now; try again after your opponent has knocked."
+
 
 let knock_player_update players new_hands new_scores =
   ({
@@ -195,8 +201,8 @@ let knock_state_update st new_hands new_scores winner =
 
 
 let knock_match match_deck st = 
-  if not (fst st.last_moves = Some (Knock, None))
-  then Illegal else
+  if not (fst st.last_moves = Some (Knock, None)) then failwith "something went wrong."
+  else
     let m_ind = st.current_player in
     (* 2. Determine whether match_deck is valid *)
     let k,m = if m_ind = 0
@@ -206,7 +212,7 @@ let knock_match match_deck st =
     let k_new_hand = Deck.push_deck match_deck k_orig_hand in
     let match_dead = 
       Deck.intersect (Deck.deadwood k_new_hand) match_deck in
-    if not (Deck.is_empty match_dead) then Illegal else
+    if not (Deck.is_empty match_dead) then Illegal "" else
       (* 3. Calculate scores *)
       let k_ind = (m_ind + 1) mod 2 in
       let m_new_hand = Deck.remove_deck match_deck m.hand in
@@ -256,6 +262,21 @@ let knock_match match_deck st =
           else Legal next_st
       )
 
+
+let pass st =
+  match st.last_moves with
+  | (None,None) | (Some (Pass,_),None) ->
+    Legal
+      {
+        stock_pile = st.stock_pile;
+        discard_pile = st.discard_pile;
+        players = st.players;
+        current_player = if (st.current_player = 0) then 1 else 0;
+        last_moves =  (Some (Pass,None),fst st.last_moves);
+      }
+  | _ -> Illegal "You can only pass in the beginning of the round."
+
+
 let sort_player_hand current_player players =
   if (current_player = 0) then 
     let sorted_hand = Deck.suit_sort ((fst players).hand) in 
@@ -287,22 +308,3 @@ let sort st =
       last_moves = st.last_moves;
     }
 
-(* (Command.command * Deck.card option) option *)
-
-let pass_valid st = 
-  match st.last_moves with
-  | (None, None) -> true
-  | ((Some p), None) -> if (fst p) = Pass then true else false
-  | _ -> false
-
-let pass st =
-  if pass_valid st then
-    Legal
-      {
-        stock_pile = st.stock_pile;
-        discard_pile = st.discard_pile;
-        players = st.players;
-        current_player = if (st.current_player = 0) then 1 else 0;
-        last_moves =  (Some (Pass , None),fst st.last_moves);
-      }
-  else Illegal

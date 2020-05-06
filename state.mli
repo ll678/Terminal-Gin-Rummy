@@ -13,7 +13,7 @@ type p
 type t 
 
 (** The result of a new game state. *)
-type result = Legal of t | Illegal | Null of t | Win of t
+type result = Legal of t | Illegal of string | Null of t | Win of t
 
 (** [init_state s p n] is the initial state of the game when playing Terminal 
     Gin Runnmy. In that state the player p starts. Players have the names n and
@@ -88,6 +88,10 @@ val discard : Deck.card -> t -> result
 *)
 (* val knock_declare : t -> (result * Deck.t * Deck.t * int) *)
 val knock_declare : t -> result
+
+
+val knock_match_declare : t -> result
+
 
 (** [knock_match st] is [r] if an attempt by the current player in [st] to
     match their selected deadwood with opponent's cards results in [r]. It is
