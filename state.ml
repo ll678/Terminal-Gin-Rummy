@@ -17,6 +17,7 @@ type t = {
   last_moves: (move * move);
 }
 
+(* TODO: Illegal could be of string to display a helpful message *)
 type result = Legal of t | Illegal | Null of t | Win of t
 
 let init_players starting_cards starting_scores names = (
@@ -93,35 +94,34 @@ let update_player st card =
 let get_new_draw_state st location =
   let current_stock  = get_stock st in
   let current_discard = get_discard st in
-  let card = if (location = "Stock") then Deck.hd current_stock else Deck.hd current_discard in
+  let card = if (location = "stock") then Deck.hd current_stock else Deck.hd current_discard in
   {
-    stock_pile = if (location = "Stock") then (Deck.tl current_stock) 
+    stock_pile = if (location = "stock") then (Deck.tl current_stock) 
       else current_stock;
-    discard_pile = if (location = "Discard") then (Deck.tl current_discard)
+    discard_pile = if (location = "discard") then (Deck.tl current_discard)
       else current_discard;
     players = update_player st card;
     current_player = st.current_player;
     last_moves = (Some (Draw [location], Some card), fst st.last_moves);
   }
 
-let check_first_draw location st=  
-  match st.last_moves with
-  | (None, None) -> if location = "Stock" then false else true
-  | ((Some p), None) -> if location = "Stock" then false else true
-  | _ -> true
+let draw_allowed location st=  
+  match fst st.last_moves with
+  | None -> if location = "discard" then true else false
+  | Some (Pass,_) -> if location = "discard" then true else false
+  | Some (Discard _,_) -> true
+  | _ -> false
 
 let draw location st =
-  if (not (check_first_draw location st)) then Illegal else 
-  if (List.mem location ["Stock"; "Discard"]) then
-    if location = "Discard" && (Deck.length st.discard_pile) = 0 then Illegal else
+  if (not (draw_allowed location st)) then Illegal
+  else if (List.mem location ["stock"; "discard"]) then
+    if location = "discard" && (Deck.length st.discard_pile) = 0 then Illegal
+    else
       (let new_st = get_new_draw_state st location in
        if (Deck.length new_st.stock_pile) <= 2
        then Null (init_state ((fst st.players).score, (snd st.players).score) 0
                     ((fst st.players).name, (snd st.players).name))
-       else match (fst st.last_moves) with
-         | None -> Legal new_st
-         | Some (Draw _,_) -> Illegal
-         | _ -> Legal new_st) 
+       else Legal new_st) 
   else Illegal
 
 (** [discard_player card player] is [player] but with [card] removed.
@@ -135,7 +135,7 @@ let discard_player card player =
   }
 
 let discard card st = 
-  if fst st.last_moves = Some (Draw ["Discard"], Some card) then Illegal
+  if fst st.last_moves = Some (Draw ["discard"], Some card) then Illegal
   else match fst st.last_moves with
     | Some (Draw _, _) ->
       let p_ind = st.current_player in
@@ -171,8 +171,32 @@ let knock_declare st =
         last_moves = (Some (Knock, None),fst st.last_moves);
       })
 
+let knock_player_update players new_hands new_scores =
+  ({
+    name = (fst players).name;
+    hand = fst new_hands;
+    score = fst new_scores;
+  },
+    {
+      name = (snd players).name;
+      hand = snd new_hands;
+      score = snd new_scores;
+    })
+
+let knock_state_update st new_hands new_scores winner = 
+  {
+    stock_pile = st.stock_pile;
+    discard_pile = st.discard_pile;
+    players = knock_player_update st.players new_hands new_scores;
+    current_player = winner;
+    last_moves = (None,None);
+  }
+
+
+
 let knock_match match_deck st = 
-  if not (fst st.last_moves = Some (Knock, None)) then Illegal else
+  if not (fst st.last_moves = Some (Knock, None))
+  then Illegal else
     let m_ind = st.current_player in
     (* 2. Determine whether match_deck is valid *)
     let k,m = if m_ind = 0
@@ -186,9 +210,12 @@ let knock_match match_deck st =
       (* 3. Calculate scores *)
       let k_ind = (m_ind + 1) mod 2 in
       let m_new_hand = Deck.remove_deck match_deck m.hand in
-      let p0_deadwood_val,p1_deadwood_val = if m_ind = 0
-        then Deck.deadwood_value m_new_hand,Deck.deadwood_value k_new_hand
-        else Deck.deadwood_value k_new_hand,Deck.deadwood_value m_new_hand
+      let p0_new_hand,p1_new_hand = if m_ind = 0
+        then m_new_hand,k_new_hand
+        else k_new_hand,m_new_hand
+      in
+      let p0_deadwood_val,p1_deadwood_val = 
+        Deck.deadwood_value p0_new_hand,Deck.deadwood_value p1_new_hand
       in
       let names = ((fst st.players).name,(snd st.players).name) in
       let p0_score_orig,p1_score_orig = (fst st.players).score,(snd st.players).score in

@@ -118,7 +118,8 @@ let rec knock (new_st : State.result) (st : State.t) : State.t =
 
 let rec knock_match (st : State.t) : State.t =
   print_string (st |> State.get_opponent_player_name); print_string "'s Hand:\n";
-  print_list (st |> State.get_opponent_player_hand |> Deck.string_of_deck);
+  (* TODO: print opponent's hand using pretty printer. using boring one for development *)
+  print_list (st |> State.get_opponent_player_hand |> Deck.string_of_deck_short);
   print_string ("\n");
 
   print_endline ("\nPlease list any cards you want to match. Separate cards with a single comma.");
@@ -133,6 +134,8 @@ let rec knock_match (st : State.t) : State.t =
       st
     | valid_deck -> match State.knock_match valid_deck st with
       | Legal new_st ->
+        (* | Legal new_st,end_hand_p1,end_hand_p2,winner_bonus -> *)
+        (* TODO: want to print ending deadwoods, score added before next round *)
         let winner_score = State.get_current_player_score new_st in
         let winner_name = State.get_current_player_name new_st in
         let loser_score = State.get_opponent_player_score new_st in
@@ -142,10 +145,11 @@ let rec knock_match (st : State.t) : State.t =
         print_string loser_name; print_string "'s Score: "; 
         print_endline (loser_score |> string_of_int);
         print_endline (winner_name ^ " has won this round!");
-        new_st
+        new_st 
+      (* TODO: prompt for continue to next round... new function *)
       | Illegal -> print_string "Not all these cards form melds. Try again.\n"; 
         knock_match st
-      | Null new_st -> failwith "knock fail"
+      | Null new_st -> failwith "knock fail (shouldnt happen)"
       | Win new_st -> 
         let winner_score = State.get_current_player_score new_st in
         let winner_name = State.get_current_player_name new_st in
