@@ -104,7 +104,7 @@ let get_new_draw_state st location =
     last_moves = (Some (Draw [location], Some card), fst st.last_moves);
   }
 
-let check_first_draw location st=  
+let check_first_draw location st =  
   match st.last_moves with
   | (None, None) -> if location = "Stock" then false else true
   | ((Some p), None) -> if location = "Stock" then false else true
@@ -279,3 +279,15 @@ let pass st =
         last_moves =  (Some (Pass , None),fst st.last_moves);
       }
   else Illegal
+
+let prompt_command st =
+  if pass_valid st then "You can either draw from Discard or pass your turn." 
+  else
+    match (get_moves st) with
+    | Some (Draw _, _), _ -> (match (knock_declare st) with 
+        | Illegal -> "It is your turn to discard."
+        | Legal _ -> "You can either discard or knock."
+        | _ -> "")
+    | Some (Discard _, _), _ | Some (Pass, _ ), _ -> "It is your turn to draw."
+    | Some (Knock, _), _ -> "Please type \"match\" to begin laying off cards."
+    | _ -> "Please enter a command."

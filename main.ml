@@ -7,6 +7,9 @@ let rec print_list lst =
     print_string " "; 
     print_list t
 
+let if_red suit =
+  if suit = "Hearts" || suit = "Diamonds" then true else false
+
 let rec print_cards_top lst =
   match lst with
   | [] -> print_string ""
@@ -16,18 +19,31 @@ let rec print_cards_rank1 lst =
   match lst with
   | [] -> print_string ""
   | h::t -> let rank = Deck.nth (String.split_on_char ' ' h) 0 in
-    if rank = "Ten" then
-      (print_string ("|" ^ Deck.rankstring_of_string rank ^ " |  "); 
-       print_cards_rank1 t)
+    let suit = Deck.nth (String.split_on_char ' ' h) 2 in
+    if (if_red suit) then
+      (if rank = "Ten" then
+         (print_string ("|");
+          ANSITerminal.(print_string [red] (Deck.rankstring_of_string rank));
+          print_string (" |  "); 
+          print_cards_rank1 t)
+       else
+         (print_string ("|");
+          ANSITerminal.(print_string [red] (Deck.rankstring_of_string rank));
+          print_string ("  |  "); 
+          print_cards_rank1 t))
     else
-      (print_string ("|" ^ Deck.rankstring_of_string rank ^ "  |  "); 
-       print_cards_rank1 t)
+      (if rank = "Ten" then
+         (print_string ("|" ^ Deck.rankstring_of_string rank ^ " |  "); 
+          print_cards_rank1 t)
+       else
+         (print_string ("|" ^ Deck.rankstring_of_string rank ^ "  |  "); 
+          print_cards_rank1 t))
 
 let rec print_cards_suit lst = 
   match lst with
   | [] -> print_string ""
   | h::t -> let suit = Deck.nth (String.split_on_char ' ' h) 2 in
-    if suit = "Hearts" || suit = "Diamonds" then
+    if (if_red suit) then
       (print_string ("| ");
        ANSITerminal.(print_string [red] (Deck.suitstring_of_string suit));
        print_string (" |  ");
@@ -35,7 +51,6 @@ let rec print_cards_suit lst =
     else 
       (print_string ("| ");
        print_string (Deck.suitstring_of_string suit);
-       (* ANSITerminal.(print_string [black] (Deck.suitstring_of_string suit)); *)
        print_string (" |  ");
        print_cards_suit t)
 
@@ -43,12 +58,25 @@ let rec print_cards_rank2 lst =
   match lst with
   | [] -> print_string ""
   | h::t -> let rank = Deck.nth (String.split_on_char ' ' h) 0 in
-    if rank = "Ten" then
-      (print_string ("| " ^ Deck.rankstring_of_string rank ^ "|  "); 
-       print_cards_rank2 t)
+    let suit = Deck.nth (String.split_on_char ' ' h) 2 in
+    if (if_red suit) then
+      (if rank = "Ten" then
+         (print_string ("| ");
+          ANSITerminal.(print_string [red] (Deck.rankstring_of_string rank));
+          print_string ("|  "); 
+          print_cards_rank2 t)
+       else
+         (print_string ("|  ");
+          ANSITerminal.(print_string [red] (Deck.rankstring_of_string rank));
+          print_string ("|  "); 
+          print_cards_rank2 t))
     else
-      (print_string ("|  " ^ Deck.rankstring_of_string rank ^ "|  "); 
-       print_cards_rank2 t)
+      (if rank = "Ten" then
+         (print_string ("| " ^ Deck.rankstring_of_string rank ^ "|  "); 
+          print_cards_rank2 t)
+       else
+         (print_string ("|  " ^ Deck.rankstring_of_string rank ^ "|  "); 
+          print_cards_rank2 t))
 
 let rec print_cards_bottom lst = 
   match lst with
@@ -83,6 +111,21 @@ let rec print_melds lst =
     print_string "\n"; 
     print_melds t
 
+let rec print_deadwood lst =
+  match lst with
+  | [] -> ()
+  | h::t -> let rank = Deck.nth (String.split_on_char ' ' h) 0 in
+    let suit = Deck.nth (String.split_on_char ' ' h) 2 in
+    if (if_red suit) then
+      (ANSITerminal.(print_string [red] (Deck.rankstring_of_string rank));
+       ANSITerminal.(print_string [red] (Deck.suitstring_of_string suit));
+       print_string "  ";)
+    else 
+      (print_string (Deck.rankstring_of_string rank);
+       print_string (Deck.suitstring_of_string suit);
+       print_string "  ");
+    print_deadwood t
+
 let change (new_st : State.result) (st : State.t) = 
   match new_st with 
   | Legal t -> t
@@ -100,10 +143,67 @@ let handle_score (st : State.t) =
   print_int (State.get_current_player_score st);
   print_endline "\n"
 
+let rec do_nothing st =
+  print_string "> ";
+  match read_line () with 
+  | "resume" | "Resume" -> st
+  | _ -> print_endline "Invalid command. Please type \"resume\""; do_nothing st
+
 let print_help st = 
-  print_string "How to play Gin Rummy:";
-  (* Rules of Gin Rummy *)
-  print_endline "\n"
+  print_endline "How to play Gin Rummy:\n";
+  print_string 
+    "Basic Gameplay
+
+     It is your turn to make a move. Each turn consists of a draw and a discard.
+     Enter \"draw Discard\" to draw the card on top of the Discard pile, or 
+     \"draw Stock\" to draw a random card from the Stock pile. Then enter 
+     \"discard\" and the name of the card that you wish to discard from your 
+     hand (ex. \"three of hearts\"). By drawing new cards, you will try to form 
+     as many melds as you can in your hand.
+
+     If it is your first turn, you can only either draw from the Discard pile 
+     or pass your turn (type \"pass\").
+
+     A meld is either:
+     1) Three or more cards of the same rank (called a set)
+     2) Three or more cards of the same suit in consecutive rank order 
+     (called a run)
+     (In Gin Rummy, the Ace is low, so A-2-3 is a valid run, but Q-K-A is not.)
+
+    How to Win
+
+     The remaining cards in your hand that do not form melds are called 
+     deadwood. Your objective is to minimize the value of your deadwood. When 
+     your deadwood has a value of 10 or less, you can choose to end the round 
+     by knocking (type \"knock\"). Knocking discards the highest value card 
+     in your deadwood and arranges the remaining cards into runs and sets. 
+
+     After knocking, your opponent will be allowed to lay off their deadwood 
+     cards by adding them to your melds (but not your deadwood), if possible.
+     To lay off any cards, type \"match\". Then, you will be prompted to type
+     the list of cards that you wish to lay off, separated by a comma and 
+     no spaces.
+
+     Your scores will then be calculated and the winner of the round will be 
+     the player with a lower deadwood value. If you knock when you have no 
+     deadwood, that is called \"going gin\" (type \"gin\" or \"knock\") and 
+     your opponent will not be allowed to lay off. The game will continue until 
+     a player reaches a score of 100 or more and wins.
+
+    Other Commands
+
+     score- view your current score
+     sort- sort your hand by suit first, then rank
+     help- bring up rules and gameplay information
+     quit- quit the game
+
+
+    Type \"resume\" to resume playing";
+  print_string "\n";
+  print_string "> ";
+  match read_line () with 
+  | "resume" | "Resume" -> st
+  | _ -> print_endline "Invalid command. Please type \"resume\"."; do_nothing st
 
 (** After Player 1 knocks in state [st], [knock] handles [new_st], 
     in which Player 2 is the current player and can choose cards to lay off. 
@@ -117,11 +217,16 @@ let rec knock (new_st : State.result) (st : State.t) : State.t =
   | Win t -> failwith "knock fail: win"
 
 let rec knock_match (st : State.t) : State.t =
-  print_string (st |> State.get_opponent_player_name); print_string "'s Hand:\n";
-  print_list (st |> State.get_opponent_player_hand |> Deck.string_of_deck);
+  print_string "Your Deadwood:\n";
+  print_cards (st |> State.get_current_player_hand |> Deck.deadwood |> 
+               Deck.string_of_deck);
+  print_string ("\n\n");
+  print_string (st |> State.get_opponent_player_name); 
+  print_string "'s Melds:\n";
+  print_melds (st |> State.get_opponent_player_hand |> Deck.best_meld);
   print_string ("\n");
 
-  print_endline ("\nPlease list any cards you want to match. Separate cards with a single comma.");
+  print_endline ("\nPlease list any cards you want to lay off. Separate cards with a single comma.");
   print_string  "> ";
   match read_line () with 
   | exception End_of_file -> 
@@ -173,7 +278,7 @@ let process_command (command : Command.command) (st : State.t) =
   | Pass -> change (State.pass st) st
   | Sort -> change (State.sort st) st
   | Score -> handle_score st; st
-  | Help -> print_help st; st
+  | Help -> print_help st
   | Quit -> exit 0
 
 (*A function that either quits or executes a command based on input*)
@@ -207,13 +312,13 @@ let rec play_game (st : State.t) =
 
   (* Print deadwood of current player's hand *)
   print_string "Deadwood:\n";
-  print_list (st |> State.get_current_player_hand |> Deck.deadwood 
-              |> Deck.string_of_deck_short);
+  print_deadwood (st |> State.get_current_player_hand |> Deck.deadwood |> 
+                  Deck.string_of_deck);
   print_string ("\n\n");
 
-  (* Prompt for player to draw. *)
-  print_endline ("Please enter a command.");
-  print_string "> ";
+  (* Prompt for the appropriate command(s). *)
+  print_endline (State.prompt_command st);
+  print_string "\n> ";
 
   match read_line () with 
   | exception End_of_file -> ()
