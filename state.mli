@@ -16,7 +16,7 @@ type t
 type move
 
 (** The result of a new game state. *)
-type result = Legal of t | Illegal of string | Null of t
+type result = Legal of t | Illegal of string | Null of t | RoundEnd of t * Deck.t * Deck.t * int
 
 
 (** [init_state s p n] is the initial state of the game when playing Terminal 
@@ -111,7 +111,7 @@ val knock_match_declare : t -> result
     - Determine winner and calculate scores accordingly
     - Initialize new state
 *)
-val knock_match : Deck.t -> t -> (result * Deck.t * Deck.t * int)
+val knock_match : Deck.t -> t -> result
 
 (** [prompt_command st] returns a string to prompt for the appropriate command
     based on the current [st]. *)

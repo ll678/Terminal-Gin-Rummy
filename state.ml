@@ -18,7 +18,7 @@ type t = {
 }
 
 (* TODO: Illegal could be of string to display a helpful message *)
-type result = Legal of t | Illegal of string | Null of t
+type result = Legal of t | Illegal of string | Null of t | RoundEnd of t * Deck.t * Deck.t * int
 
 let init_players starting_cards starting_scores names = (
   {
@@ -169,7 +169,24 @@ let knock_declare st =
   | Some (Draw _,_) ->
     let knocker = if st.current_player = 0
       then fst st.players else snd st.players in
-    if Deck.knock_deadwood_value knocker.hand > 10 then Illegal "You do not have less than 10 deadwood."
+    let k_deadwood = Deck.knock_deadwood_value knocker.hand in
+    if k_deadwood > 10 then Illegal "You do not have less than 10 deadwood."
+    else if k_deadwood = 0 then 
+      let p0,p1 = st.players in
+      let k_ind = st.current_player in
+      let names = (p0.name,p1.name) in
+      let matcher = if k_ind = 0 then p1 else p0 in
+      let m_deadwood = Deck.deadwood_value matcher.hand in
+      let round_score = m_deadwood + 20 in
+
+      if k_ind = 0 then
+        let p0_score = p0.score + round_score in
+        let next_st = init_state (p0_score,p1.score) 0 names in
+        RoundEnd (next_st,p0.hand,p1.hand,round_score)
+      else
+        let p1_score = p1.score + round_score in
+        let next_st = init_state (p0.score,p1_score) 1 names in
+        RoundEnd (next_st,p1.hand,p0.hand,round_score)
     else Legal ({
         stock_pile = st.stock_pile;
         discard_pile = st.discard_pile;
@@ -220,7 +237,7 @@ let knock_match match_deck st =
     let k_new_hand = Deck.push_deck match_deck k_orig_hand in
     let match_dead = 
       Deck.intersect (Deck.deadwood k_new_hand) match_deck in
-    if not (Deck.is_empty match_dead) then (Illegal "Not all these cards form melds. Try again.",match_deck,match_deck,-1) else
+    if not (Deck.is_empty match_dead) then Illegal "Not all these cards form melds. Try again." else
       (* 3. Calculate scores *)
       let k_ind = (m_ind + 1) mod 2 in
       let m_new_hand = Deck.remove_deck match_deck m.hand in
@@ -236,57 +253,45 @@ let knock_match match_deck st =
       let names = ((fst st.players).name,(snd st.players).name) in
       let p0_score_orig,p1_score_orig = (fst st.players).score,(snd st.players).score in
       let deadwood_diff = p0_deadwood_val - p1_deadwood_val in
-      (* If gin, add 20 + deadwood difference to knocker *)
-      if Deck.deadwood_value k_orig_hand = 0 then (
-        if k_ind = 0 then
-          let round_score = (Int.abs deadwood_diff) + 20 in
-          let p0_score = p0_score_orig + round_score in
-          let next_st = init_state (p0_score,p1_score_orig) 0 names in
-          (Legal next_st,p0_new_hand,p1_new_hand,round_score)
-        else
-          let round_score = (Int.abs deadwood_diff) + 20 in
-          let p1_score = p1_score_orig + round_score in
-          let next_st = init_state (p0_score_orig,p1_score) 0 names in
-          (Legal next_st,p1_new_hand,p0_new_hand,round_score)
-      ) else if deadwood_diff < 0 then (
+      if deadwood_diff < 0 then (
         if k_ind = 0 then
           let round_score = (-deadwood_diff) in
           let p0_score = p0_score_orig+round_score in
           print_string("1: p0_score: "^(string_of_int p0_score)^"\n");
           let next_st = init_state (p0_score,p1_score_orig) 0 names in
-          (Legal next_st,p0_new_hand,p1_new_hand,round_score)
+          RoundEnd (next_st,p0_new_hand,p1_new_hand,round_score)
         else
           let round_score = (-deadwood_diff)+10 in
           let p0_score = p0_score_orig+round_score in
           print_string("2: p0_score: "^(string_of_int p0_score)^"\n");
           let next_st = init_state (p0_score,p1_score_orig) 0 names in
-          (Legal next_st,p0_new_hand,p1_new_hand,round_score)
+          RoundEnd (next_st,p0_new_hand,p1_new_hand,round_score)
       ) else if deadwood_diff > 0 then (
         if k_ind = 0 then
           let round_score = deadwood_diff+10 in
           let p1_score = p1_score_orig+round_score in
           print_string("3: p1_score: "^(string_of_int p1_score)^"\n");
           let next_st = init_state (p0_score_orig,p1_score) 1 names in
-          (Legal next_st,p1_new_hand,p0_new_hand,round_score)
+          RoundEnd (next_st,p1_new_hand,p0_new_hand,round_score)
         else
           let round_score = deadwood_diff in
           let p1_score = p1_score_orig+round_score in
           print_string("4: p1_score: "^(string_of_int p1_score)^"\n");
           let next_st = init_state (p0_score_orig,p1_score) 1 names in
-          (Legal next_st,p1_new_hand,p0_new_hand,round_score)
+          RoundEnd (next_st,p1_new_hand,p0_new_hand,round_score)
       ) else (
         if k_ind = 0 then
           let round_score = deadwood_diff+10 in
           let p1_score = p1_score_orig+round_score in
           print_string("5: p1_score: "^(string_of_int p1_score)^"\n");
           let next_st = init_state (p0_score_orig,p1_score) 1 names in
-          (Legal next_st,p1_new_hand,p0_new_hand,round_score)
+          RoundEnd (next_st,p1_new_hand,p0_new_hand,round_score)
         else
           let round_score = deadwood_diff+10 in
           let p0_score = p0_score_orig+round_score in
           print_string("6: p0_score: "^(string_of_int p0_score)^"\n");
-          let next_st = init_state (p0_score_orig,p0_score) 1 names in
-          (Legal next_st,p0_new_hand,p1_new_hand,round_score)
+          let next_st = init_state (p0_score_orig,p0_score) 0 names in
+          RoundEnd (next_st,p0_new_hand,p1_new_hand,round_score)
       )
 
 let pass st =
@@ -357,7 +362,8 @@ let prompt_command st =
     (match (knock_declare st) with 
      | Illegal _ -> "It is your turn to discard."
      | Legal _ -> "You can either discard or knock."
-     | _ -> "")
+     | RoundEnd _ -> "You can call gin."
+     | Null _ -> failwith "prompt_command fail: null")
   | Some (Discard _, _), _ | Some (Pass, _ ), _ -> "It is your turn to draw."
   | Some (Knock, _), _ -> "Please type \"match\" to begin laying off cards."
   | _ -> "Please enter a command."

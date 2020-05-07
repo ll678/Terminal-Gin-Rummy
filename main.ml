@@ -134,6 +134,7 @@ let change (new_st : State.result) (st : State.t) =
     print_string 
       "Less than two cards in stock. Game is null. New round starting... \n"; 
     st
+  | RoundEnd _ -> failwith "change fail: roundend"
 
 let handle_score (st : State.t) = 
   print_string "Your score is: " ; 
@@ -212,15 +213,6 @@ let print_help st =
   | "resume" -> st
   | _ -> print_endline "Invalid command. Please type \"resume\"."; do_nothing st
 
-(** After Player 1 knocks in state [st], [knock] handles [new_st], 
-    in which Player 2 is the current player and can choose cards to lay off. 
-    The resulting state is an initialized subsequent round, unless
-    a player wins and the game ends. *)
-let rec knock (new_st : State.result) (st : State.t) : State.t =
-  match new_st with 
-  | Legal t -> t
-  | Illegal str -> print_string (str^"\n"); st
-  | Null t -> failwith "knock fail: null"
 
 let conclude_round st winner_deck loser_deck round_score = 
   let winner_name = State.get_current_player_name st in
@@ -256,6 +248,20 @@ let conclude_round st winner_deck loser_deck round_score =
       exit 0
     ) else print_endline ("\nStarting new round..."); st 
 
+
+(** After Player 1 knocks in state [st], [knock] handles [new_st], 
+    in which Player 2 is the current player and can choose cards to lay off. 
+    The resulting state is an initialized subsequent round, unless
+    a player wins and the game ends. *)
+let rec knock (new_st : State.result) (st : State.t) : State.t =
+  match new_st with 
+  | Legal t -> t
+  | RoundEnd (new_st,winner_deck,loser_deck,round_score) ->
+    conclude_round new_st winner_deck loser_deck round_score
+  | Illegal str -> print_string (str^"\n"); st
+  | Null t -> failwith "knock fail: null"
+
+
 let rec knock_match (st : State.t) : State.t =
   match State.knock_match_declare st with
   | Legal st ->
@@ -280,13 +286,14 @@ let rec knock_match (st : State.t) : State.t =
           print_endline "You cannot match these. Try again.\n"; 
           st
         | valid_deck -> match State.knock_match valid_deck st with
-          | (Legal new_st,winner_deck,loser_deck,round_score) ->
+          | RoundEnd (new_st,winner_deck,loser_deck,round_score) ->
             conclude_round new_st winner_deck loser_deck round_score
-          | (Illegal str,_,_,_) -> print_string (str^"\n"); knock_match st
+          | Illegal str -> print_string (str^"\n"); knock_match st
           | _ -> failwith "knock_match fail (shouldnt happen)"
     end
   | Illegal str -> print_string (str^"\n"); st
   | _ -> failwith "knock_match: something went wrong."
+
 
 (** [process_command] takes terminal input and executes a command. The command 
     may or may not change state but process_command always returns a state. *)
