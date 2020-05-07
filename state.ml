@@ -217,16 +217,16 @@ let knock_match match_deck st =
       then snd st.players, fst st.players
       else fst st.players, snd st.players in
     let k_orig_hand = k.hand in
-    let k_new_hand = Deck.push_deck match_deck k_orig_hand in
-    let match_dead = 
-      Deck.intersect (Deck.deadwood k_new_hand) match_deck in
-    if not (Deck.is_empty match_dead) then (Illegal "Not all these cards form melds. Try again.",match_deck,match_deck,-1) else
+    let k_melds = Deck.best_meld k_orig_hand in 
+    if not (Deck.valid_match match_deck k_melds) 
+    then (Illegal "Not all these cards form melds. Try again.", match_deck, match_deck, -1) 
+    else
       (* 3. Calculate scores *)
       let k_ind = (m_ind + 1) mod 2 in
+      let k_new_hand = Deck.push_deck match_deck k_orig_hand in
       let m_new_hand = Deck.remove_deck match_deck m.hand in
-      let p0_new_hand,p1_new_hand = if m_ind = 0
-        then m_new_hand,k_new_hand
-        else k_new_hand,m_new_hand
+      let p0_new_hand, p1_new_hand = 
+        if m_ind = 0 then m_new_hand,k_new_hand else k_new_hand,m_new_hand
       in
       let p0_deadwood_val,p1_deadwood_val = 
         Deck.deadwood_value p0_new_hand,Deck.deadwood_value p1_new_hand
@@ -301,7 +301,6 @@ let pass st =
         last_moves =  (Some (Pass,None),fst st.last_moves);
       }
   | _ -> Illegal "You can only pass in the beginning of the round."
-
 
 let sort_player_hand current_player players =
   if (current_player = 0) then 

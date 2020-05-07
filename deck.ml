@@ -282,7 +282,6 @@ let best_meld hand =
 let deadwood hand =
   difference hand (List.flatten (best_meld hand))
 
-
 let rec card_score (card:card) (hand:t) (acc:int) =
   match hand with 
   | [] -> acc
@@ -341,6 +340,19 @@ let knock_deadwood_value hand =
     let max_card = nth d max_index in
     let final_d = remove max_card d in
     value_of_hand final_d
+
+(** [valid_melds card melds] returns true if [card] extends any of the melds
+    in [melds]. *)
+let rec valid_melds card melds =
+  match melds with
+  | [] -> false
+  | h::t -> let hand = push card h in
+    if is_empty (deadwood hand) then true else valid_melds card t
+
+let rec valid_match match_deck melds =
+  match match_deck with
+  | [] -> true
+  | h::t -> if (valid_melds h melds) then valid_match t melds else false
 
 let rec get_list n l = 
   if n=0 then [] else

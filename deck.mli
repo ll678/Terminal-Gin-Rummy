@@ -61,6 +61,10 @@ val meld_value : t -> int
     with the implied discard of the highest value card in the deadwood. *)
 val knock_deadwood_value : t -> int
 
+(** [valid_match deck melds] returns true if all of the cards in [deck]
+    extend any of the melds in [melds]. *) 
+val valid_match : t -> t list -> bool
+
 (** [start_cards] creates an initialized and shuffled deck and returns a list
     that contains a list of stock pile cards, a list of discard pile cards, 
     and each player's starting hand. *)
