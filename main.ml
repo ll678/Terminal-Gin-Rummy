@@ -190,13 +190,13 @@ let print_help st =
      cards by adding them to your melds (but not your deadwood), if possible.
      To lay off any cards, type \"match\". Then, you will be prompted to type
      the list of cards that you wish to lay off, separated by a comma and 
-     no spaces.
+     no spaces. If you knock when you have no deadwood, that is called 
+     \"going gin\" (type \"gin\" or \"knock\") and your opponent will not be 
+     allowed to lay off any cards. 
 
      Your scores will then be calculated and the winner of the round will be 
-     the player with a lower deadwood value. If you knock when you have no 
-     deadwood, that is called \"going gin\" (type \"gin\" or \"knock\") and 
-     your opponent will not be allowed to lay off. The game will continue until 
-     a player reaches a score of 100 or more and wins.
+     the player with a lower deadwood value. The game will continue until 
+     a player reaches a score of 100 or more.
 
     Other Commands
 
