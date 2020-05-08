@@ -17,7 +17,6 @@ type t = {
   last_moves: (move * move);
 }
 
-(* TODO: Illegal could be of string to display a helpful message *)
 type result = Legal of t | Illegal of string | Null of t | RoundEnd of t * Deck.t * Deck.t * int
 
 let init_players starting_cards starting_scores names = (
@@ -169,8 +168,10 @@ let discard_player card player =
   }
 
 let discard card st = 
-  if fst st.last_moves = Some (Draw ["discard"], Some card) then Illegal "You cannot discard the card you just drew from the discard pile. Try another one."
-  else match fst st.last_moves with
+  if fst st.last_moves = Some (Draw ["discard"], Some card) then 
+    Illegal "You cannot discard the card you just drew from the discard pile. Try another one."
+  else 
+    match fst st.last_moves with
     | Some (Draw _, _) ->
       let p_ind = st.current_player in
       let p = if p_ind = 0 then fst st.players else snd st.players in
@@ -366,7 +367,6 @@ let sort st =
       last_moves = st.last_moves;
     }
 
-(* (Command.command * Deck.card option) option *)
 
 let pass st =
   match st.last_moves with

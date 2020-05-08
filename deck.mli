@@ -39,6 +39,11 @@ val suit_sort : t -> t
 (** [suit_sort hand] is the score of [hand]. *)
 val value_of_hand : t -> int
 
+(** [union l1 l2] contains only the elements that are elements of [l1]
+    or elements of [l2]. This function was inspired by code previously
+    used in A4: Search. *)
+val union : t -> t -> t
+
 (** [intersect l1 l2] contains only the elements that are elements of [l1]
     and elements of [l2]. *)
 val intersect : t -> t -> t
@@ -62,7 +67,8 @@ val meld_value : t -> int
 val knock_deadwood_value : t -> int
 
 (** [valid_match deck melds] returns true if all of the cards in [deck]
-    extend any of the melds in [melds]. *) 
+    extend any of the melds in [melds]. Returns true if [deck] is empty.
+    Returns false if [melds] is empty. *) 
 val valid_match : t -> t list -> bool
 
 (** [start_cards] creates an initialized and shuffled deck and returns a list
@@ -100,7 +106,7 @@ val is_empty : t -> bool
 *)
 val remove : card -> t -> t
 
-(** [remove_deck rm_deck deck] is the deck without the cards in [rm_list].
+(** [remove_deck rm_deck deck] is the deck without the cards in [rm_deck].
     Throws: Failure "remove failure: card not in deck." if [card] not in [deck].
 *)
 val remove_deck : t -> t -> t
@@ -132,7 +138,7 @@ val rankstring_of_string : string -> string
     of the string card suit [string]. *) 
 val suitstring_of_string : string -> string
 
-(** [string_of_hd deck] is a string list of the hd of [deck]. If
+(** [string_of_hd deck] is a string list of the top card of [deck]. If
     the deck is empty, the empty list is returned. *)
 val string_of_hd : t -> string list
 
@@ -152,6 +158,10 @@ val test_hand3 : t
 (** [test_hand4] is [test_hand3] with the king of hearts pushed on top, used
     strictly for testing. *)
 val test_hand4 : t
+
+(** [test_hand5] is [test_hand4] with the king of hearts, four of diamonds,
+    and four of spades removed, used strictly for testing. *)
+val test_hand5 : t
 
 val get_worst : t -> card * int
 

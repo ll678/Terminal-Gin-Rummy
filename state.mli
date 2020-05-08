@@ -94,7 +94,6 @@ val discard : Deck.card -> t -> result
     - This function is mainly for checking legality of Knock
     - 
 *)
-(* val knock_declare : t -> (result * Deck.t * Deck.t * int) *)
 val knock_declare : t -> result
 
 

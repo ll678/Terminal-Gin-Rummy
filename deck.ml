@@ -179,9 +179,6 @@ let run_melds hand =
   let runs = [clubs_run; spades_run; hearts_run; diamonds_run] in
   List.filter (fun lst -> lst <> []) runs
 
-(** [union l1 l2] contains only the elements that are elements of [l1]
-    or elements of [l2]. This function was inspired by code previously
-    used in A4: Search. *)
 let rec union l1 l2 =
   List.fold_right 
     (fun card acc -> if List.mem card l2
@@ -524,6 +521,9 @@ let test_hand3 = [(Five, Spades); (Six, Diamonds); (Three, Spades);
 let test_hand4 = [(King, Hearts); (Five, Spades); (Six, Diamonds); 
                   (Three, Spades); (Four, Diamonds); (Five, Diamonds); 
                   (Two, Spades); (Five, Clubs); (Four, Spades); (Six, Clubs)]
+
+let test_hand5 = [(Five, Spades); (Six, Diamonds); (Three, Spades); 
+                  (Five, Diamonds); (Two, Spades); (Five, Clubs); (Six, Clubs)]
 
 let test_meld = [
   [(Ace, Spades); (Two, Spades); (Three, Spades)];

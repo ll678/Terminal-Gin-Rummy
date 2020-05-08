@@ -8,21 +8,21 @@ open Command
     and Command modules, as well as several functions in the State module. The
     remaining State module functions and the Main module were manually debugged
     by playtesting the game. 
-    To test the Deck and Command modules, black box testing was utilized, 
-    implementing test cases commonly encountered during gameplay, as well as 
-    unexpected/invalid inputs resulting in raised exceptions. Sample decks and 
-    melds for testing purposes were created in the Deck module to facilitate 
-    the testing of various functions.
-    To test the State and Main modules, we actively playtested the game as
-    functions were implemented. This involved both inputting valid and invalid
-    commands when interacting with the command shell, including testing edge
+    To test the Deck, Command, and State modules, black box testing was 
+    utilized, implementing test cases commonly encountered during gameplay, as 
+    well as unexpected/invalid inputs resulting in raised exceptions. Sample 
+    decks, melds, and states for testing purposes were created in the Deck 
+    and State modules to facilitate the testing of various functions.
+    To test the State and Main modules, we also actively playtested the game 
+    while functions were implemented. This involved both inputting valid and 
+    invalid commands when interacting with the command shell, including edge
     cases (e.g. drawing from discard results in an empty discard pile).
     Overall, this testing approach, which was largely modeled after A2/A3
     (Adventure), demonstrates the validity of our system because it combines 
     both efficient and automatic OUnit testing for the simpler functions and 
     playtesting with effective code coverage for the more complex functions 
-    that handle state. Our testing scenarios consider all possible inputs 
-    encountered during gameplay.
+    that handle state and interaction with the command shell. Our testing 
+    scenarios consider all the inputs encountered during gameplay.
 *) 
 
 let suit_sort_test
@@ -52,6 +52,15 @@ let deadwood_test
     (expected_output : Deck.t) : test =
   name >:: (fun _ -> 
       assert_equal (deadwood hand) expected_output)
+
+let valid_match_test
+    (name : string)
+    (deck : string)
+    (hand : Deck.t)
+    (expected_output : bool) : test =
+  name >:: (fun _ ->
+      assert_equal (valid_match (deck_of_string deck) (best_meld hand)) 
+        expected_output)
 
 let string_of_deck_test
     (name : string)
@@ -83,6 +92,21 @@ let remove_test
   name >:: (fun _ -> 
       assert_equal (remove (card_of_string card_string) hand) expected_output)
 
+let remove_deck_test
+    (name : string)
+    (deck1 : string)
+    (deck2 : Deck.t)
+    (expected_output : Deck.t) : test =
+  name >:: (fun _ -> 
+      assert_equal (remove_deck (deck_of_string deck1) deck2) expected_output)
+
+let string_of_hd_test
+    (name : string)
+    (deck : Deck.t)
+    (expected_output : string list) : test =
+  name >:: (fun _ -> 
+      assert_equal (string_of_hd deck) expected_output)
+
 let deck_tests = 
   [
     suit_sort_test "sort hand 2 by suit" test_hand2 sorted_test_hand2;
@@ -107,10 +131,28 @@ let deck_tests =
       test_hand2 test_hand3;
     remove_test "remove a card from hand 2 (lowercase)" "six of spades" 
       test_hand2 test_hand3;
+    remove_deck_test "remove three cards from hand 4" 
+      "king of hearts,four of diamonds,four of spades" test_hand4 test_hand5;
+    remove_deck_test "remove no cards from hand 3" 
+      "" test_hand3 test_hand3;
     push_test "push a card to hand 3 (mixed case)" "king of Hearts" 
       test_hand3 test_hand4;
     push_test "push a card to hand 3 (lowercase)" "king of hearts" 
       test_hand3 test_hand4;
+    string_of_hd_test "empty deck"
+      test_hand_empty [];
+    string_of_hd_test "non-empty deck"
+      test_hand ["Queen of Hearts"];
+    valid_match_test "empty match"
+      "" test_hand true;
+    valid_match_test "empty melds"
+      "king of clubs" test_hand_empty false;
+    valid_match_test "partially valid match, lowercase"
+      "four of diamonds,five of spades" test_hand false;
+    valid_match_test "invalid match, uppercase"
+      "Five of Spades" test_hand false;
+    valid_match_test "valid match, mixed cases"
+      "ace of spades,Six of Hearts,five of Hearts" test_hand2 true;
   ]
 
 let parse_test 
@@ -124,7 +166,7 @@ let command_tests = [
   parse_test "draw a card lowercase" "draw stock" 
     (Draw ["stock"]);
   parse_test "draw a card uppercase" "draw Discard" 
-    (Draw ["Discard"]);
+    (Draw ["discard"]);
   parse_test "discard a card uppercase" "discard jack of diamonds" 
     (Discard ["jack";"of";"diamonds"]);
   parse_test "knock" "knock" 
@@ -141,6 +183,8 @@ let command_tests = [
     (Score);
   parse_test "help" "help" 
     (Help);
+  parse_test "hint" "hint" 
+    (Hint);
   "parse malformed exception" >:: 
   (fun _ -> assert_raises (Malformed) 
       (fun () -> parse "hello   world "));
@@ -155,7 +199,64 @@ let command_tests = [
       (fun () -> parse "      "));
 ]
 
+(** 
+   (not used)
+   [state_test] passes when next_st matches the given parameters. *)
+let state_test
+    (name : string)
+    (next_st : State.t)
+    (exp_curr_p : int)
+
+    (exp_stock_len : int)
+    (exp_discard_len : int)
+    (exp_curr_hand_len : int)
+    (exp_opp_hand_len : int)
+
+    (exp_curr_score : int)
+    (exp_opp_score : int) 
+
+    (exp_curr_name : string)
+    (exp_opp_name : string) 
+  : test =
+  name >:: (fun _ -> 
+      assert_equal (next_st |> get_current_player) exp_curr_p;
+
+      let stock = get_stock next_st in
+      let discard = get_discard next_st in
+      assert_equal (length stock) exp_stock_len;
+      assert_equal (length discard) exp_discard_len;
+
+      let curr_hand = get_current_player_hand next_st in
+      let opp_hand = get_opponent_player_hand next_st in
+      assert_equal (length curr_hand) exp_curr_hand_len;
+      assert_equal (length opp_hand) exp_curr_hand_len;
+
+      let all_cards = stock |> union discard |> union curr_hand |> union opp_hand in
+      assert_equal (length all_cards) 52;
+
+      let curr_score = get_current_player_score next_st in
+      assert_equal (curr_score) exp_curr_score;
+      let opp_score = get_opponent_player_score next_st in
+      assert_equal (opp_score) exp_opp_score;
+
+      let curr_name = get_current_player_name next_st in
+      assert_equal (curr_name) exp_curr_name;
+      let opp_name = get_opponent_player_name next_st in
+      assert_equal (opp_name) exp_opp_name;
+    )
+
+
+
+let init_state = init_state (0, 0) 0 ("jason","nate")
+
+
+let state_tests = [
+  state_test "basic init state" init_state 0 31 1 10 10 0 0 "jason" "nate";
+]
+
+
+
 let suite = 
-  "test suite for A2"  >::: List.flatten [deck_tests; command_tests]
+  "test suite"  >::: List.flatten [deck_tests; command_tests]
 
 let () = run_test_tt_main suite
