@@ -39,6 +39,11 @@ val suit_sort : t -> t
 (** [suit_sort hand] is the score of [hand]. *)
 val value_of_hand : t -> int
 
+(** [union l1 l2] contains only the elements that are elements of [l1]
+    or elements of [l2]. This function was inspired by code previously
+    used in A4: Search. *)
+val union : t -> t -> t
+
 (** [intersect l1 l2] contains only the elements that are elements of [l1]
     and elements of [l2]. *)
 val intersect : t -> t -> t

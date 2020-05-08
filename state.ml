@@ -17,7 +17,6 @@ type t = {
   last_moves: (move * move);
 }
 
-(* TODO: Illegal could be of string to display a helpful message *)
 type result = Legal of t | Illegal of string | Null of t | RoundEnd of t * Deck.t * Deck.t * int
 
 let init_players starting_cards starting_scores names = (
@@ -339,7 +338,6 @@ let sort st =
       last_moves = st.last_moves;
     }
 
-(* (Command.command * Deck.card option) option *)
 
 let pass st =
   match st.last_moves with
