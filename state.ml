@@ -51,15 +51,42 @@ let get_discard st =
 let get_current_player st = 
   st.current_player
 
-let get_last_move_type st  : Command.command option =
-  let last_move =  fst (st.last_moves) in 
-  match last_move with 
-  | None -> None
-  |(Some (Draw x, b)) -> Some (Draw x)
-  |(Some (Discard x, b)) -> Some (Discard x)
-  |(Some (Knock, b))-> Some (Knock)
-  |(Some (Pass, b)) -> Some (Pass)
-  | _ -> failwith "Not sure how you got here"
+(* let get_last_move_type st  : Command.command option =
+   let last_move =  fst (st.last_moves) in 
+   match last_move with 
+   | None -> None
+   |(Some (Draw x, b)) -> 
+
+    begin
+      match st.last_moves with
+      | (None,None) -> Some (Draw ["Discard"])
+      | (Some (Pass,_),None) -> Some (Draw ["Discard"])
+      | _ ->(Some (Draw x))
+    end
+   |(Some (Discard x, b)) -> Some (Discard x)
+
+   |(Some (Knock, b))-> Some (Knock)
+   |(Some (Pass, b)) -> Some (Pass)
+   | _ -> failwith "Not sure how you got here" *)
+
+(* Returns the type of the last move *)
+let get_last_moves_type st  : Command.command option =
+
+  match st.last_moves with 
+  (* There have been no moves made *)
+  | None,None -> None
+  (* Someone has drawn a card *)
+  |(Some (Draw x, z),_) -> (Some (Draw x))
+  (* Someone has passed *)
+  | (Some (Pass,_),None) -> Some Pass
+  (* Someone has discarded *)
+  |(Some (Discard x, b),a) -> Some (Discard x)
+  (* Someone has knocked*)
+  |(Some (Knock, b),a)-> Some (Knock)
+  (* Someone has passed *)
+  |(Some (Pass, b),a) -> Some (Pass)
+  | _ -> failwith "Not sure how you got here3or4"
+
 
 let get_current_player_name st = if st.current_player = 0
   then (fst (st.players)).name else (snd (st.players)).name

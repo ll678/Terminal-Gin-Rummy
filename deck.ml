@@ -76,6 +76,14 @@ let value_of_card rank =
   | Seven -> 7 | Eight -> 8 | Nine -> 9 | Ten -> 10 | Jack -> 10 
   | Queen -> 10 | King -> 10
 
+(** [value_of_card num] returns the int numerical value corresponding to 
+    a card of [num]. *)
+let value_of_rank rank =
+  match rank with
+  | Ace -> 1 | Two -> 2 | Three -> 3 | Four -> 4 | Five -> 5 | Six -> 6
+  | Seven -> 7 | Eight -> 8 | Nine -> 9 | Ten -> 10 | Jack -> 11 
+  | Queen -> 12 | King -> 13
+
 (** [value_of_hand hand] returns the total int value of [hand]. *)
 let value_of_hand hand =
   List.fold_right (fun (rank, _) -> (+) (value_of_card rank)) hand 0
@@ -287,18 +295,15 @@ let rec card_score (card:card) (hand:t) (acc:int) =
   | [] -> acc
   | h::t -> 
 
-    (* let acc = if fst h = fst card then acc +1 else acc in 
-       let acc = if 
+    let acc = if fst h = fst card then (acc + 1) else acc in 
+    let acc = if value_of_rank (fst h) = (value_of_rank (fst card)+1)
+              || value_of_rank (fst h) = (value_of_rank (fst card)-1) then (acc+1) else acc in 
+    let acc = if value_of_rank (fst h) = (value_of_rank (fst card)+1) then (acc+1) else acc in
+    let acc = if snd h = snd card then (acc+1) else acc in
+    card_score card t acc
 
 
-    *)
 
-    (* if fst h = fst card then
-       card_score card t (acc +1) 
-
-       else  card_score card t (acc) *)
-
-    failwith "unfinished"
 
 
 let get_value (card:card) (hand:t) =
@@ -313,7 +318,7 @@ let rec least (lst:((card*int) list)) (acc) =
 let rec get_values deadwood i acc =
   if i >= List.length deadwood then acc else
     let value = (get_value (nth deadwood i) deadwood) in
-    get_values deadwood (i-1) ((value)::acc)  
+    get_values deadwood (i+1) ((value)::acc)  
 
 let get_worst deadwood =
   let vals = get_values deadwood 0 [] in 

@@ -149,7 +149,15 @@ let handle_hint (new_move : Optimal.move) (st : State.t) =
   | Draw t -> print_string "Draw from: " ; 
     print_string t;
     print_endline "\n"
-  | Knock -> failwith "Unimplemented"
+  | Knock -> print_string "You should knock to win this round!" ; 
+    print_endline "\n"
+
+let perform_optimal st =
+  let call = Optimal.get_optimal st in
+  match call with
+  | Discard t -> "Discard " ^ Deck.string_of_card t  ; 
+  | Draw t -> "Discard " ^  t ; 
+  | Knock -> "Knock"
 
 let rec do_nothing st =
   print_string "> ";
@@ -358,24 +366,117 @@ let rec play_game (st : State.t) =
   | read_line -> let next_st = process_readline read_line st in 
     (play_game next_st)
 
+
+let rec play_cpu_game (st : State.t) =
+  print_string "\n----------------------------------------------------------\n";
+
+  print_string "It is "; print_string (st |> State.get_current_player_name); 
+  print_string "'s Turn:\n\n";
+
+  print_string "Discard Pile:             Stock Pile:\n";
+  print_piles (st |> State.get_discard |> Deck.string_of_hd);
+  print_string ("\n");
+
+  print_string (st |> State.get_current_player_name); print_string "'s Hand:\n";
+  print_cards (st |> State.get_current_player_hand |> Deck.string_of_deck);
+  print_string ("\n");
+
+  (* Print melds of current player's hand *)
+  print_string "\nMelds:\n";
+  print_melds (st |> State.get_current_player_hand |> Deck.best_meld);
+  print_string ("\n");
+
+  (* Print deadwood of current player's hand *)
+  print_string "Deadwood:\n";
+  print_deadwood (st |> State.get_current_player_hand |> Deck.deadwood |> 
+                  Deck.string_of_deck);
+  print_string ("\n\n");
+
+
+  if (State.get_current_player_name st = "CPU") then 
+    let s = perform_optimal st in 
+    let next_st = process_readline s st in 
+    (play_cpu_game next_st)
+  else
+    print_endline (State.prompt_command st);
+  print_string "\n> ";
+
+  match read_line () with 
+  | exception End_of_file -> ()
+  | read_line -> let next_st = process_readline read_line st in 
+    (play_cpu_game next_st)
+
 (** [init_game n1 n2] starts a game of gin rummy with players [n1] and [n2]. *)
-let init_game name1 name2 =
-  let init = State.init_state (0, 0) 0 (name1,name2) in
-  play_game init
+let init_game name1 name2 b =
+  if b then  
+    let init = State.init_state (0, 0) 0 (name1,"CPU") in
+    play_cpu_game init else
+    let init = State.init_state (0, 0) 0 (name1,name2) in
+    play_game init
+
+let rec main_help () =
+  print_endline "Please enter a valid response:'yes' if you would like to play against the 
+  computer and 'no' if you would like to play a two-player game .\n";
+  print_string  "> ";
+  match read_line () with
+  | exception End_of_file -> ()
+  | answer -> 
+    match answer with
+    | "yes" -> begin print_endline "Please enter your name, Player 1.\n";
+        print_string  "> ";
+        match read_line () with
+        | exception End_of_file -> ()
+        | name1 -> 
+          init_game name1 "" true
+      end
+    | "no" ->  
+      begin
+        print_endline "Please enter your name, Player 1.\n";
+        print_string  "> ";
+        match read_line () with
+        | exception End_of_file -> ()
+        | name1 -> 
+          print_endline "Please enter your name, Player 2.\n";
+          print_string  "> ";
+          match read_line () with
+          | exception End_of_file -> ()
+          | name2 -> init_game name1 name2 false
+      end
+    | _-> main_help ()
 
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
   print_endline "\n\nWelcome to Gin Rummy.\n";
-  print_endline "Please enter your name, Player 1.\n";
+  print_endline "Please enter 'yes' if you would like to play against the 
+  computer and 'no' if you would like to play a two-player game .\n";
   print_string  "> ";
   match read_line () with
   | exception End_of_file -> ()
-  | name1 -> 
-    print_endline "Please enter your name, Player 2.\n";
-    print_string  "> ";
-    match read_line () with
-    | exception End_of_file -> ()
-    | name2 -> init_game name1 name2
+  | answer -> 
+    match answer with
+    | "yes" -> begin print_endline "Please enter your name, Player 1.\n";
+        print_string  "> ";
+        match read_line () with
+        | exception End_of_file -> ()
+        | name1 -> 
+          init_game name1 "" true
+      end
+
+    | "no" ->  
+      begin
+        print_endline "Please enter your name, Player 1.\n";
+        print_string  "> ";
+        match read_line () with
+        | exception End_of_file -> ()
+        | name1 -> 
+          print_endline "Please enter your name, Player 2.\n";
+          print_string  "> ";
+          match read_line () with
+          | exception End_of_file -> ()
+          | name2 -> init_game name1 name2 false
+      end
+    | _-> main_help ()
+
 
 (* Execute the game engine. *)
 let () = main ()
