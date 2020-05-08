@@ -156,7 +156,7 @@ let perform_optimal st =
   let call = Optimal.get_optimal st in
   match call with
   | Discard t -> "Discard " ^ Deck.string_of_card t  ; 
-  | Draw t -> "Discard " ^  t ; 
+  | Draw t -> "Draw " ^  t ; 
   | Knock -> "Knock"
 
 let rec do_nothing st =
@@ -398,13 +398,14 @@ let rec play_cpu_game (st : State.t) =
     let next_st = process_readline s st in 
     (play_cpu_game next_st)
   else
-    print_endline (State.prompt_command st);
-  print_string "\n> ";
-
-  match read_line () with 
-  | exception End_of_file -> ()
-  | read_line -> let next_st = process_readline read_line st in 
-    (play_cpu_game next_st)
+    begin
+      print_endline (State.prompt_command st);
+      print_string "\n> ";
+      match read_line () with 
+      | exception End_of_file -> ()
+      | read_line -> let next_st = process_readline read_line st in 
+        (play_cpu_game next_st)
+    end
 
 (** [init_game n1 n2] starts a game of gin rummy with players [n1] and [n2]. *)
 let init_game name1 name2 b =
