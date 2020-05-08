@@ -198,9 +198,7 @@ let command_tests = [
       (fun () -> parse "      "));
 ]
 
-(** 
-   (not used)
-   [state_test] passes when next_st matches the given parameters. *)
+(** [state_test] passes when next_st matches the given parameters. *)
 let state_test
     (name : string)
     (next_st : State.t)
@@ -230,7 +228,8 @@ let state_test
       assert_equal (length curr_hand) exp_curr_hand_len;
       assert_equal (length opp_hand) exp_curr_hand_len;
 
-      let all_cards = stock |> union discard |> union curr_hand |> union opp_hand in
+      let all_cards = 
+        stock |> union discard |> union curr_hand |> union opp_hand in
       assert_equal (length all_cards) 52;
 
       let curr_score = get_current_player_score next_st in
@@ -244,16 +243,11 @@ let state_test
       assert_equal (opp_name) exp_opp_name;
     )
 
-
-
 let init_state = init_state (0, 0) 0 ("jason","nate")
-
 
 let state_tests = [
   state_test "basic init state" init_state 0 31 1 10 10 0 0 "jason" "nate";
 ]
-
-
 
 let suite = 
   "test suite"  >::: List.flatten [deck_tests; command_tests; state_tests]
