@@ -277,8 +277,6 @@ let knock_match match_deck st =
       let p0_deadwood_val,p1_deadwood_val = 
         Deck.deadwood_value p0_new_hand,Deck.deadwood_value p1_new_hand
       in
-      print_string ("***DEBUG: deadwood value p0: "^string_of_int p0_deadwood_val^"\n");
-      print_string ("***DEBUG: deadwood value p1: "^string_of_int p1_deadwood_val^"\n");
       let names = ((fst st.players).name,(snd st.players).name) in
       let p0_score_orig,p1_score_orig = (fst st.players).score,(snd st.players).score in
       let deadwood_diff = p0_deadwood_val - p1_deadwood_val in

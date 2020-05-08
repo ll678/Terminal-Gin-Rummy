@@ -211,6 +211,7 @@ let print_help st =
      score- view your current score
      sort- sort your hand by suit first, then rank
      help- bring up rules and gameplay information
+     hint- suggests your next move
      quit- quit the game
 
 
@@ -409,9 +410,14 @@ let rec play_cpu_game (st : State.t) =
 
 (** [init_game n1 n2] starts a game of gin rummy with players [n1] and [n2]. *)
 let init_game name1 name2 b =
+  print_endline 
+    "\n
+  You can type \"help\" for the game instructions and rules. 
+  You can type \"hint\" for a hint.";
   if b then  
     let init = State.init_state (0, 0) 0 (name1,"CPU") in
-    play_cpu_game init else
+    play_cpu_game init 
+  else
     let init = State.init_state (0, 0) 0 (name1,name2) in
     play_game init
 
