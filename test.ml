@@ -199,14 +199,64 @@ let command_tests = [
       (fun () -> parse "      "));
 ]
 
+(** 
+   (not used)
+   [state_test] passes when next_st matches the given parameters. *)
+let state_test
+    (name : string)
+    (next_st : State.t)
+    (exp_curr_p : int)
+
+    (exp_stock_len : int)
+    (exp_discard_len : int)
+    (exp_curr_hand_len : int)
+    (exp_opp_hand_len : int)
+
+    (exp_curr_score : int)
+    (exp_opp_score : int) 
+
+    (exp_curr_name : string)
+    (exp_opp_name : string) 
+  : test =
+  name >:: (fun _ -> 
+      assert_equal (next_st |> get_current_player) exp_curr_p;
+
+      let stock = get_stock next_st in
+      let discard = get_discard next_st in
+      assert_equal (length stock) exp_stock_len;
+      assert_equal (length discard) exp_discard_len;
+
+      let curr_hand = get_current_player_hand next_st in
+      let opp_hand = get_opponent_player_hand next_st in
+      assert_equal (length curr_hand) exp_curr_hand_len;
+      assert_equal (length opp_hand) exp_curr_hand_len;
+
+      let all_cards = stock |> union discard |> union curr_hand |> union opp_hand in
+      assert_equal (length all_cards) 52;
+
+      let curr_score = get_current_player_score next_st in
+      assert_equal (curr_score) exp_curr_score;
+      let opp_score = get_opponent_player_score next_st in
+      assert_equal (opp_score) exp_opp_score;
+
+      let curr_name = get_current_player_name next_st in
+      assert_equal (curr_name) exp_curr_name;
+      let opp_name = get_opponent_player_name next_st in
+      assert_equal (opp_name) exp_opp_name;
+    )
+
+
+
+let init_state = init_state (0, 0) 0 ("jason","nate")
 
 
 let state_tests = [
-
+  state_test "basic init state" init_state 0 31 1 10 10 0 0 "jason" "nate";
 ]
 
+
+
 let suite = 
-  "test suite for A2"  >::: 
-  List.flatten [deck_tests; command_tests; state_tests]
+  "test suite"  >::: List.flatten [deck_tests; command_tests]
 
 let () = run_test_tt_main suite
