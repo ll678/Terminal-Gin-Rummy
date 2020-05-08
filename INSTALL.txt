@@ -61,9 +61,8 @@ the discard pile, which is faced up, to your hand. Drawing from the stock pile
 will add the top card of the shuffled stock deck, which is faced down, to your 
 hand. To draw a card, you must type “draw”, a space, and then the name of the 
 pile you wish to draw from. 
-Ex. “draw Stock” or “draw Discard” are valid commands. 
-Note that capitalization is important. 
-Ex. “Draw stock” is not valid. 
+    Ex. “Draw stock”, “draw Stock”, “draw discard”, and “Draw Discard” are all 
+        valid commands. 
 The rules for when you can draw are listed below:
     You cannot draw from the stock pile during your first turn
     You can only draw once per turn
@@ -73,10 +72,8 @@ The rules for when you can draw are listed below:
 Discard: Discard is used to discard a card from your hand. To discard a card, 
 you must type “discard”, a space and then the name of the card you wish to 
 discard. 
-Ex. “discard ace of spades” or “discard king of hearts” are valid 
-commands. 
-Note that capitalization is important for the command, but not the card. 
-Ex. “discard King Of Hearts” is valid, but “Discard King Of Hearts” is not. 
+    Ex. “Discard ace of spades”, “discard King Of Hearts”, and 
+        “discard king of hearts” are all valid commands. 
 Additionally the card that you are discarding must be a card in your hand. 
 If the card is not present in your hand, it is not a valid command.
 The rules for when you can discard are listed below:
@@ -88,9 +85,8 @@ Pass: Pass is used to skip your turn in the beginning of the game, when the only
 other option is to draw the face-up card in the discard pile. After the first 
 player passes, the second player can also either pass or draw the card in the 
 discard pile. Following this, a normal turn begins. To pass, you must type “pass”. 
-Ex. “pass” is a valid command. 
-Note that capitalization is important. 
-Ex. “Pass” is not valid. The rules for when you can pass are listed below:
+    Ex. “pass” and “Pass” are valid commands. 
+The rules for when you can pass are listed below:
     If you are the first player, you can only pass if it is your first turn of 
       the beginning of a round
     If you are the second player, you can only pass if it is your first turn of 
@@ -100,19 +96,16 @@ Score: Score is used to get your current score. When this command is used, the
 current player’s score will be shown in the terminal. Each player’s score is 
 only recalculated at the end of each round. To get your score, you must 
 type “score”. 
-Ex. “score” is a valid command. 
-Note that capitalization is important. 
-Ex. “Score” is not valid. You can always use the score command.
+Ex. “score” and “Score” are valid commands. 
+You can always use the score command.
 
 Sort: Sort is used to sort your current hand. To sort, you must type “sort”. 
-Ex. “sort” is a valid command. 
-Note that capitalization is important. 
-Ex. “Sort” is not valid. You can always use the sort command.
+Ex. “sort” and “Sort” are valid commands. 
+You can always use the sort command.
 
 Quit: Quit is used to terminate the game. To quit, you must type “quit”. 
-Ex. “quit” is a valid command. 
-Note that capitalization is important. 
-Ex. “Quit” is not valid. You can always use the quit command.
+Ex. “quit” and “Quit” are valid commands. 
+You can always use the quit command.
 
 Knock: Knock is used to end the current round when a player believes the value 
 of their deadwood is less than that of their opponent’s. When a player knocks, 
@@ -121,9 +114,7 @@ After the opposing player matches, the current scores will be calculated based
 on the value of deadwood each player has remaining. The game will determine who 
 won the round and a new round will begin. The winner and the scores will be 
 outputted in the terminal. To knock, you must type “knock”. 
-Ex. “knock” is a valid command. 
-Note that capitalization is important. 
-Ex. “Knock” is not valid. 
+    Ex. “knock” and “Knock” are valid commands. 
 The rules for when you can knock are listed below:
     You can only knock after you have drawn a card during this turn
     You can only knock if the value of your deadwood is less than 10
@@ -135,12 +126,13 @@ The rules for when you can knock are listed below:
 Match: Match is used following your opponent’s knock if your opponent does not 
 go gin. This involves laying off any unmatched cards in your hand to extend the 
 runs and sets laid down by your opponent. To lay off your cards, you must 
-type “match”. The terminal will then prompt for a list of cards to lay off. 
+type “match”. 
+    Ex. “match” and “Match” are valid commands. 
+The terminal will then prompt for a list of cards to lay off. 
 The cards that you wish to lay off must be a part of your deadwood. 
-Ex. “ace of hearts,two of diamonds” is a valid lay off list if an 
-Ace of Hearts and a Two of Diamonds can be added to the melds of your opponent. 
-Note that capitalization is important for the command, but not the cards. 
-Ex. “match” is valid, but “Match” is not valid. 
+    Ex. “ace of hearts,two of diamonds” is a valid lay off list if an 
+    Ace of Hearts and a Two of Diamonds can be added to the melds of 
+    your opponent. 
 The rules for when you can match are listed below:
     You can only match directly after your opponent has knocked
 

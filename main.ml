@@ -134,6 +134,7 @@ let change (new_st : State.result) (st : State.t) =
     print_string 
       "Less than two cards in stock. Game is null. New round starting... \n"; 
     st
+  | RoundEnd _ -> failwith "change fail: roundend"
 
 let handle_score (st : State.t) = 
   print_string "Your score is: " ; 
@@ -152,8 +153,8 @@ let handle_hint (new_move : Optimal.move) (st : State.t) =
 
 let rec do_nothing st =
   print_string "> ";
-  match read_line () with 
-  | "resume" | "Resume" -> st
+  match String.lowercase_ascii (read_line ()) with   
+  | "resume" -> st
   | _ -> print_endline "Invalid command. Please type \"resume\""; do_nothing st
 
 let print_help st = 
@@ -162,8 +163,8 @@ let print_help st =
     "Basic Gameplay
 
      It is your turn to make a move. Each turn consists of a draw and a discard.
-     Enter \"draw Discard\" to draw the card on top of the Discard pile, or 
-     \"draw Stock\" to draw a random card from the Stock pile. Then enter 
+     Enter \"draw discard\" to draw the card on top of the discard pile, or 
+     \"draw stock\" to draw a random card from the stock pile. Then enter 
      \"discard\" and the name of the card that you wish to discard from your 
      hand (ex. \"three of hearts\"). By drawing new cards, you will try to form 
      as many melds as you can in your hand.
@@ -189,13 +190,13 @@ let print_help st =
      cards by adding them to your melds (but not your deadwood), if possible.
      To lay off any cards, type \"match\". Then, you will be prompted to type
      the list of cards that you wish to lay off, separated by a comma and 
-     no spaces.
+     no spaces. If you knock when you have no deadwood, that is called 
+     \"going gin\" (type \"gin\" or \"knock\") and your opponent will not be 
+     allowed to lay off any cards. 
 
      Your scores will then be calculated and the winner of the round will be 
-     the player with a lower deadwood value. If you knock when you have no 
-     deadwood, that is called \"going gin\" (type \"gin\" or \"knock\") and 
-     your opponent will not be allowed to lay off. The game will continue until 
-     a player reaches a score of 100 or more and wins.
+     the player with a lower deadwood value. The game will continue until 
+     a player reaches a score of 100 or more.
 
     Other Commands
 
@@ -208,19 +209,10 @@ let print_help st =
     Type \"resume\" to resume playing";
   print_string "\n";
   print_string "> ";
-  match read_line () with 
-  | "resume" | "Resume" -> st
+  match String.lowercase_ascii (read_line ()) with 
+  | "resume" -> st
   | _ -> print_endline "Invalid command. Please type \"resume\"."; do_nothing st
 
-(** After Player 1 knocks in state [st], [knock] handles [new_st], 
-    in which Player 2 is the current player and can choose cards to lay off. 
-    The resulting state is an initialized subsequent round, unless
-    a player wins and the game ends. *)
-let rec knock (new_st : State.result) (st : State.t) : State.t =
-  match new_st with 
-  | Legal t -> t
-  | Illegal str -> print_string (str^"\n"); st
-  | Null t -> failwith "knock fail: null"
 
 let conclude_round st winner_deck loser_deck round_score = 
   let winner_name = State.get_current_player_name st in
@@ -256,6 +248,18 @@ let conclude_round st winner_deck loser_deck round_score =
       exit 0
     ) else print_endline ("\nStarting new round..."); st 
 
+(** After Player 1 knocks in state [st], [knock] handles [new_st], 
+    in which Player 2 is the current player and can choose cards to lay off. 
+    The resulting state is an initialized subsequent round, unless
+    a player wins and the game ends. *)
+let rec knock (new_st : State.result) (st : State.t) : State.t =
+  match new_st with 
+  | Legal t -> t
+  | RoundEnd (new_st,winner_deck,loser_deck,round_score) ->
+    conclude_round new_st winner_deck loser_deck round_score
+  | Illegal str -> print_string (str^"\n"); st
+  | Null t -> failwith "knock fail: null"
+
 let rec knock_match (st : State.t) : State.t =
   match State.knock_match_declare st with
   | Legal st ->
@@ -267,9 +271,11 @@ let rec knock_match (st : State.t) : State.t =
       print_string (st |> State.get_opponent_player_name); 
       print_string "'s Melds:\n";
       print_melds (st |> State.get_opponent_player_hand |> Deck.best_meld);
-      print_string ("\n");
+      print_endline ("\n");
 
-      print_endline ("\nPlease list any cards you want to lay off. Separate cards with a single comma.");
+      print_endline 
+        ("Please list any cards you want to lay off. Separate cards with a single comma and no spaces.
+        If you cannot lay off any cards, press enter to end the round.");
       print_string  "> ";
       match read_line () with 
       | exception End_of_file -> 
@@ -280,9 +286,9 @@ let rec knock_match (st : State.t) : State.t =
           print_endline "You cannot match these. Try again.\n"; 
           st
         | valid_deck -> match State.knock_match valid_deck st with
-          | (Legal new_st,winner_deck,loser_deck,round_score) ->
+          | RoundEnd (new_st,winner_deck,loser_deck,round_score) ->
             conclude_round new_st winner_deck loser_deck round_score
-          | (Illegal str,_,_,_) -> print_string (str^"\n"); knock_match st
+          | Illegal str -> print_string (str^"\n"); knock_match st
           | _ -> failwith "knock_match fail (shouldnt happen)"
     end
   | Illegal str -> print_string (str^"\n"); st
