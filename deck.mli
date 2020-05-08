@@ -111,6 +111,8 @@ val knock_deadwood_value : t -> int
     Returns false if [melds] is empty. *) 
 val valid_match : t -> t list -> bool
 
+val get_worst : t -> card * int
+
 (** [string_of_card card] is the string representation of [card]. *)
 val string_of_card : card -> string
 
@@ -162,8 +164,6 @@ val test_hand4 : t
 (** [test_hand5] is [test_hand4] with the king of hearts, four of diamonds,
     and four of spades removed, used strictly for testing. *)
 val test_hand5 : t
-
-val get_worst : t -> card * int
 
 (** [test_meld] and [test_meld2] are lists of the melds of [test_hand] and
     [test_hand2], respectively, used strictly for testing. *)
