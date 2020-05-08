@@ -5,14 +5,13 @@ open Command
 
 (** Test Plan:
     Our OUnit test suite automatically tests the main functions in the Deck
-    and Command modules, as well as several functions in the State module. The
-    remaining State module functions and the Main module were manually debugged
+    and Command modules. The State and Main module were manually debugged
     by playtesting the game. 
-    To test the Deck, Command, and State modules, black box testing was 
+    To test the Deck and Command modules, black box testing was 
     utilized, implementing test cases commonly encountered during gameplay, as 
     well as unexpected/invalid inputs resulting in raised exceptions. Sample 
-    decks, melds, and states for testing purposes were created in the Deck 
-    and State modules to facilitate the testing of various functions.
+    decks and melds for testing purposes were created in the Deck module to 
+    facilitate the testing of various functions.
     To test the State and Main modules, we also actively playtested the game 
     while functions were implemented. This involved both inputting valid and 
     invalid commands when interacting with the command shell, including edge
@@ -257,6 +256,6 @@ let state_tests = [
 
 
 let suite = 
-  "test suite"  >::: List.flatten [deck_tests; command_tests]
+  "test suite"  >::: List.flatten [deck_tests; command_tests; state_tests]
 
 let () = run_test_tt_main suite
