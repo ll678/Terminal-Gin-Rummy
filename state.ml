@@ -142,8 +142,10 @@ let discard_player card player =
   }
 
 let discard card st = 
-  if fst st.last_moves = Some (Draw ["discard"], Some card) then Illegal "You cannot discard the card you just drew from the discard pile. Try another one."
-  else match fst st.last_moves with
+  if fst st.last_moves = Some (Draw ["discard"], Some card) then 
+    Illegal "You cannot discard the card you just drew from the discard pile. Try another one."
+  else 
+    match fst st.last_moves with
     | Some (Draw _, _) ->
       let p_ind = st.current_player in
       let p = if p_ind = 0 then fst st.players else snd st.players in

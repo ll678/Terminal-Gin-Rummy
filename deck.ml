@@ -520,6 +520,9 @@ let test_hand4 = [(King, Hearts); (Five, Spades); (Six, Diamonds);
                   (Three, Spades); (Four, Diamonds); (Five, Diamonds); 
                   (Two, Spades); (Five, Clubs); (Four, Spades); (Six, Clubs)]
 
+let test_hand5 = [(Five, Spades); (Six, Diamonds); (Three, Spades); 
+                  (Five, Diamonds); (Two, Spades); (Five, Clubs); (Six, Clubs)]
+
 let test_meld = [
   [(Ace, Spades); (Two, Spades); (Three, Spades)];
   [(Four, Spades); (Four, Hearts); (Four, Clubs)]; 
