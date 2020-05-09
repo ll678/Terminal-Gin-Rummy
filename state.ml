@@ -88,9 +88,9 @@ let get_last_moves_type st  : Command.command option =
   (* Someone has passed *)
   |(Some (Pass, b),a) -> Some (Pass)
   (* Someone has matched*)
-  |(Some (Match, b),a) -> Some (Match)
+  (* |(Some (Match, b),a) -> Some (Match) *)
 
-  | _ -> failwith "Not sure how you got here3or4"
+  | _ -> failwith "Not sure how you got here"
 
 
 let get_current_player_name st = if st.current_player = 0

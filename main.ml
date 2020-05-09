@@ -1,5 +1,11 @@
 (** This code was inspired by the adventure game we created in A2 and A3 *)
 
+(** [print_string_list lst] prints the string list [lst] in the
+    command shell. *)
+let rec print_string_list = function 
+    [] -> ()
+  | h::t -> print_string h ; print_string " " ; print_string_list t
+
 (** [if_red suit] is true if [suit] is "Hearts" or "Diamonds". *)
 let if_red suit =
   if suit = "Hearts" || suit = "Diamonds" then true else false
@@ -165,7 +171,7 @@ let handle_hint (new_move : Optimal.move) (st : State.t) =
   | Knock -> print_string "You should knock to win this round!" ; 
     print_endline "\n"
   | Cards t -> print_string "Match with: " ; 
-    print_list (Deck.string_of_deck t);
+    print_string_list (Deck.string_of_deck t);
     print_endline "\n"
   | Match -> print_string "Type Match to begin to match cards!" ; 
     print_endline "\n"

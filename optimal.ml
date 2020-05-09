@@ -47,7 +47,8 @@ let check_optimal_knock st x =
 let optimal_match st =
   let combined_hand = Deck.push_deck (Deck.deadwood (State.get_current_player_hand st)) (State.get_opponent_player_hand st) in
   let left_over_deadwood = Deck.difference (Deck.deadwood combined_hand) (Deck.deadwood (State.get_opponent_player_hand st)) in
-  Deck.difference (Deck.deadwood (State.get_opponent_player_hand st)) (left_over_deadwood)
+  let tmp = Deck.difference  (left_over_deadwood) (Deck.deadwood (State.get_opponent_player_hand st)) in 
+  Deck.difference (Deck.deadwood (State.get_current_player_hand st)) (tmp)
 
 
 let get_optimal st =
@@ -62,8 +63,7 @@ let get_optimal st =
      | Null _ -> failwith "Null game")
   | Some Discard x -> if x = ["Discard"] then Draw "Discard" else optimal_draw st
   | Some Pass -> optimal_draw st
-  | Some Knock -> Match
-  | Some Match -> Cards (optimal_match st)
+  | Some Knock -> Cards (optimal_match st)
   | _ -> failwith "Not sure how you got here 1"
 
 
