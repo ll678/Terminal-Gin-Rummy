@@ -68,6 +68,12 @@ let rec remove_deck rm_deck deck =
   | [] -> deck
   | h :: t -> remove_deck t (remove h deck)
 
+let rec get_list n l = 
+  if n=0 then [] else
+    match l with 
+    | []-> []
+    | h::t ->  h::(get_list (n-1) t)
+
 (** [value_of_card num] returns the int value corresponding to 
     a card of [num]. *)
 let value_of_card rank =
@@ -287,40 +293,6 @@ let best_meld hand =
 let deadwood hand =
   difference hand (List.flatten (best_meld hand))
 
-let rec card_score (card:card) (hand:t) (acc:int) =
-  match hand with 
-  | [] -> acc
-  | h::t -> 
-
-    let acc = if fst h = fst card then (acc + 1) else acc in 
-    let acc = if value_of_rank (fst h) = (value_of_rank (fst card)+1)
-              || value_of_rank (fst h) = (value_of_rank (fst card)-1) then (acc+1) else acc in 
-    let acc = if value_of_rank (fst h) = (value_of_rank (fst card)+1) then (acc+1) else acc in
-    let acc = if snd h = snd card then (acc+1) else acc in
-    card_score card t acc
-
-
-
-
-
-let get_value (card:card) (hand:t) =
-  let dif = difference hand [card] in 
-  (card, card_score card hand 0)
-
-let rec least (lst:((card*int) list)) (acc) =
-  match lst with 
-  | [] -> acc
-  | h::t -> if snd h < snd acc then (least t h) else least t acc
-
-let rec get_values deadwood i acc =
-  if i >= List.length deadwood then acc else
-    let value = (get_value (nth deadwood i) deadwood) in
-    get_values deadwood (i+1) ((value)::acc)  
-
-let get_worst deadwood =
-  let vals = get_values deadwood 0 [] in 
-  least vals (hd vals)
-
 let deadwood_value hand =
   hand |> deadwood |> value_of_hand
 
@@ -356,22 +328,44 @@ let rec valid_match match_deck melds =
   | [] -> true
   | h::t -> if (valid_melds h melds) then valid_match t melds else false
 
-let rec get_list n l = 
-  if n=0 then [] else
-    match l with 
-    | []-> []
-    | h::t ->  h::(get_list (n-1) t)
-
 let start_cards =
   let temp = shuffle init_deck in  
-  (* let temp = init_deck in *)
-
   let fst = get_list 31 temp  in
   let snd = get_list 1 (difference temp fst) in
   let trd = get_list 10 (difference (difference temp fst) snd) in
   let fth = 
     get_list 10 (difference (difference (difference temp fst) snd) trd) in
   [fst; snd; trd; fth]
+
+let rec card_score (card:card) (hand:t) (acc:int) =
+  match hand with 
+  | [] -> acc
+  | h::t -> 
+
+    let acc = if fst h = fst card then (acc + 1) else acc in 
+    let acc = if value_of_rank (fst h) = (value_of_rank (fst card)+1)
+              || value_of_rank (fst h) = (value_of_rank (fst card)-1) then (acc+1) else acc in 
+    let acc = if value_of_rank (fst h) = (value_of_rank (fst card)+1) then (acc+1) else acc in
+    let acc = if snd h = snd card then (acc+1) else acc in
+    card_score card t acc
+
+let get_value (card:card) (hand:t) =
+  let dif = difference hand [card] in 
+  (card, card_score card hand 0)
+
+let rec least (lst:((card*int) list)) (acc) =
+  match lst with 
+  | [] -> acc
+  | h::t -> if snd h < snd acc then (least t h) else least t acc
+
+let rec get_values deadwood i acc =
+  if i >= List.length deadwood then acc else
+    let value = (get_value (nth deadwood i) deadwood) in
+    get_values deadwood (i+1) ((value)::acc)  
+
+let get_worst deadwood =
+  let vals = get_values deadwood 0 [] in 
+  least vals (hd vals)
 
 let string_of_card card = 
   let suit = match snd card with

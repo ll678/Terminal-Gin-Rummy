@@ -1,20 +1,18 @@
 (** This code was inspired by the adventure game we created in A2 and A3 *)
 
-let rec print_list lst =
-  match lst with
-  | [] -> ()
-  | h::t -> print_string h; 
-    print_string " "; 
-    print_list t
-
+(** [if_red suit] is true if [suit] is "Hearts" or "Diamonds". *)
 let if_red suit =
   if suit = "Hearts" || suit = "Diamonds" then true else false
 
+(** [print_cards_top lst] prints the top line marking each card in [lst] in the
+    command shell. *)
 let rec print_cards_top lst =
   match lst with
   | [] -> print_string ""
   | h::t -> print_string " ___   "; print_cards_top t
 
+(** [print_cards_rank1 lst] prints the rank symbol in the top left corner of 
+    each card in [lst] in the command shell. *)
 let rec print_cards_rank1 lst = 
   match lst with
   | [] -> print_string ""
@@ -39,6 +37,8 @@ let rec print_cards_rank1 lst =
          (print_string ("|" ^ Deck.rankstring_of_string rank ^ "  |  "); 
           print_cards_rank1 t))
 
+(** [print_cards_suit lst] prints the suit symbol in the center of each card in 
+    [lst] in the command shell. *)
 let rec print_cards_suit lst = 
   match lst with
   | [] -> print_string ""
@@ -54,6 +54,8 @@ let rec print_cards_suit lst =
        print_string (" |  ");
        print_cards_suit t)
 
+(** [print_cards_rank2 lst] prints the rank symbol in the bottom right corner of 
+    each card in [lst] in the command shell. *)
 let rec print_cards_rank2 lst = 
   match lst with
   | [] -> print_string ""
@@ -78,11 +80,15 @@ let rec print_cards_rank2 lst =
          (print_string ("|  " ^ Deck.rankstring_of_string rank ^ "|  "); 
           print_cards_rank2 t))
 
+(** [print_cards_bottom lst] prints the bottom line marking each card in [lst] 
+    in the command shell. *)
 let rec print_cards_bottom lst = 
   match lst with
   | [] -> print_string ""
   | h::t -> print_string " ‾‾‾   "; print_cards_bottom t
 
+(** [print_cards lst] prints a graphic representation of the cards in [lst]
+    in sequential order (left to right) in the command shell. *)
 let print_cards lst =
   print_cards_top lst; print_string "\n";
   print_cards_rank1 lst; print_string "\n";
@@ -90,6 +96,10 @@ let print_cards lst =
   print_cards_rank2 lst; print_string "\n";
   print_cards_bottom lst; print_string "\n"
 
+(** [print_piles lst] prints a graphic representation of the face-up card in the
+    discard pile [lst], followed by a graphic representation of the face-down 
+    card in the stock pile in the command shell. If the discard pile is empty,
+    no card is printed for the discard pile. *)
 let print_piles lst =
   if List.length lst = 0 then
     (print_string "                           ___  \n";
@@ -104,6 +114,8 @@ let print_piles lst =
      print_cards_rank2 lst; print_string "                   |░░░| \n";
      print_cards_bottom lst; print_string "                    ‾‾‾ \n")
 
+(** [print_melds lst] prints each sublist of cards in [lst], separated by
+    a new line between each sublist. *)
 let rec print_melds lst =
   match lst with
   | [] -> ()
@@ -111,6 +123,7 @@ let rec print_melds lst =
     print_string "\n"; 
     print_melds t
 
+(** [print_deadwood lst] prints the deadwood cards in [lst]. *)
 let rec print_deadwood lst =
   match lst with
   | [] -> ()
@@ -166,12 +179,16 @@ let perform_optimal st =
   | Cards t -> String.concat "Match "  (Deck.string_of_deck t)
   | Match -> "Match"
 
+(** [do_nothing st] prompts for the "resume" keyword to resume playing if
+    the player enters any string other than "resume". *)
 let rec do_nothing st =
   print_string "> ";
   match String.lowercase_ascii (read_line ()) with   
   | "resume" -> st
   | _ -> print_endline "Invalid command. Please type \"resume\""; do_nothing st
 
+(** [print_help st] prints the help menu prompted by the Help command and
+    prompts for the "resume" keyword to resume playing. *)
 let print_help st = 
   print_endline "How to play Gin Rummy:\n";
   print_string 
@@ -218,6 +235,7 @@ let print_help st =
      score- view your current score
      sort- sort your hand by suit first, then rank
      help- bring up rules and gameplay information
+     hint- suggests your next move
      quit- quit the game
 
 
@@ -280,17 +298,18 @@ let rec knock_match (st : State.t) : State.t =
   | Legal st ->
     begin
       print_string "Your Deadwood:\n";
-      print_cards (st |> State.get_current_player_hand |> Deck.deadwood |> 
-                   Deck.string_of_deck);
+      print_cards (st |> State.get_current_player_hand |>
+                   Deck.deadwood |> Deck.string_of_deck);
       print_string ("\n\n");
       print_string (st |> State.get_opponent_player_name); 
       print_string "'s Melds:\n";
-      print_melds (st |> State.get_opponent_player_hand |> Deck.best_meld);
+      print_melds (st |> State.get_opponent_player_hand |>
+                   Deck.best_meld);
       print_endline ("\n");
-
       print_endline 
-        ("Please list any cards you want to lay off. Separate cards with a single comma and no spaces.
-        If you cannot lay off any cards, press enter to end the round.");
+        ("Please list any cards you want to lay off. \
+          Separate cards with a single comma and no spaces.\n\
+          If you cannot lay off any cards, press enter to end the round.");
       print_string  "> ";
       match read_line () with 
       | exception End_of_file -> 
@@ -416,9 +435,14 @@ let rec play_cpu_game (st : State.t) =
 
 (** [init_game n1 n2] starts a game of gin rummy with players [n1] and [n2]. *)
 let init_game name1 name2 b =
+  print_endline 
+    "\n
+  You can type \"help\" for the game instructions and rules. 
+  You can type \"hint\" for a hint.";
   if b then  
     let init = State.init_state (0, 0) 0 (name1,"CPU") in
-    play_cpu_game init else
+    play_cpu_game init 
+  else
     let init = State.init_state (0, 0) 0 (name1,name2) in
     play_game init
 
@@ -455,8 +479,9 @@ let rec main_help () =
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
   print_endline "\n\nWelcome to Gin Rummy.\n";
-  print_endline "Please enter 'yes' if you would like to play against the 
-  computer and 'no' if you would like to play a two-player game .\n";
+  print_endline
+    "Please enter 'yes' if you would like to play against the \
+     computer and 'no' if you would like to play a two-player game.\n";
   print_string  "> ";
   match read_line () with
   | exception End_of_file -> ()
