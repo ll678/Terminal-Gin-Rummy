@@ -338,11 +338,11 @@ let start_cards =
     get_list 10 (difference (difference (difference temp fst) snd) trd) in
   [fst; snd; trd; fth]
 
+(** [card_score card hand acc] returns an int with the score of [card]. *)
 let rec card_score (card:card) (hand:t) (acc:int) =
   match hand with 
   | [] -> acc
   | h::t -> 
-
     let acc = if fst h = fst card then (acc + 1) else acc in 
     let acc = if value_of_rank (fst h) = (value_of_rank (fst card)+1)
               || value_of_rank (fst h) = (value_of_rank (fst card)-1) then (acc+1) else acc in 
@@ -354,10 +354,10 @@ let get_value (card:card) (hand:t) =
   let dif = difference hand [card] in 
   (card, card_score card hand 0)
 
-let rec least (lst:((card*int) list)) (acc) =
+let rec least (lst:((card*int) list)) (acc1) (acc2) =
   match lst with 
-  | [] -> acc
-  | h::t -> if snd h < snd acc then (least t h) else least t acc
+  | [] -> (acc1, acc2)
+  | h::t -> if snd h < snd acc1 then (least t h acc1) else least t acc1 acc2
 
 let rec get_values deadwood i acc =
   if i >= List.length deadwood then acc else
@@ -365,8 +365,8 @@ let rec get_values deadwood i acc =
     get_values deadwood (i+1) ((value)::acc)  
 
 let get_worst deadwood =
-  let vals = get_values deadwood 0 [] in 
-  least vals (hd vals)
+  let vals = get_values deadwood 0 []  in 
+  least vals (hd vals) (hd vals)
 
 let string_of_card card = 
   let suit = match snd card with

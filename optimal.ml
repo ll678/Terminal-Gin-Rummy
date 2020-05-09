@@ -9,9 +9,9 @@ let optimal_sort hand st =
   let tmp = Deck.get_worst deadwood in 
   match (last_card_drawn st) with
   | Some x ->
-    if fst tmp = x then failwith "Same card" else Discard (fst tmp)
-  |None ->
-    Discard (fst tmp)
+    if (fst (fst tmp)) = x then Discard (fst (snd tmp)) else Discard (fst(fst tmp))
+  | None ->
+    Discard (fst (fst tmp))
 
 let optimal_discard st =
   let hand = State.get_current_player_hand st in 

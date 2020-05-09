@@ -111,7 +111,9 @@ val knock_deadwood_value : t -> int
     Returns false if [melds] is empty. *) 
 val valid_match : t -> t list -> bool
 
-val get_worst : t -> card * int
+(** [get_worst hand] is the two cards with the lowest card values in the 
+    deadwood [hand]. *)
+val get_worst : t -> (card * int) * (card * int)
 
 (** [string_of_card card] is the string representation of [card]. *)
 val string_of_card : card -> string
