@@ -103,6 +103,16 @@ Sort: Sort is used to sort your current hand. To sort, you must type “sort”.
 Ex. “sort” and “Sort” are valid commands. 
 You can always use the sort command.
 
+Help: Help brings up the help menu, with instructions on how to play the game. 
+If you need help playing, type “help”. 
+Ex. “help” and “Help” are valid commands. 
+You can always use the help command.
+
+Hint: Hint suggests the strategic next move for you. To receive a hint, 
+you must type “hint”. 
+Ex. “hint” and “Hint” are valid commands. 
+You can always use the hint command.
+
 Quit: Quit is used to terminate the game. To quit, you must type “quit”. 
 Ex. “quit” and “Quit” are valid commands. 
 You can always use the quit command.

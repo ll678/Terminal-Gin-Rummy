@@ -23,6 +23,46 @@ exception Malformed
 (** [init_deck] is the initialized and sorted standard 52-card deck. *)
 val init_deck : t
 
+(** [start_cards] creates an initialized and shuffled deck and returns a list
+    that contains a list of stock pile cards, a list of discard pile cards, 
+    and each player's starting hand. *)
+val start_cards : t list
+
+(** [push card deck] pushes [card] onto the top of [deck]. *)
+val push : card -> t -> t
+
+(** [push_deck from_deck to_deck] pushes [from_deck] onto the top of [to_deck].
+*)
+val push_deck : t -> t -> t
+
+(** [mem card deck] is true when [card] is in [deck], else false. *)
+val mem : card -> t -> bool
+
+(** [nth deck idx] is the element in [deck] with index [idx]. *)
+val nth : 'a list -> int -> 'a
+
+(** [hd deck] is the first card in [deck]. *)
+val hd : t -> card
+
+(** [tl deck] is the tail of [deck]. *)
+val tl : t -> t
+
+(** [length deck] is the length of [deck]. *)
+val length : t -> int
+
+(** [is_empty deck] is true when [deck] is empty, else false. *)
+val is_empty : t -> bool
+
+(** [remove card deck] is the deck without [card] in [deck].
+    Throws: Failure "remove failure: card not in deck." if [card] not in [deck].
+*)
+val remove : card -> t -> t
+
+(** [remove_deck rm_deck deck] is the deck without the cards in [rm_deck].
+    Throws: Failure "remove failure: card not in deck." if [card] not in [deck].
+*)
+val remove_deck : t -> t -> t
+
 (** [get_list n l] is the first n cards in the deck l *)
 val get_list : int -> t -> t
 
@@ -71,45 +111,7 @@ val knock_deadwood_value : t -> int
     Returns false if [melds] is empty. *) 
 val valid_match : t -> t list -> bool
 
-(** [start_cards] creates an initialized and shuffled deck and returns a list
-    that contains a list of stock pile cards, a list of discard pile cards, 
-    and each player's starting hand. *)
-val start_cards : t list
-
-(** [push card deck] pushes [card] onto the top of [deck]. *)
-val push : card -> t -> t
-
-(** [push_deck from_deck to_deck] pushes [from_deck] onto the top of [to_deck].
-*)
-val push_deck : t -> t -> t
-
-(** [mem card deck] is true when [card] is in [deck], else false. *)
-val mem : card -> t -> bool
-
-(** [nth deck idx] is the element in [deck] with index [idx]. *)
-val nth : 'a list -> int -> 'a
-
-(** [hd deck] is the first card in [deck]. *)
-val hd : t -> card
-
-(** [tl deck] is the tail of [deck]. *)
-val tl : t -> t
-
-(** [length deck] is the length of [deck]. *)
-val length : t -> int
-
-(** [is_empty deck] is true when [deck] is empty, else false. *)
-val is_empty : t -> bool
-
-(** [remove card deck] is the deck without [card] in [deck].
-    Throws: Failure "remove failure: card not in deck." if [card] not in [deck].
-*)
-val remove : card -> t -> t
-
-(** [remove_deck rm_deck deck] is the deck without the cards in [rm_deck].
-    Throws: Failure "remove failure: card not in deck." if [card] not in [deck].
-*)
-val remove_deck : t -> t -> t
+val get_worst : t -> card * int
 
 (** [string_of_card card] is the string representation of [card]. *)
 val string_of_card : card -> string
@@ -162,8 +164,6 @@ val test_hand4 : t
 (** [test_hand5] is [test_hand4] with the king of hearts, four of diamonds,
     and four of spades removed, used strictly for testing. *)
 val test_hand5 : t
-
-val get_worst : t -> card * int
 
 (** [test_meld] and [test_meld2] are lists of the melds of [test_hand] and
     [test_hand2], respectively, used strictly for testing. *)
