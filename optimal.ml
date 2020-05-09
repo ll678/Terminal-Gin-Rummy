@@ -1,14 +1,21 @@
 
 type move = Discard of Deck.card | Draw of string | Knock | Cards of Deck.t | Match
 
-let optimal_sort hand =
+let last_card_drawn st =
+  State.get_last_card_drawn st 
+
+let optimal_sort hand st =
   let deadwood = Deck.deadwood hand in 
   let tmp = Deck.get_worst deadwood in 
-  Discard (fst tmp)
+  match (last_card_drawn st) with
+  | Some x ->
+    if fst tmp = x then failwith "Same card" else Discard (fst tmp)
+  |None ->
+    Discard (fst tmp)
 
 let optimal_discard st =
   let hand = State.get_current_player_hand st in 
-  optimal_sort hand
+  optimal_sort hand st
 
 let optimal stock discard hand =
   let first = Deck.push stock hand in
@@ -57,10 +64,11 @@ let get_optimal st =
   | None -> Draw "Discard"
   | Some Draw x -> 
     (match (State.knock_declare st) with 
-     | Illegal _ -> if x = ["Discard"] then Draw "Discard" else optimal_discard st
+     (* if x = ["Discard"] then Draw "Discard" else *)
+     | Illegal _ -> optimal_discard st
      | Legal _ -> check_optimal_knock st x
      | RoundEnd _ -> Knock
-     | Null _ -> failwith "Null game")
+     | Null _ -> failwith "Null Game")
   | Some Discard x -> if x = ["Discard"] then Draw "Discard" else optimal_draw st
   | Some Pass -> optimal_draw st
   | Some Knock -> Cards (optimal_match st)

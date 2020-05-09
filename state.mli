@@ -59,6 +59,10 @@ val get_opponent_player_score : t -> int
 (** [get_moves st] is the last two moves of the current player. *)
 val get_moves : t -> (move * move)
 
+(** [get_last_card_drawn st] is an option of the last card drawn. 
+    If there wasn't a last card drawn then None *)
+val get_last_card_drawn : t -> Deck.card option
+
 (** [draw location st]is [r] if attempting to draw from [location] by the
     current player in [st] results in [r].
     [r] is [Null st'] if there are less than 2 cards in stock, where [st'] a

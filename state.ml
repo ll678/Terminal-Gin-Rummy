@@ -87,8 +87,6 @@ let get_last_moves_type st  : Command.command option =
   |(Some (Knock, b),a)-> Some (Knock)
   (* Someone has passed *)
   |(Some (Pass, b),a) -> Some (Pass)
-  (* Someone has matched*)
-  (* |(Some (Match, b),a) -> Some (Match) *)
 
   | _ -> failwith "Not sure how you got here"
 
@@ -113,6 +111,15 @@ let get_opponent_player_score st = if st.current_player = 0
 
 let get_moves st = 
   st.last_moves
+
+let get_last_card_drawn st =
+  let last_move = fst st.last_moves in 
+  match last_move with 
+  | Some (Draw a, Some b) -> Some b
+  | _ ->  None
+
+(* (Command.command * Deck.card option) option *)
+
 
 (** [update_player_draw st card] is the pair of players after the current
     player in [st] adds [card] to their hand. *)
