@@ -353,15 +353,22 @@ let rec card_score (card:card) (hand:t) (acc:int) =
     let acc = if snd h = snd card then (acc+1) else acc in
     card_score card t acc
 
+(**[get card hand] is a (card*int) where each card is a 
+   card from [hand] and every int is the respective card's card score . *)
 let get_value (card:card) (hand:t) =
   let dif = difference hand [card] in 
   (card, card_score card hand 0)
 
+(**[get_values deadwood i acc] is a (card*int)*(card*int) list where each 
+   (card*int) in the pair 
+   is one of the pairs where int is one of the two lowest int's in lst  . *)
 let rec least (lst:((card*int) list)) (acc1) (acc2) =
   match lst with 
   | [] -> (acc1, acc2)
   | h::t -> if snd h < snd acc1 then (least t h acc1) else least t acc1 acc2
 
+(**[get_values deadwood i acc] is a (card*int) list where each card is a 
+   deadwood card from [deadwood] and every int is the respective card's card value  . *)
 let rec get_values deadwood i acc =
   if i >= List.length deadwood then acc else
     let value = (get_value (nth deadwood i) deadwood) in
