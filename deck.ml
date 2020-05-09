@@ -356,6 +356,7 @@ let rec card_score (card:card) (hand:t) (acc:int) =
 (** [get card hand] is a (card*int) where each card is a 
     card from [hand] and every int is the respective card's card score. *)
 let get_value (card:card) (hand:t) =
+  (* let dif = difference hand [card] in  *)
   (card, card_score card hand 0)
 
 (** [get_values deadwood i acc] is a (card*int)*(card*int) list where each 
