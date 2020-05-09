@@ -186,7 +186,7 @@ let run_melds hand =
   let runs = [clubs_run; spades_run; hearts_run; diamonds_run] in
   List.filter (fun lst -> lst <> []) runs
 
-let rec union l1 l2 =
+let union l1 l2 =
   List.fold_right 
     (fun card acc -> if List.mem card l2
       then acc else card::acc) l1 l2
