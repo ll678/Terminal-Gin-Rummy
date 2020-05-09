@@ -145,6 +145,9 @@ let rec print_deadwood lst =
        print_string "  ");
     print_deadwood t
 
+(**[change new_st st] is [st] if new_st is [Illegal], 
+   fails if new_st is RoundEnd and
+   is the new_st state otherwise . *)
 let change (new_st : State.result) (st : State.t) = 
   match new_st with 
   | Legal t -> t
@@ -155,11 +158,13 @@ let change (new_st : State.result) (st : State.t) =
     st
   | RoundEnd _ -> failwith "change fail: roundend"
 
+(**[handle_score st] prints the current player's score for state [st]. *)
 let handle_score (st : State.t) = 
   print_string "Your score is: " ; 
   print_int (State.get_current_player_score st);
   print_endline "\n"
 
+(**[handle_hint st] prints an optimal move for state [st]. *)
 let handle_hint (new_move : Optimal.move) (st : State.t) = 
   match new_move with
   | Discard t -> print_string "Discard: " ; 
@@ -176,6 +181,7 @@ let handle_hint (new_move : Optimal.move) (st : State.t) =
   | Match -> print_string "Type Match to begin to match cards!" ; 
     print_endline "\n"
 
+(**[perform_optimal st] is an optimal move as a string. *)
 let perform_optimal st =
   let call = Optimal.get_optimal st in
   match call with
@@ -252,7 +258,9 @@ let print_help st =
   | "resume" -> st
   | _ -> print_endline "Invalid command. Please type \"resume\"."; do_nothing st
 
-
+(**[conclude_round st winner_deck loser_deck round_score] is [st'] where
+   [st'] is a reinitialized state with scores and player carried over from the 
+   previous game. *)
 let conclude_round st winner_deck loser_deck round_score = 
   let winner_name = State.get_current_player_name st in
   let loser_name = State.get_opponent_player_name st in
@@ -299,6 +307,8 @@ let rec knock (new_st : State.result) (st : State.t) : State.t =
   | Illegal str -> print_string (str^"\n"); st
   | Null t -> failwith "knock fail: null"
 
+(**[knock_match st] is [st'] if the player was able to knock and [st] 
+   otherwise. *)
 let rec knock_match (st : State.t) : State.t =
   match State.knock_match_declare st with
   | Legal st ->
@@ -354,7 +364,7 @@ let process_command (command : Command.command) (st : State.t) =
   | Help -> print_help st
   | Quit -> exit 0
 
-(*A function that either quits or executes a command based on input*)
+(**[process_readline st] parses and processes terminal input with state [st]. *)
 let process_readline read_line (st : State.t) = 
   match Command.parse read_line with
   | exception Command.Empty ->
@@ -363,7 +373,8 @@ let process_readline read_line (st : State.t) =
     print_endline "This is a malformed command.\n"; st
   | command -> (process_command command st)
 
-(* Should initalize game but not initiate state transitions *)
+(** [play_game st] starts a game of gin rummy with 
+    the init state [st]. *)
 let rec play_game (st : State.t) =
   print_string "\n----------------------------------------------------------\n";
 
@@ -398,7 +409,8 @@ let rec play_game (st : State.t) =
   | read_line -> let next_st = process_readline read_line st in 
     (play_game next_st)
 
-
+(** [play_cpu_game st] starts a game of gin rummy with against the cpu with 
+    the init state [st]. *)
 let rec play_cpu_game (st : State.t) =
   print_string "\n----------------------------------------------------------\n";
 
@@ -423,7 +435,6 @@ let rec play_cpu_game (st : State.t) =
   print_deadwood (st |> State.get_current_player_hand |> Deck.deadwood |> 
                   Deck.string_of_deck);
   print_string ("\n\n");
-
 
   if (State.get_current_player_name st = "CPU") then 
     let s = perform_optimal st in 
@@ -452,6 +463,7 @@ let init_game name1 name2 b =
     let init = State.init_state (0, 0) 0 (name1,name2) in
     play_game init
 
+(** [main ()] prompts for the game play information, then starts it. *)
 let rec main_help () =
   print_endline "Please enter a valid response:'yes' if you would like to play against the 
   computer and 'no' if you would like to play a two-player game .\n";
