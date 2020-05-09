@@ -307,8 +307,8 @@ let rec knock (new_st : State.result) (st : State.t) : State.t =
   | Illegal str -> print_string (str^"\n"); st
   | Null t -> failwith "knock fail: null"
 
-(**[knock_match st] is [st'] if the player was able to knock and [st] 
-   otherwise. *)
+(** [knock_match st] is [st'] if the player was able to knock and [st] 
+    otherwise. *)
 let rec knock_match (st : State.t) : State.t =
   match State.knock_match_declare st with
   | Legal st ->
@@ -364,7 +364,8 @@ let process_command (command : Command.command) (st : State.t) =
   | Help -> print_help st
   | Quit -> exit 0
 
-(**[process_readline st] parses and processes terminal input with state [st]. *)
+(** [process_readline st] parses and processes terminal input with state [st]. 
+*)
 let process_readline read_line (st : State.t) = 
   match Command.parse read_line with
   | exception Command.Empty ->
@@ -465,8 +466,8 @@ let init_game name1 name2 b =
 
 (** [main ()] prompts for the game play information, then starts it. *)
 let rec main_help () =
-  print_endline "Please enter a valid response:'yes' if you would like to play against the 
-  computer and 'no' if you would like to play a two-player game .\n";
+  print_endline "Please enter a valid response:'yes' if you would like to play 
+  against the computer and 'no' if you would like to play a two-player game.\n";
   print_string  "> ";
   match read_line () with
   | exception End_of_file -> ()
