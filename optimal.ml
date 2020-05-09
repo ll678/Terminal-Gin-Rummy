@@ -1,5 +1,5 @@
 
-type move = Discard of Deck.card | Draw of string | Knock 
+type move = Discard of Deck.card | Draw of string | Knock | Cards of Deck.t | Match
 
 let optimal_sort hand =
   let deadwood = Deck.deadwood hand in 
@@ -41,6 +41,13 @@ let check_optimal_knock st x =
   if current_deadwood_value < new_opposing_value then Knock else 
   if x = ["Discard"] then Draw "Discard" else optimal_discard st
 
+(* Plan: In order to know what to match we want to match and see what melds would be taken.
+   In order to do this we first want to create a (combined) hand with the matcher's deadwood and the opponents hand.
+   Then we want to get the deadwood from this combined hand and get rid of the original deadwood that we had *)
+let optimal_match st =
+  let combined_hand = Deck.push_deck (Deck.deadwood (State.get_current_player_hand st)) (State.get_opponent_player_hand st) in
+  let left_over_deadwood = Deck.difference (Deck.deadwood combined_hand) (Deck.deadwood (State.get_opponent_player_hand st)) in
+  Deck.difference (Deck.deadwood (State.get_opponent_player_hand st)) (left_over_deadwood)
 
 
 let get_optimal st =
@@ -55,6 +62,8 @@ let get_optimal st =
      | Null _ -> failwith "Null game")
   | Some Discard x -> if x = ["Discard"] then Draw "Discard" else optimal_draw st
   | Some Pass -> optimal_draw st
+  | Some Knock -> Match
+  | Some Match -> Cards (optimal_match st)
   | _ -> failwith "Not sure how you got here 1"
 
 

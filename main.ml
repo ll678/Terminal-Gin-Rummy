@@ -151,13 +151,20 @@ let handle_hint (new_move : Optimal.move) (st : State.t) =
     print_endline "\n"
   | Knock -> print_string "You should knock to win this round!" ; 
     print_endline "\n"
+  | Cards t -> print_string "Match with: " ; 
+    print_list (Deck.string_of_deck t);
+    print_endline "\n"
+  | Match -> print_string "Type Match to begin to match cards!" ; 
+    print_endline "\n"
 
 let perform_optimal st =
   let call = Optimal.get_optimal st in
   match call with
   | Discard t -> "Discard " ^ Deck.string_of_card t  ; 
   | Draw t -> "Draw " ^  t ; 
-  | Knock -> "Knock"
+  | Knock -> "Knock" ;
+  | Cards t -> String.concat "Match "  (Deck.string_of_deck t)
+  | Match -> "Match"
 
 let rec do_nothing st =
   print_string "> ";

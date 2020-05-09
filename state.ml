@@ -77,13 +77,16 @@ let get_last_moves_type st  : Command.command option =
   (* Someone has drawn a card *)
   |(Some (Draw x, z),_) -> (Some (Draw x))
   (* Someone has passed *)
-  | (Some (Pass,_),None) -> Some Pass
+  |(Some (Pass,_),None) -> Some Pass
   (* Someone has discarded *)
   |(Some (Discard x, b),a) -> Some (Discard x)
   (* Someone has knocked*)
   |(Some (Knock, b),a)-> Some (Knock)
   (* Someone has passed *)
   |(Some (Pass, b),a) -> Some (Pass)
+  (* Someone has matched*)
+  |(Some (Match, b),a) -> Some (Match)
+
   | _ -> failwith "Not sure how you got here3or4"
 
 
