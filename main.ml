@@ -273,17 +273,18 @@ let rec knock_match (st : State.t) : State.t =
   | Legal st ->
     begin
       print_string "Your Deadwood:\n";
-      print_cards (st |> State.get_current_player_hand |> Deck.deadwood |> 
-                   Deck.string_of_deck);
+      print_cards (st |> State.get_current_player_hand |>
+                   Deck.deadwood |> Deck.string_of_deck);
       print_string ("\n\n");
       print_string (st |> State.get_opponent_player_name); 
       print_string "'s Melds:\n";
-      print_melds (st |> State.get_opponent_player_hand |> Deck.best_meld);
+      print_melds (st |> State.get_opponent_player_hand |>
+                   Deck.best_meld);
       print_endline ("\n");
-
       print_endline 
-        ("Please list any cards you want to lay off. Separate cards with a single comma and no spaces.
-        If you cannot lay off any cards, press enter to end the round.");
+        ("Please list any cards you want to lay off. \
+          Separate cards with a single comma and no spaces.\n\
+          If you cannot lay off any cards, press enter to end the round.");
       print_string  "> ";
       match read_line () with 
       | exception End_of_file -> 
@@ -448,8 +449,9 @@ let rec main_help () =
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
   print_endline "\n\nWelcome to Gin Rummy.\n";
-  print_endline "Please enter 'yes' if you would like to play against the 
-  computer and 'no' if you would like to play a two-player game .\n";
+  print_endline
+    "Please enter 'yes' if you would like to play against the \
+     computer and 'no' if you would like to play a two-player game.\n";
   print_string  "> ";
   match read_line () with
   | exception End_of_file -> ()
