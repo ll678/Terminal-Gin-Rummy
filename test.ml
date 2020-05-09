@@ -5,17 +5,19 @@ open Command
 
 (** Test Plan:
     Our OUnit test suite automatically tests the main functions in the Deck
-    and Command modules. The State and Main module were manually debugged
-    by playtesting the game. 
+    and Command modules. The State, Main, and Optimal modules were manually 
+    debugged by playtesting the game. 
     To test the Deck and Command modules, black box testing was 
     utilized, implementing test cases commonly encountered during gameplay, as 
     well as unexpected/invalid inputs resulting in raised exceptions. Sample 
     decks and melds for testing purposes were created in the Deck module to 
     facilitate the testing of various functions.
-    To test the State and Main modules, we also actively playtested the game 
-    while functions were implemented. This involved both inputting valid and 
-    invalid commands when interacting with the command shell, including edge
-    cases (e.g. drawing from discard results in an empty discard pile).
+    Testing the State, Main, and Optimal modules with our testing suite would
+    have involved complicated test functions to initialize and change state.
+    Instead, we actively playtested the game while functions were implemented
+    to test these modules. This involved both inputting valid and invalid 
+    commands when interacting with the command shell, including edge cases 
+    (e.g. drawing from discard results in an empty discard pile).
     Overall, this testing approach, which was largely modeled after A2/A3
     (Adventure), demonstrates the validity of our system because it combines 
     both efficient and automatic OUnit testing for the simpler functions and 
@@ -250,6 +252,6 @@ let state_tests = [
 ]
 
 let suite = 
-  "test suite"  >::: List.flatten [deck_tests; command_tests; state_tests]
+  "test suite" >::: List.flatten [deck_tests; command_tests; state_tests]
 
 let () = run_test_tt_main suite

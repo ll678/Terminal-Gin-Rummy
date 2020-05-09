@@ -17,11 +17,6 @@ exception Empty
 (* TODO: we could make this malformed of string, to display helpful message *)
 exception Malformed
 
-
-(** [remove_emptys str_list] is the list of non-empty strings in [str_list] 
-    It also lowercases each string.
-    Example: [remove_emptys ["hello";"";"goodbye";"";""]] is ["hello";"goodbye"]
-*)
 let rec remove_emptys_lower str_list = 
   match str_list with
   | [] -> []

@@ -70,9 +70,6 @@ val get_list : int -> t -> t
     but not elements of [l2]. *)
 val difference : t -> t -> t
 
-(** [shuffle deck] randomizes the order of [deck]. *)
-val shuffle : t -> t
-
 (** [suit_sort hand] sorts [hand] by suit first, then rank. *)
 val suit_sort : t -> t
 
@@ -118,15 +115,8 @@ val get_worst : t -> (card * int) * (card * int)
 (** [string_of_card card] is the string representation of [card]. *)
 val string_of_card : card -> string
 
-(** [string_of_card_short card] is a compact string representation of [card]. *)
-val string_of_card_short : card -> string
-
 (** [string_of_deck deck] is the list of stringified cards in [deck]. *)
 val string_of_deck : t -> string list
-
-(** [string_of_deck_short deck] is the list of stringified cards in [deck]
-    with shortened representations of suit and rank. *)
-val string_of_deck_short : t -> string list
 
 (** [card_of_string string] is the card of [string]. *)
 val card_of_string : string -> card

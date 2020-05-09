@@ -173,7 +173,7 @@ let handle_hint (new_move : Optimal.move) (st : State.t) =
   | Cards t -> print_string "Match with: " ; 
     print_string_list (Deck.string_of_deck t);
     print_endline "\n"
-  | Match -> print_string "Type Match to begin to match cards!" ; 
+  | Match -> print_string "Type \"match\" to begin laying off cards!" ; 
     print_endline "\n"
 
 let perform_optimal st =
@@ -313,8 +313,8 @@ let rec knock_match (st : State.t) : State.t =
                    Deck.best_meld);
       print_endline ("\n");
       print_endline 
-        ("Please list any cards you want to lay off. \
-          Separate cards with a single comma and no spaces.\n\
+        ("Please list any cards you want to lay off.
+          Separate cards with a single comma and no spaces.
           If you cannot lay off any cards, press enter to end the round.");
       print_string  "> ";
       match read_line () with 
