@@ -94,9 +94,10 @@ let value_of_rank rank =
 let value_of_hand hand =
   List.fold_right (fun (rank, _) -> (+) (value_of_card rank)) hand 0
 
+(** [shuffle deck] randomizes the order of [deck]. *)
 let shuffle deck =
-  let int_dict = List.map (fun c -> (Random.self_init(); 
-                                     Random.int (length deck), c)) deck in
+  let int_dict = List.map 
+      (fun c -> (Random.self_init(); Random.int (length deck), c)) deck in
   let sort_dict = List.sort compare int_dict in
   sort_dict |> List.split |> snd
 
@@ -330,7 +331,6 @@ let rec valid_match match_deck melds =
 
 let start_cards =
   let temp = shuffle init_deck in  
-  (* let temp = init_deck in  *)
   let fst = get_list 31 temp  in
   let snd = get_list 1 (difference temp fst) in
   let trd = get_list 10 (difference (difference temp fst) snd) in
@@ -344,9 +344,12 @@ let rec card_score (card:card) (hand:t) (acc:int) =
   | [] -> acc
   | h::t -> 
     let acc = if fst h = fst card then (acc + 1) else acc in 
-    let acc = if value_of_rank (fst h) = (value_of_rank (fst card)+1)
-              || value_of_rank (fst h) = (value_of_rank (fst card)-1) then (acc+1) else acc in 
-    let acc = if value_of_rank (fst h) = (value_of_rank (fst card)+1) then (acc+1) else acc in
+    let acc = 
+      if value_of_rank (fst h) = (value_of_rank (fst card)+1)
+      || value_of_rank (fst h) = (value_of_rank (fst card)-1) 
+      then (acc+1) else acc in 
+    let acc = if value_of_rank (fst h) = (value_of_rank (fst card)+1) 
+      then (acc+1) else acc in
     let acc = if snd h = snd card then (acc+1) else acc in
     card_score card t acc
 
@@ -399,39 +402,10 @@ let string_of_card card =
   in
   rank ^ " of " ^ suit
 
-let string_of_card_short card = 
-  let suit = match snd card with
-    | Clubs -> "♣"
-    | Diamonds -> "♦"
-    | Hearts -> "♥"
-    | Spades -> "♠"
-  in
-  let rank = match fst card with
-    | Ace -> "A"
-    | Two -> "2"
-    | Three -> "3"
-    | Four -> "4"
-    | Five -> "5"
-    | Six -> "6"
-    | Seven -> "7"
-    | Eight -> "8"
-    | Nine -> "9"
-    | Ten -> "10"
-    | Jack -> "J"
-    | Queen -> "Q"
-    | King -> "K"
-  in
-  rank ^ suit
-
 let rec string_of_deck deck = 
   match deck with
   | [] -> []
   | h :: t -> string_of_card h :: string_of_deck t
-
-let rec string_of_deck_short deck = 
-  match deck with
-  | [] -> []
-  | h :: t -> string_of_card_short h :: string_of_deck_short t
 
 let card_of_string string = 
   let str_lst = String.split_on_char ' ' string |> Command.remove_emptys_lower
