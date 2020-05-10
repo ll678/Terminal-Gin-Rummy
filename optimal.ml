@@ -22,7 +22,7 @@ let optimal stock discard hand =
   let second = Deck.push discard hand in 
   let value_one = Deck.value_of_hand first in 
   let value_two = Deck.value_of_hand second in
-  if value_one = value_two then Draw "Either" else
+  if value_one = value_two then Draw "Discard" else
   if value_one > value_two then Draw "Stock" else
     Draw "Discard"
 
@@ -58,6 +58,45 @@ let optimal_match st =
   Deck.difference (Deck.deadwood (State.get_current_player_hand st)) (tmp)
 
 
+
+
+let add_valid_deadwood meld first second =
+  let sorted = Deck.suit_sort meld in 
+  if Deck.is_set meld then 
+
+
+
+    Deck.push_deck (Deck.find_deadwood_with_rank first (Deck.hd meld)) meld
+  else 
+
+    let f = Deck.add_run meld first  in
+    let s = Deck.add_run meld first  in
+
+    Deck.union f s
+
+
+
+
+let rec match_deadwood matcher_deadwood knocker_melds acc =
+  let first = Deck.suit_sort matcher_deadwood in
+  let second = Deck.rev_sort  matcher_deadwood in
+  match knocker_melds with
+  | [] -> acc
+  | h::t -> 
+    let new_meld = add_valid_deadwood h first second in 
+    match_deadwood (Deck.difference matcher_deadwood new_meld) (t) ((Deck.difference new_meld h)::acc)
+
+
+(* list of matchers deadwood 
+   melds of knockers hand - list of knocker's best melds (best melds function in Deck)
+   iterate over different melds, if the meld is a set then look for same rank and suit
+   if the meld is a run then sort deadwood of the same suit, and 
+   For match go through each meld  *)
+let optimal_match_fix st =
+  let matcher_deadwood = Deck.deadwood (State.get_current_player_hand st) in
+  let knocker_melds = Deck.best_meld (State.get_opponent_player_hand st) in
+  Deck.flatten_deck (match_deadwood matcher_deadwood knocker_melds [])
+
 let get_optimal st =
   (* Pass is not implemented *)
   match State.get_last_moves_type st with
@@ -71,7 +110,7 @@ let get_optimal st =
      | Null _ -> failwith "Null Game")
   | Some Discard x -> if x = ["Discard"] then Draw "Discard" else optimal_draw st
   | Some Pass -> optimal_draw st
-  | Some Knock -> Cards (optimal_match st)
+  | Some Knock -> Cards (optimal_match_fix st)
   | _ -> failwith "Not sure how you got here 1"
 
 

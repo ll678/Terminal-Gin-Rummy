@@ -17,6 +17,8 @@ type card = rank * suit
 (** The abstract type of values representing card decks. *)
 type t
 
+
+
 (** The exception of malformed cards. *)
 exception Malformed
 
@@ -50,6 +52,16 @@ val tl : t -> t
 (** [length deck] is the length of [deck]. *)
 val length : t -> int
 
+(** [is_set meld] is [true] if meld is a set, [false] otherwise. *)
+val is_set: t -> bool
+
+(** [flatten_deck d] is a flattened list of d. *)
+val flatten_deck: t list -> t
+
+(** [find_deadwood_with_rank deadwood acc card] is a deck [t] where all values in the deck 
+    are deadwood cards that have the same rank as card. *)
+val find_deadwood_with_rank: t -> card -> t
+
 (** [is_empty deck] is true when [deck] is empty, else false. *)
 val is_empty : t -> bool
 
@@ -72,6 +84,13 @@ val difference : t -> t -> t
 
 (** [suit_sort hand] sorts [hand] by suit first, then rank. *)
 val suit_sort : t -> t
+
+(** [add_run meld deadwood] is [meld'] with valid deadwood cards added to 
+    [meld]. *)
+val add_run : t -> t -> t
+
+(** [rev_sort hand] reverse sorts [hand] by suit first, then rank. *)
+val rev_sort : t -> t
 
 (** [suit_sort hand] is the score of [hand]. *)
 val value_of_hand : t -> int

@@ -7,6 +7,7 @@ type card = rank * suit
 
 type t = card list
 
+
 exception Malformed
 
 let init_deck = 
@@ -74,6 +75,9 @@ let rec get_list n l =
     | []-> []
     | h::t ->  h::(get_list (n-1) t)
 
+let flatten_deck deck=
+  List.flatten deck
+
 (** [value_of_card num] returns the int value corresponding to 
     a card of [num]. *)
 let value_of_card rank =
@@ -89,6 +93,35 @@ let value_of_rank rank =
   | Ace -> 1 | Two -> 2 | Three -> 3 | Four -> 4 | Five -> 5 | Six -> 6
   | Seven -> 7 | Eight -> 8 | Nine -> 9 | Ten -> 10 | Jack -> 11 
   | Queen -> 12 | King -> 13
+
+(** [final deck acc] returns the last card in the deck [deck]. *)
+let rec final deck acc =
+  match deck with 
+  | [] -> acc
+  | h::t -> final t h
+
+let rec add_run meld deadwood =
+  match deadwood with
+  | [] -> meld
+  | h::t -> 
+    let head = hd meld in
+    let tail = final meld (hd meld) in
+    if ((value_of_rank (fst h) = value_of_rank (fst head) -1 || value_of_rank (fst h) = value_of_rank (fst head) -1 )
+        || (value_of_rank (fst h) = value_of_rank (fst tail) -1 || value_of_rank (fst h) = value_of_rank (fst tail) -1 )) &&
+       snd h = snd head
+    then add_run (h::meld) t else add_run meld t
+
+(** [search_rank deadwood acc card] is a deck [t] where all values in the deck 
+    are deadwood cards that have the same rank as card. *)
+let rec search_rank deadwood acc card =
+  match deadwood with 
+  | [] -> acc
+  | h::t -> if value_of_rank (fst h) = value_of_rank (fst card) then 
+      search_rank t (h::acc) card else search_rank t acc card 
+
+
+let find_deadwood_with_rank deadwood card =
+  search_rank deadwood [] card
 
 (** [value_of_hand hand] returns the total int value of [hand]. *)
 let value_of_hand hand =
@@ -279,6 +312,18 @@ let rec calculate_meld_value list acc =
 let rec list_traversal i n list =
   if (nth list i) = n then i else list_traversal (i+1) n list
 
+
+let rec is_set_check (meld:t) (acc:bool) (rank:rank)  =
+  match meld with 
+  | [] -> acc
+  | h::t -> 
+    let card_rank = (fst h) in 
+    is_set_check t (acc && (card_rank = rank)) rank
+
+let is_set meld =
+  is_set_check meld true (fst (hd meld))
+
+
 let best_meld hand =
   let melds = get_melds hand in
   let meld_vals = List.rev (calculate_meld_value melds []) in
@@ -299,6 +344,9 @@ let deadwood_value hand =
 
 let meld_value hand =
   (hand |> value_of_hand) - (hand |> deadwood_value)
+
+let rev_sort deck =
+  List.rev (suit_sort deck)
 
 let knock_deadwood_value hand =
   let d = deadwood hand in
