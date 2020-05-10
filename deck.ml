@@ -27,86 +27,6 @@ let init_deck =
     (King, Clubs); (King, Diamonds); (King, Hearts); (King, Spades);
   ]
 
-let test_meld_deck =
-
-  [
-    (Nine, Spades);(Ace, Clubs); (Ace, Diamonds); (Ace, Hearts); (Ace, Spades);
-    (Two, Clubs); (Two, Diamonds); (Two, Hearts); (Two, Spades);
-    (Three, Clubs); (Three, Diamonds); (Three, Hearts); (Three, Spades);
-    (Four, Clubs); (Four, Diamonds); (Four, Hearts); (Four, Spades);
-    (Five, Clubs); (Five, Hearts); (Five, Spades);
-    (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
-    (Queen, Hearts); (Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); 
-    (Seven, Spades);
-    (Eight, Clubs); (King, Spades);(Eight, Diamonds); (Eight, Hearts); 
-    (Queen, Diamonds); (Eight, Spades);
-    (Nine, Clubs); (Nine, Diamonds);(Jack, Hearts); (Nine, Hearts); 
-    (Five, Diamonds);
-
-    (Ten, Clubs); (Ten, Diamonds); (Ten, Hearts); (Ten, Spades);
-    (Jack, Diamonds);  (Jack, Spades);
-    (Queen, Clubs); (Queen, Spades);
-    (King, Clubs); (King, Diamonds); (King, Hearts); 
-  ]
-
-let test_run_meld_deck =
-
-  [
-    (* Stock pile *)
-    (Nine, Spades);(Ace, Clubs); (Ace, Diamonds); (Ace, Hearts); (Ace, Spades);
-    (Two, Diamonds); (Two, Hearts); (Two, Spades);
-    (Three, Clubs); (Three, Diamonds); (Three, Hearts); (Three, Spades);
-    (Four, Clubs); (Four, Diamonds); (Four, Hearts); (Four, Spades);
-    (Five, Clubs); (Five, Hearts); (Five, Spades);
-    (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
-    (Queen, Clubs);(Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); 
-    (Seven, Spades);
-    (Ten, Spades); (Nine, Clubs); 
-    (* Discard pile *)
-    (Eight, Diamonds); 
-
-    (* Player 1 *)
-    (Eight, Hearts); (King, Spades);(Queen, Spades);(Eight, Spades);
-    (Nine, Diamonds);(Jack, Spades);(Nine, Hearts); (Five, Diamonds);
-    (Ten, Clubs); (Two, Clubs);
-
-    (* Player 2 *)
-    (Ten, Diamonds); (Ten, Hearts);(Eight, Clubs);
-    (Jack, Diamonds);  (Jack, Hearts); 
-    (Queen, Diamonds); (Queen, Hearts); 
-    (King, Clubs); (King, Diamonds); (King, Hearts); 
-  ]
-
-let test_run_meld_deck_two =
-  [
-    (* Stock pile *)
-    (Nine, Spades);(Eight, Spades); (Ace, Clubs); (Ace, Diamonds); 
-    (Ace, Hearts); 
-    (Two, Diamonds); (Two, Hearts); (Two, Spades);
-    (Three, Clubs); (Three, Diamonds); (Three, Hearts); (Three, Spades);
-    (Four, Clubs); (Four, Diamonds);  (Four, Spades);
-    (Five, Clubs); (Five, Hearts); (Five, Spades); (Eight, Clubs);
-    (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
-    (Queen, Clubs);(Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); 
-    (Seven, Spades);
-    (Ten, Spades); (Nine, Clubs); 
-    (* Discard pile *)
-    (Ace, Spades);
-
-
-    (* Player 1 *)
-    (Eight, Hearts); (King, Spades);(Queen, Spades);
-    (Nine, Diamonds);(Jack, Spades);(Nine, Hearts); (Five, Diamonds); 
-    (Eight, Diamonds); 
-    (Ten, Clubs); (Two, Clubs);
-
-    (* Player 2 *)
-    (Ten, Diamonds); (Ten, Hearts);
-    (Jack, Diamonds);  (Jack, Hearts); 
-    (Queen, Diamonds); (Queen, Hearts); (Four, Hearts);
-    (King, Clubs); (King, Diamonds); (King, Hearts); 
-  ]
-
 let push card deck = 
   card :: deck
 
@@ -677,5 +597,85 @@ let test_meld_deck =
     (Ten, Clubs); (Ten, Diamonds); (Ten, Hearts); (Ten, Spades);
     (Jack, Diamonds);  (Jack, Spades);
     (Queen, Clubs); (Queen, Spades);
+    (King, Clubs); (King, Diamonds); (King, Hearts); 
+  ]
+
+let test_meld_deck =
+
+  [
+    (Nine, Spades);(Ace, Clubs); (Ace, Diamonds); (Ace, Hearts); (Ace, Spades);
+    (Two, Clubs); (Two, Diamonds); (Two, Hearts); (Two, Spades);
+    (Three, Clubs); (Three, Diamonds); (Three, Hearts); (Three, Spades);
+    (Four, Clubs); (Four, Diamonds); (Four, Hearts); (Four, Spades);
+    (Five, Clubs); (Five, Hearts); (Five, Spades);
+    (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
+    (Queen, Hearts); (Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); 
+    (Seven, Spades);
+    (Eight, Clubs); (King, Spades);(Eight, Diamonds); (Eight, Hearts); 
+    (Queen, Diamonds); (Eight, Spades);
+    (Nine, Clubs); (Nine, Diamonds);(Jack, Hearts); (Nine, Hearts); 
+    (Five, Diamonds);
+
+    (Ten, Clubs); (Ten, Diamonds); (Ten, Hearts); (Ten, Spades);
+    (Jack, Diamonds);  (Jack, Spades);
+    (Queen, Clubs); (Queen, Spades);
+    (King, Clubs); (King, Diamonds); (King, Hearts); 
+  ]
+
+let test_run_meld_deck =
+
+  [
+    (* Stock pile *)
+    (Nine, Spades);(Ace, Clubs); (Ace, Diamonds); (Ace, Hearts); (Ace, Spades);
+    (Two, Diamonds); (Two, Hearts); (Two, Spades);
+    (Three, Clubs); (Three, Diamonds); (Three, Hearts); (Three, Spades);
+    (Four, Clubs); (Four, Diamonds); (Four, Hearts); (Four, Spades);
+    (Five, Clubs); (Five, Hearts); (Five, Spades);
+    (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
+    (Queen, Clubs);(Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); 
+    (Seven, Spades);
+    (Ten, Spades); (Nine, Clubs); 
+    (* Discard pile *)
+    (Eight, Diamonds); 
+
+    (* Player 1 *)
+    (Eight, Hearts); (King, Spades);(Queen, Spades);(Eight, Spades);
+    (Nine, Diamonds);(Jack, Spades);(Nine, Hearts); (Five, Diamonds);
+    (Ten, Clubs); (Two, Clubs);
+
+    (* Player 2 *)
+    (Ten, Diamonds); (Ten, Hearts);(Eight, Clubs);
+    (Jack, Diamonds);  (Jack, Hearts); 
+    (Queen, Diamonds); (Queen, Hearts); 
+    (King, Clubs); (King, Diamonds); (King, Hearts); 
+  ]
+
+let test_run_meld_deck_two =
+  [
+    (* Stock pile *)
+    (Nine, Spades);(Eight, Spades); (Ace, Clubs); (Ace, Diamonds); 
+    (Ace, Hearts); 
+    (Two, Diamonds); (Two, Hearts); (Two, Spades);
+    (Three, Clubs); (Three, Diamonds); (Three, Hearts); (Three, Spades);
+    (Four, Clubs); (Four, Diamonds);  (Four, Spades);
+    (Five, Clubs); (Five, Hearts); (Five, Spades); (Eight, Clubs);
+    (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
+    (Queen, Clubs);(Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); 
+    (Seven, Spades);
+    (Ten, Spades); (Nine, Clubs); 
+    (* Discard pile *)
+    (Ace, Spades);
+
+
+    (* Player 1 *)
+    (Eight, Hearts); (King, Spades);(Queen, Spades);
+    (Nine, Diamonds);(Jack, Spades);(Nine, Hearts); (Five, Diamonds); 
+    (Eight, Diamonds); 
+    (Ten, Clubs); (Two, Clubs);
+
+    (* Player 2 *)
+    (Ten, Diamonds); (Ten, Hearts);
+    (Jack, Diamonds);  (Jack, Hearts); 
+    (Queen, Diamonds); (Queen, Hearts); (Four, Hearts);
     (King, Clubs); (King, Diamonds); (King, Hearts); 
   ]
