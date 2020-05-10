@@ -31,20 +31,15 @@ let optimal stock discard hand =
   let value_one = Deck.deadwood_value first in 
   let value_two = Deck.deadwood_value second in
 
-
-
   if value_one = value_two then Draw "Discard" else
   if value_one > value_two then Draw "Discard" else
     Draw "Stock"
-
 
 (** [print_string_list lst] prints the string list [lst] in the
     command shell. *)
 let rec print_string_list = function 
     [] -> ()
   | h::t -> print_string h ; print_string " " ; print_string_list t
-
-
 
 (** [optimal_draw st] is the optimal draw move *) 
 let optimal_draw st = 
@@ -56,11 +51,10 @@ let optimal_draw st =
   if Deck.length discard <=0 then Draw "Stock" else
     optimal (Deck.hd stock) (Deck.hd discard) hand 
 
-
 (** [add_valid_deadwood meld first second] is Meld with extending 
     deadwood added on *) 
 let add_valid_deadwood meld first second =
-  (* let sorted = Deck.suit_sort meld in  *)
+
   if Deck.is_set meld then 
     Deck.push_deck (Deck.find_deadwood_with_rank first (Deck.hd meld)) meld
   else 
@@ -68,11 +62,6 @@ let add_valid_deadwood meld first second =
     let f = Deck.add_run meld first  in
     let s = Deck.add_run meld second  in
 
-    (* print_string ("****DEBUG Beggining of first****");
-       print_string_list (Deck.string_of_deck f);
-       print_string ("****DEBUG Beggining of second****");
-       print_string_list (Deck.string_of_deck s);
-       print_string ("****DEBUG END****"); *)
     Deck.union f s
 
 (** [match_deadwood matcher_deadwood knocker_melds acc] is the Deck.t list
@@ -120,17 +109,6 @@ let check_optimal_knock st x =
   let new_opposing_value = Deck.deadwood_value difference in
   if current_deadwood_value < new_opposing_value then Knock else 
   if x = ["Discard"] then Draw "Discard" else optimal_discard st
-(* let combined_hand = Deck.push_deck (Deck.deadwood 
-   (State.get_opponent_player_hand st)) (State.get_current_player_hand st) in
-   let left_over_deadwood = Deck.deadwood combined_hand in *)
-
-(* let matching_cards = optimal_match st in
-   let new_opposing_value = Deck.deadwood_value left_over_deadwood in
-
-
-   if current_deadwood_value < new_opposing_value then Knock else 
-   if x = ["Discard"] then Draw "Discard" else optimal_discard st *)
-
 
 let get_optimal st =
   match State.get_last_moves_type st with

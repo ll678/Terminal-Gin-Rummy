@@ -36,9 +36,12 @@ let test_meld_deck =
     (Four, Clubs); (Four, Diamonds); (Four, Hearts); (Four, Spades);
     (Five, Clubs); (Five, Hearts); (Five, Spades);
     (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
-    (Queen, Hearts); (Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); (Seven, Spades);
-    (Eight, Clubs); (King, Spades);(Eight, Diamonds); (Eight, Hearts); (Queen, Diamonds); (Eight, Spades);
-    (Nine, Clubs); (Nine, Diamonds);(Jack, Hearts); (Nine, Hearts); (Five, Diamonds);
+    (Queen, Hearts); (Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); 
+    (Seven, Spades);
+    (Eight, Clubs); (King, Spades);(Eight, Diamonds); (Eight, Hearts); 
+    (Queen, Diamonds); (Eight, Spades);
+    (Nine, Clubs); (Nine, Diamonds);(Jack, Hearts); (Nine, Hearts); 
+    (Five, Diamonds);
 
     (Ten, Clubs); (Ten, Diamonds); (Ten, Hearts); (Ten, Spades);
     (Jack, Diamonds);  (Jack, Spades);
@@ -56,7 +59,8 @@ let test_run_meld_deck =
     (Four, Clubs); (Four, Diamonds); (Four, Hearts); (Four, Spades);
     (Five, Clubs); (Five, Hearts); (Five, Spades);
     (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
-    (Queen, Clubs);(Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); (Seven, Spades);
+    (Queen, Clubs);(Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); 
+    (Seven, Spades);
     (Ten, Spades); (Nine, Clubs); 
     (* Discard pile *)
     (Eight, Diamonds); 
@@ -76,13 +80,15 @@ let test_run_meld_deck =
 let test_run_meld_deck_two =
   [
     (* Stock pile *)
-    (Nine, Spades);(Eight, Spades); (Ace, Clubs); (Ace, Diamonds); (Ace, Hearts); 
+    (Nine, Spades);(Eight, Spades); (Ace, Clubs); (Ace, Diamonds); 
+    (Ace, Hearts); 
     (Two, Diamonds); (Two, Hearts); (Two, Spades);
     (Three, Clubs); (Three, Diamonds); (Three, Hearts); (Three, Spades);
     (Four, Clubs); (Four, Diamonds);  (Four, Spades);
     (Five, Clubs); (Five, Hearts); (Five, Spades); (Eight, Clubs);
     (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
-    (Queen, Clubs);(Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); (Seven, Spades);
+    (Queen, Clubs);(Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); 
+    (Seven, Spades);
     (Ten, Spades); (Nine, Clubs); 
     (* Discard pile *)
     (Ace, Spades);
