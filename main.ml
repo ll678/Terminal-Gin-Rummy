@@ -410,9 +410,8 @@ let rec play_game (st : State.t) =
   | read_line -> let next_st = process_readline read_line st in 
     (play_game next_st)
 
-(** [play_cpu_game st] starts a game of gin rummy with against the cpu with 
-    the init state [st]. *)
-let rec play_cpu_game (st : State.t) =
+
+let rec handle_cpu_match (st : State.t) =
   print_string "\n----------------------------------------------------------\n";
 
   print_string "It is "; print_string (st |> State.get_current_player_name); 
@@ -441,6 +440,54 @@ let rec play_cpu_game (st : State.t) =
     let s = perform_optimal st in 
     let next_st = process_readline s st in 
     (play_cpu_game next_st)
+  else
+    begin
+      print_endline (State.prompt_command st);
+      print_string "\n> ";
+      match read_line () with 
+      | exception End_of_file -> ()
+      | read_line -> let next_st = process_readline read_line st in 
+        (play_cpu_game next_st)
+    end
+
+(** [play_cpu_game st] starts a game of gin rummy with against the cpu with 
+    the init state [st]. *)
+let rec play_cpu_game (st : State.t) =
+  print_string "\n----------------------------------------------------------\n";
+
+  print_string "It is "; print_string (st |> State.get_current_player_name); 
+  print_string "'s Turn:\n\n";
+
+  print_string "Discard Pile:             Stock Pile:\n";
+  print_piles (st |> State.get_discard |> Deck.string_of_hd);
+  print_string ("\n");
+
+  print_string (st |> State.get_current_player_name); print_string "'s Hand:\n";
+  print_cards (st |> State.get_current_player_hand |> Deck.string_of_deck);
+  print_string ("\n");
+
+  (* Print melds of current player's hand *)
+  print_string "\nMelds:\n";
+  print_melds (st |> State.get_current_player_hand |> Deck.best_meld);
+  print_string ("\n");
+
+  (* Print deadwood of current player's hand *)
+  print_string "Deadwood:\n";
+  print_deadwood (st |> State.get_current_player_hand |> Deck.deadwood |> 
+                  Deck.string_of_deck);
+  print_string ("\n\n");
+
+
+  (* (Command.command * Deck.card option) option *)
+  if (State.get_current_player_name st = "CPU") then 
+    match fst (State.get_moves st) with
+    | Some (Knock, a) -> handle_cpu_match
+    | _ ->
+
+      let s = perform_optimal st in 
+      let next_st = process_readline s st in 
+      (play_cpu_game next_st)
+
   else
     begin
       print_endline (State.prompt_command st);
