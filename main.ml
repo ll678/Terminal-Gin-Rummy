@@ -180,6 +180,8 @@ let handle_hint (new_move : Optimal.move) (st : State.t) =
     print_endline "\n"
   | Match -> print_string "Type \"match\" to begin laying off cards!" ; 
     print_endline "\n"
+  | Pass -> print_string "You should pass!" ; 
+    print_endline "\n"
 
 (**[perform_optimal st] is an optimal move as a string. *)
 let perform_optimal st =
@@ -190,6 +192,7 @@ let perform_optimal st =
   | Knock -> "Knock" ;
   | Cards t -> String.concat "Match "  (Deck.string_of_deck t)
   | Match -> "Match"
+  | Pass -> "Pass"
 
 (** [do_nothing st] prompts for the "resume" keyword to resume playing if
     the player enters any string other than "resume". *)
