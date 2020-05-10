@@ -335,8 +335,8 @@ let rec knock_match (st : State.t) : State.t =
       print_endline ("\n");
       print_endline 
         ("Please list any cards you want to lay off.
-          Separate cards with a single comma and no spaces.
-          If you cannot lay off any cards, press enter to end the round.");
+        Separate cards with a single comma and no spaces.
+        If you cannot lay off any cards, press enter to end the round.");
       print_string  "> ";
       if State.get_current_player_name st = "CPU" 
       then match Deck.deck_of_string (perform_optimal st) with
@@ -434,7 +434,8 @@ let rec play_game (st : State.t) =
   | read_line -> let next_st = process_readline read_line st in 
     (play_game next_st)
 
-
+(** [handle_cpu_match st] changes to the next game state of a CPU game during
+    a match state. *)
 let rec handle_cpu_match (st : State.t) =
   let next_st = process_readline "Match" st in 
   (play_cpu_game next_st)
