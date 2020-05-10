@@ -222,13 +222,19 @@ let knock_declare st =
         let p1_score = p1.score + round_score in
         let next_st = init_state (p0.score,p1_score) 1 names in
         RoundEnd (next_st,p1.hand,p0.hand,round_score)
-    else Legal ({
-        stock_pile = st.stock_pile;
-        discard_pile = st.discard_pile;
-        players = st.players;
-        current_player = (st.current_player + 1) mod 2;
-        last_moves = (Some (Knock, None),fst st.last_moves);
-      })
+    else 
+      let opp = if (st.current_player + 1) mod 2 = 0 then fst st.players 
+        else snd st.players in
+      let card = Deck.max_deadwood_card knocker.hand in
+      Legal ({
+          stock_pile = st.stock_pile;
+          discard_pile = st.discard_pile;
+          players =               
+            if st.current_player = 0 then (discard_player card knocker, opp)
+            else (opp, discard_player card knocker);
+          current_player = (st.current_player + 1) mod 2;
+          last_moves = (Some (Knock, None),fst st.last_moves);
+        })
   | Some (Knock,_) ->
     Illegal "You cannot knock now; type \"match\" or \"help\"."
   | _ -> Illegal "You cannot knock now; try again after a draw."

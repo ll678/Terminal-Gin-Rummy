@@ -127,7 +127,23 @@ outputted in the terminal. To knock, you must type “knock”.
     Ex. “knock” and “Knock” are valid commands. 
 The rules for when you can knock are listed below:
     You can only knock after you have drawn a card during this turn
-    You can only knock if the value of your deadwood is less than 10
+    You can only knock if the value of your deadwood will be less than 10 at the
+    end of your turn
+      (After drawing a card, your hand will have eleven cards, so the deadwood 
+      card with the highest value is assumed to be automatically discarded 
+      during a knock. Therefore, this card will not factor into the value of 
+      your deadwood)
+
+Gin: Going gin is knocking when you have no deadwood after discarding. This 
+means that you either have no deadwood upon knocking or will have no deadwood
+factoring in the automatic discard after knocking. When you go gin, your 
+opponent will not have the opportunity to lay off their cards and you 
+automatically win that round. To go gin, you must type “gin”. 
+    Ex. “gin” and “Gin” are valid commands. 
+The rules for when you can go gin are listed below:
+    You can only go gin after you have drawn a card during this turn
+    You can only knock if the value of your deadwood will be 0 at the
+    end of your turn
       (After drawing a card, your hand will have eleven cards, so the deadwood 
       card with the highest value is assumed to be automatically discarded 
       during a knock. Therefore, this card will not factor into the value of 
@@ -145,6 +161,7 @@ The cards that you wish to lay off must be a part of your deadwood.
     your opponent. 
 The rules for when you can match are listed below:
     You can only match directly after your opponent has knocked
+    You cannot match if your opponent has gone gin
 
 
 
