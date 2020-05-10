@@ -1,5 +1,6 @@
 
-type move = Discard of Deck.card | Draw of string | Knock | Cards of Deck.t | Match | Pass
+type move = Discard of Deck.card | Draw of string | Knock | Cards of Deck.t 
+          | Match | Pass
 
 (** [last_card_drawn st] is the last card drawn in [st] *) 
 let last_card_drawn st =
@@ -11,7 +12,8 @@ let optimal_sort hand st =
   let tmp = Deck.get_worst deadwood in 
   match (last_card_drawn st) with
   | Some x ->
-    if (fst (fst tmp)) = x then Discard (fst (snd tmp)) else Discard (fst(fst tmp))
+    if (fst (fst tmp)) = x then Discard (fst (snd tmp)) else Discard 
+        (fst(fst tmp))
   | None ->
     Discard (fst (fst tmp))
 
@@ -40,15 +42,6 @@ let optimal_draw st =
   if Deck.length discard <=0 then Draw "Stock" else
     optimal (Deck.hd stock) (Deck.hd discard) hand 
 
-(** [check_optimal_knock st x] is [Knock] if the player can knock and 
-    [Discard of string] otherwise *) 
-let check_optimal_knock st x =
-  let current_deadwood_value = Deck.deadwood_value (State.get_current_player_hand st) in
-  let combined_hand = Deck.push_deck (Deck.deadwood (State.get_opponent_player_hand st)) (State.get_current_player_hand st) in
-  let left_over_deadwood = Deck.deadwood combined_hand in
-  let new_opposing_value = Deck.deadwood_value left_over_deadwood in
-  if current_deadwood_value < new_opposing_value then Knock else 
-  if x = ["Discard"] then Draw "Discard" else optimal_discard st
 
 
 (** [add_valid_deadwood meld first second] is Meld with extending 
@@ -71,7 +64,8 @@ let rec match_deadwood matcher_deadwood knocker_melds acc =
   | [] -> acc
   | h::t -> 
     let new_meld = add_valid_deadwood h first second in 
-    match_deadwood (Deck.difference matcher_deadwood new_meld) (t) ((Deck.difference new_meld h)::acc)
+    match_deadwood (Deck.difference matcher_deadwood new_meld) (t) 
+      ((Deck.difference new_meld h)::acc)
 
 (** [optimal_match st] is the Deck.t with valid matching cards *) 
 let optimal_match st =
@@ -79,16 +73,46 @@ let optimal_match st =
   let knocker_melds = Deck.best_meld (State.get_opponent_player_hand st) in
   Deck.flatten_deck (match_deadwood matcher_deadwood knocker_melds [])
 
+(** [optimal_match st] is the Deck.t with valid matching cards, if the 
+    opponent was matching *) 
+let optimal_opponent_match st =
+  let matcher_deadwood = Deck.deadwood (State.get_opponent_player_hand st) in
+  let knocker_melds = Deck.best_meld (State.get_current_player_hand st) in
+  Deck.flatten_deck (match_deadwood matcher_deadwood knocker_melds [])
+
 (** [check_pass st] is [Draw "discard"] if drawing adds to the player's score.
     [Pass] otherwise *) 
 let check_pass st =
   let current = Deck.value_of_hand (State.get_current_player_hand st) in
-  let check = Deck.push (Deck.hd (State.get_discard st)) (State.get_current_player_hand st) in 
+  let check = Deck.push (Deck.hd (State.get_discard st)) 
+      (State.get_current_player_hand st) in 
   if (Deck.value_of_hand check) > current then Draw "discard" else Pass
+
+(** [check_optimal_knock st x] is [Knock] if the player can knock and 
+    [Discard of string] otherwise *) 
+let check_optimal_knock st x =
+  (* The current player's deadwood value *)
+  let current_deadwood_value = Deck.deadwood_value 
+      (State.get_current_player_hand st) in
+  let difference = Deck.difference (Deck.deadwood 
+                                      (State.get_opponent_player_hand st)) 
+      (optimal_opponent_match st) in
+  let new_opposing_value = Deck.deadwood_value difference in
+  if current_deadwood_value < new_opposing_value then Knock else 
+  if x = ["Discard"] then Draw "Discard" else optimal_discard st
+(* let combined_hand = Deck.push_deck (Deck.deadwood 
+   (State.get_opponent_player_hand st)) (State.get_current_player_hand st) in
+   let left_over_deadwood = Deck.deadwood combined_hand in *)
+
+(* let matching_cards = optimal_match st in
+   let new_opposing_value = Deck.deadwood_value left_over_deadwood in
+
+
+   if current_deadwood_value < new_opposing_value then Knock else 
+   if x = ["Discard"] then Draw "Discard" else optimal_discard st *)
 
 
 let get_optimal st =
-  (* Pass is not implemented *)
   match State.get_last_moves_type st with
   | None -> Draw "Discard"
   | Some Draw x -> 
@@ -98,7 +122,8 @@ let get_optimal st =
      | Legal _ -> check_optimal_knock st x
      | RoundEnd _ -> Knock
      | Null _ -> failwith "Null Game")
-  | Some Discard x -> if x = ["Discard"] then Draw "Discard" else optimal_draw st
+  | Some Discard x -> if x = ["Discard"] then Draw "Discard" else 
+      optimal_draw st
   | Some Pass -> check_pass st
   | Some Knock -> Cards (optimal_match st)
   | _ -> failwith "Not sure how you got here 1"
