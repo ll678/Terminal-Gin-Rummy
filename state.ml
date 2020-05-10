@@ -35,7 +35,7 @@ let init_players starting_cards starting_scores names = (
   })
 
 let init_state players_starting_scores start_player names = 
-  let starting_cards = Deck.start_cards in
+  let starting_cards = Deck.start_cards (Deck.init_deck) in
   {
     stock_pile = Deck.nth starting_cards 0;
     discard_pile = Deck.nth starting_cards 1;
@@ -206,14 +206,13 @@ let knock_declare st =
       then fst st.players else snd st.players in
     let k_deadwood = Deck.knock_deadwood_value knocker.hand in
     if k_deadwood > 10 then Illegal "You do not have less than 10 deadwood."
-    else if k_deadwood = 0 then 
+    else if Deck.deadwood_value knocker.hand = 0 then 
       let p0,p1 = st.players in
       let k_ind = st.current_player in
       let names = (p0.name,p1.name) in
       let matcher = if k_ind = 0 then p1 else p0 in
       let m_deadwood = Deck.deadwood_value matcher.hand in
       let round_score = m_deadwood + 20 in
-
       if k_ind = 0 then
         let p0_score = p0.score + round_score in
         let next_st = init_state (p0_score,p1.score) 0 names in
@@ -222,6 +221,24 @@ let knock_declare st =
         let p1_score = p1.score + round_score in
         let next_st = init_state (p0.score,p1_score) 1 names in
         RoundEnd (next_st,p1.hand,p0.hand,round_score)
+    else if k_deadwood = 0 then 
+      let p0,p1 = st.players in
+      let k_ind = st.current_player in
+      let names = (p0.name,p1.name) in
+      let matcher = if k_ind = 0 then p1 else p0 in
+      let m_deadwood = Deck.deadwood_value matcher.hand in
+      let round_score = m_deadwood + 20 in
+      let k_hand = if st.current_player = 0 then p0.hand else p1.hand in
+      let k_max_deadwood = Deck.max_deadwood_card k_hand in
+      let k_hand_removed = Deck.remove k_max_deadwood k_hand in
+      if k_ind = 0 then
+        let p0_score = p0.score + round_score in
+        let next_st = init_state (p0_score,p1.score) 0 names in
+        RoundEnd (next_st,k_hand_removed,p1.hand,round_score)
+      else
+        let p1_score = p1.score + round_score in
+        let next_st = init_state (p0.score,p1_score) 1 names in
+        RoundEnd (next_st,k_hand_removed,p0.hand,round_score)
     else 
       let opp = if (st.current_player + 1) mod 2 = 0 then fst st.players 
         else snd st.players in
