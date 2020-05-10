@@ -27,6 +27,25 @@ let init_deck =
     (King, Clubs); (King, Diamonds); (King, Hearts); (King, Spades);
   ]
 
+let test_meld_deck =
+
+  [
+    (Nine, Spades);(Ace, Clubs); (Ace, Diamonds); (Ace, Hearts); (Ace, Spades);
+    (Two, Clubs); (Two, Diamonds); (Two, Hearts); (Two, Spades);
+    (Three, Clubs); (Three, Diamonds); (Three, Hearts); (Three, Spades);
+    (Four, Clubs); (Four, Diamonds); (Four, Hearts); (Four, Spades);
+    (Five, Clubs); (Five, Hearts); (Five, Spades);
+    (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
+    (Queen, Hearts); (Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); (Seven, Spades);
+    (Eight, Clubs); (King, Spades);(Eight, Diamonds); (Eight, Hearts); (Queen, Diamonds); (Eight, Spades);
+    (Nine, Clubs); (Nine, Diamonds);(Jack, Hearts); (Nine, Hearts); (Five, Diamonds);
+
+    (Ten, Clubs); (Ten, Diamonds); (Ten, Hearts); (Ten, Spades);
+    (Jack, Diamonds);  (Jack, Spades);
+    (Queen, Clubs); (Queen, Spades);
+    (King, Clubs); (King, Diamonds); (King, Hearts); 
+  ]
+
 let push card deck = 
   card :: deck
 
@@ -376,13 +395,14 @@ let rec valid_match match_deck melds =
     if is_empty dead then true else valid_match dead t
 
 let start_cards deck =
-  let temp = shuffle deck in  
+  (* let temp = shuffle deck in   *)
+  let temp = test_meld_deck in  
   let fst = get_list 31 temp  in
   let snd = get_list 1 (difference temp fst) in
   let trd = get_list 10 (difference (difference temp fst) snd) in
   let fth = 
     get_list 10 (difference (difference (difference temp fst) snd) trd) in
-  [fst; snd; trd; fth]
+  [fst; snd;  fth;trd]
 
 (** [card_score card hand acc] returns an int with the score of [card]. *)
 let rec card_score (card:card) (hand:t) (acc:int) =
