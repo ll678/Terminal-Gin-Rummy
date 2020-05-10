@@ -3,13 +3,16 @@ TERMINAL GIN RUMMY
 This is the install file for running TerminalGinRummy. 
 
 To play Gin Rummy, navigate to the TerminalGinRummy folder in the command shell 
-and run "make play". The game will prompt for Player 1’s name and Player 2’s 
+and run "make play". The game will prompt for either a single or multiplayer
+format. Type "yes" to play against a CPU, or "no" to play with another person. 
+In multiplayer, the game will prompt for Player 1’s name and Player 2’s 
 name, and then the game will begin. Each turn will consist of a draw and a 
-discard command.
+discard command. Players can type "help" at any time to bring up the game rules.
+Players can type "quit" to quit the game.
 
 To build the source files, run "make build".
 
-To delete files generated from your source code, run "make clean".
+To delete files generated from the source code, run "make clean".
 
 EXPLANATION:
 

@@ -198,3 +198,6 @@ val sorted_test_hand2 : t
 val test_deadwood : t
 
 val test_deadwood2 : t
+
+(** [test_meld_deck] is a sample init deck to facilitate match testing. *)
+val test_meld_deck : t

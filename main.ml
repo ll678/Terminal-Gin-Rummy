@@ -536,14 +536,14 @@ let main () =
   | exception End_of_file -> ()
   | answer -> 
     match answer with
-    | "yes" -> begin print_endline "Please enter your name, Player 1.\n";
+    | "yes" -> 
+      begin print_endline "Please enter your name, Player 1.\n";
         print_string  "> ";
         match read_line () with
         | exception End_of_file -> ()
         | name1 -> 
           init_game name1 "" true
       end
-
     | "no" ->  
       begin
         print_endline "Please enter your name, Player 1.\n";
@@ -558,7 +558,6 @@ let main () =
           | name2 -> init_game name1 name2 false
       end
     | _-> main_help ()
-
 
 (* Execute the game engine. *)
 let () = main ()
