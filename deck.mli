@@ -115,7 +115,7 @@ val deadwood : t -> t
 (** [deadwood_value hand] is the total int value of the deadwood in [hand]. *)
 val deadwood_value : t -> int
 
-(** [meld_value hand] is the total int value of the meld in [hand]. *)
+(** [meld_value hand] is the total int value of the melds in [hand]. *)
 val meld_value : t -> int
 
 (** [knock_deadwood_value hand] is the int value of the deadwood in [hand]
@@ -127,8 +127,8 @@ val knock_deadwood_value : t -> int
     Returns false if [melds] is empty. *) 
 val valid_match : t -> t list -> bool
 
-(** [get_worst hand] is the two cards with the lowest card values in the 
-    deadwood [hand]. *)
+(** [get_worst hand] is the tuple of the two cards with the lowest card values 
+    in the deadwood [hand]. *)
 val get_worst : t -> (card * int) * (card * int)
 
 (** [string_of_card card] is the string representation of [card]. *)
@@ -175,6 +175,9 @@ val test_hand4 : t
 (** [test_hand5] is [test_hand4] with the king of hearts, four of diamonds,
     and four of spades removed, used strictly for testing. *)
 val test_hand5 : t
+
+(** [test_hand6] is a test hand with two melds and no deadwood. *)
+val test_hand6 : t
 
 (** [test_meld] and [test_meld2] are lists of the melds of [test_hand] and
     [test_hand2], respectively, used strictly for testing. *)

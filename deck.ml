@@ -78,7 +78,7 @@ let rec get_list n l =
 let flatten_deck deck=
   List.flatten deck
 
-(** [value_of_card num] returns the int value corresponding to 
+(** [value_of_card num] returns the standard int value corresponding to 
     a card of [num]. *)
 let value_of_card rank =
   match rank with
@@ -86,8 +86,8 @@ let value_of_card rank =
   | Seven -> 7 | Eight -> 8 | Nine -> 9 | Ten -> 10 | Jack -> 10 
   | Queen -> 10 | King -> 10
 
-(** [value_of_card num] returns the int numerical value corresponding to 
-    a card of [num]. *)
+(** [value_of_card num] returns the int value corresponding to 
+    a card of [num] with face cards in ascending value. *)
 let value_of_rank rank =
   match rank with
   | Ace -> 1 | Two -> 2 | Three -> 3 | Four -> 4 | Five -> 5 | Six -> 6
@@ -364,18 +364,13 @@ let knock_deadwood_value hand =
     let final_d = remove max_card d in
     value_of_hand final_d
 
-(** [valid_melds card melds] returns true if [card] extends any of the melds
-    in [melds]. *)
-let rec valid_melds card melds =
+let rec valid_match match_deck melds =
   match melds with
   | [] -> false
-  | h::t -> let hand = push card h in
-    if is_empty (deadwood hand) then true else valid_melds card t
-
-let rec valid_match match_deck melds =
-  match match_deck with
-  | [] -> true
-  | h::t -> if (valid_melds h melds) then valid_match t melds else false
+  | h::t -> 
+    let hand = push_deck match_deck h in
+    let dead = deadwood hand in
+    if is_empty dead then true else valid_match dead t
 
 let start_cards =
   let temp = shuffle init_deck in  
@@ -401,22 +396,23 @@ let rec card_score (card:card) (hand:t) (acc:int) =
     let acc = if snd h = snd card then (acc+1) else acc in
     card_score card t acc
 
-(**[get card hand] is a (card*int) where each card is a 
-   card from [hand] and every int is the respective card's card score . *)
+(** [get card hand] is a (card*int) where each card is a 
+    card from [hand] and every int is the respective card's card score. *)
 let get_value (card:card) (hand:t) =
   (* let dif = difference hand [card] in  *)
   (card, card_score card hand 0)
 
-(**[get_values deadwood i acc] is a (card*int)*(card*int) list where each 
-   (card*int) in the pair 
-   is one of the pairs where int is one of the two lowest int's in lst  . *)
+(** [get_values deadwood i acc] is a (card*int)*(card*int) list where each 
+    (card*int) in the pair is one of the pairs where int is one of the two 
+    lowest ints in lst. *)
 let rec least (lst:((card*int) list)) (acc1) (acc2) =
   match lst with 
   | [] -> (acc1, acc2)
   | h::t -> if snd h < snd acc1 then (least t h acc1) else least t acc1 acc2
 
-(**[get_values deadwood i acc] is a (card*int) list where each card is a 
-   deadwood card from [deadwood] and every int is the respective card's card value  . *)
+(** [get_values deadwood i acc] is a (card*int) list where each card is a 
+    deadwood card from [deadwood] and every int is the respective card's card 
+    value. *)
 let rec get_values deadwood i acc =
   if i >= List.length deadwood then acc else
     let value = (get_value (nth deadwood i) deadwood) in
@@ -548,6 +544,9 @@ let test_hand4 = [(King, Hearts); (Five, Spades); (Six, Diamonds);
 
 let test_hand5 = [(Five, Spades); (Six, Diamonds); (Three, Spades); 
                   (Five, Diamonds); (Two, Spades); (Five, Clubs); (Six, Clubs)]
+
+let test_hand6 = [(Seven, Hearts); (Seven, Spades); (Seven, Hearts);
+                  (Eight, Clubs); (Nine, Clubs); (Ten, Clubs)]
 
 let test_meld = [
   [(Ace, Spades); (Two, Spades); (Three, Spades)];

@@ -14,7 +14,6 @@ type command =
 
 exception Empty
 
-(* TODO: we could make this malformed of string, to display helpful message *)
 exception Malformed
 
 let rec remove_emptys_lower str_list = 
