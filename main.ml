@@ -302,7 +302,7 @@ let conclude_round st winner_deck loser_deck round_score =
     print_string "I don't know what you did, but... try again.\n"; st
   | _ ->
     if winner_score > 100 then (
-      print_string ("\nCongrats " ^ winner_name ^ ", you've won!");
+      print_string ("\nCongrats " ^ winner_name ^ ", you've won!\n");
       exit 0
     ) else print_endline ("\nStarting new round..."); st 
 
