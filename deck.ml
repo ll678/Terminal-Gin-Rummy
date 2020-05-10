@@ -474,7 +474,7 @@ let rec string_of_deck deck =
   | h :: t -> string_of_card h :: string_of_deck t
 
 let card_of_string string = 
-  let str_lst = String.split_on_char ' ' string (*|> Command.remove_emptys_lower*)
+  let str_lst = String.split_on_char ' ' string |> Command.remove_emptys_lower
   in
   if length str_lst < 3 then raise Malformed else
     let fst = nth str_lst 0 in 
