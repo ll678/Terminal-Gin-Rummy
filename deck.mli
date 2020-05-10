@@ -57,7 +57,8 @@ val is_set: t -> bool
 (** [flatten_deck d] is a flattened list of [d]. *)
 val flatten_deck: t list -> t
 
-(** [find_deadwood_with_rank deadwood acc card] is a deck [t] where all values in the deck 
+(** [find_deadwood_with_rank deadwood acc card] is a deck [t] where all values 
+    in the deck 
     are deadwood cards that have the same rank as card. *)
 val find_deadwood_with_rank: t -> card -> t
 
@@ -209,5 +210,6 @@ val test_meld_deck : t
 (** [test_run_meld_deck] is a sample init deck to facilitate match testing. *)
 val test_run_meld_deck : t
 
-(** [test_run_meld_deck_two ] is a sample init deck to facilitate match testing. *)
+(** [test_run_meld_deck_two ] is a sample init deck to facilitate match 
+    testing. *)
 val test_run_meld_deck_two : t
