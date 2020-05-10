@@ -327,11 +327,8 @@ let rec knock_match (st : State.t) : State.t =
           Separate cards with a single comma and no spaces.
           If you cannot lay off any cards, press enter to end the round.");
       print_string  "> ";
-      match read_line () with 
-      | exception End_of_file -> 
-        print_string "I don't know what you did, but... try again.\n"; st
-      | read_line-> 
-        match Deck.deck_of_string read_line with
+      if State.get_current_player_name st = "CPU" 
+      then match Deck.deck_of_string (perform_optimal st) with
         | exception Deck.Malformed ->
           print_endline "You cannot match these. Try again.\n"; 
           st
@@ -340,6 +337,22 @@ let rec knock_match (st : State.t) : State.t =
             conclude_round new_st winner_deck loser_deck round_score
           | Illegal str -> print_string (str^"\n"); knock_match st
           | _ -> failwith "knock_match fail (shouldnt happen)"
+
+
+      else
+        match read_line () with 
+        | exception End_of_file -> 
+          print_string "I don't know what you did, but... try again.\n"; st
+        | read_line-> 
+          match Deck.deck_of_string read_line with
+          | exception Deck.Malformed ->
+            print_endline "You cannot match these. Try again.\n"; 
+            st
+          | valid_deck -> match State.knock_match valid_deck st with
+            | RoundEnd (new_st,winner_deck,loser_deck,round_score) ->
+              conclude_round new_st winner_deck loser_deck round_score
+            | Illegal str -> print_string (str^"\n"); knock_match st
+            | _ -> failwith "knock_match fail (shouldnt happen)"
     end
   | Illegal str -> print_string (str^"\n"); st
   | _ -> failwith "knock_match: something went wrong."
@@ -412,47 +425,14 @@ let rec play_game (st : State.t) =
 
 
 let rec handle_cpu_match (st : State.t) =
-  print_string "\n----------------------------------------------------------\n";
+  let next_st = process_readline "Match" st in 
+  (play_cpu_game next_st)
 
-  print_string "It is "; print_string (st |> State.get_current_player_name); 
-  print_string "'s Turn:\n\n";
+and
 
-  print_string "Discard Pile:             Stock Pile:\n";
-  print_piles (st |> State.get_discard |> Deck.string_of_hd);
-  print_string ("\n");
-
-  print_string (st |> State.get_current_player_name); print_string "'s Hand:\n";
-  print_cards (st |> State.get_current_player_hand |> Deck.string_of_deck);
-  print_string ("\n");
-
-  (* Print melds of current player's hand *)
-  print_string "\nMelds:\n";
-  print_melds (st |> State.get_current_player_hand |> Deck.best_meld);
-  print_string ("\n");
-
-  (* Print deadwood of current player's hand *)
-  print_string "Deadwood:\n";
-  print_deadwood (st |> State.get_current_player_hand |> Deck.deadwood |> 
-                  Deck.string_of_deck);
-  print_string ("\n\n");
-
-  if (State.get_current_player_name st = "CPU") then 
-    let s = perform_optimal st in 
-    let next_st = process_readline s st in 
-    (play_cpu_game next_st)
-  else
-    begin
-      print_endline (State.prompt_command st);
-      print_string "\n> ";
-      match read_line () with 
-      | exception End_of_file -> ()
-      | read_line -> let next_st = process_readline read_line st in 
-        (play_cpu_game next_st)
-    end
-
-(** [play_cpu_game st] starts a game of gin rummy with against the cpu with 
-    the init state [st]. *)
-let rec play_cpu_game (st : State.t) =
+  (** [play_cpu_game st] starts a game of gin rummy with against the cpu with 
+      the init state [st]. *)
+  play_cpu_game (st : State.t) =
   print_string "\n----------------------------------------------------------\n";
 
   print_string "It is "; print_string (st |> State.get_current_player_name); 
@@ -480,10 +460,8 @@ let rec play_cpu_game (st : State.t) =
 
   (* (Command.command * Deck.card option) option *)
   if (State.get_current_player_name st = "CPU") then 
-    match fst (State.get_moves st) with
-    | Some (Knock, a) -> handle_cpu_match
-    | _ ->
-
+    if (State.check_knock st) then handle_cpu_match st
+    else
       let s = perform_optimal st in 
       let next_st = process_readline s st in 
       (play_cpu_game next_st)

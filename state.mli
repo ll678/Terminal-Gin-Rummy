@@ -59,6 +59,9 @@ val get_opponent_player_score : t -> int
 (** [get_moves st] is the last two moves of the current player. *)
 val get_moves : t -> (move * move)
 
+(** [check_knock st] is [true] if last move was a knock [false] otherwise. *)
+val check_knock : t -> bool
+
 (** [get_last_card_drawn st] is an option of the last card drawn. 
     If there wasn't a last card drawn then None *)
 val get_last_card_drawn : t -> Deck.card option
