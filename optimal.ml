@@ -26,11 +26,16 @@ let optimal_discard st =
 let optimal stock discard hand =
   let first = Deck.push stock hand in
   let second = Deck.push discard hand in 
-  let value_one = Deck.value_of_hand first in 
-  let value_two = Deck.value_of_hand second in
+  (* We want to compare the two deadwood values (whatever has the 
+     lowest deadwood value) *)
+  let value_one = Deck.deadwood_value first in 
+  let value_two = Deck.deadwood_value second in
+
+
+
   if value_one = value_two then Draw "Discard" else
-  if value_one > value_two then Draw "Stock" else
-    Draw "Discard"
+  if value_one > value_two then Draw "Discard" else
+    Draw "Stock"
 
 (** [optimal_draw st] is the optimal draw move *) 
 let optimal_draw st = 
