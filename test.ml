@@ -54,13 +54,27 @@ let deadwood_test
   name >:: (fun _ -> 
       assert_equal (deadwood hand) expected_output)
 
+let deadwood_value_test
+    (name : string)
+    (hand : Deck.t)
+    (expected_output : int) : test =
+  name >:: (fun _ -> 
+      assert_equal (deadwood_value hand) expected_output)
+
+let meld_value_test
+    (name : string)
+    (hand : Deck.t)
+    (expected_output : int) : test =
+  name >:: (fun _ -> 
+      assert_equal (meld_value hand) expected_output)
+
 let valid_match_test
     (name : string)
     (deck : string)
     (hand : Deck.t)
     (expected_output : bool) : test =
   name >:: (fun _ ->
-      assert_equal (valid_match (deck_of_string deck) (best_meld hand)) 
+      assert_equal (valid_match (deck_of_string deck) (best_meld hand))
         expected_output)
 
 let string_of_deck_test
@@ -108,19 +122,32 @@ let string_of_hd_test
   name >:: (fun _ -> 
       assert_equal (string_of_hd deck) expected_output)
 
+let get_worst_test
+    (name : string)
+    (deck : Deck.t)
+    (expected_output : (Deck.card * int)* (Deck.card * int)) : test =
+  name >:: (fun _ -> 
+      assert_equal (get_worst deck) expected_output)
+
 let deck_tests = 
   [
+    suit_sort_test "sort empty hand" test_hand_empty test_hand_empty;
     suit_sort_test "sort hand 2 by suit" test_hand2 sorted_test_hand2;
     value_of_hand_test "value of empty hand" test_hand_empty 0;
     value_of_hand_test "value of hand 1" test_hand 38;
     value_of_hand_test "value of hand 2" test_hand2 46;
-    melds_test "testing meld of empty hand" test_hand_empty [];
-    melds_test "testing meld one run and set" test_hand test_meld;
-    melds_test "testing meld multiple runs/sets" test_hand2 test_meld2;
-    deadwood_test "testing deadwood of empty hand" 
-      test_hand_empty test_hand_empty;
-    deadwood_test "testing deadwood of hand 1" test_hand test_deadwood;
-    deadwood_test "testing deadwood of hand 2" test_hand2 test_deadwood2;
+    melds_test "meld of empty hand" test_hand_empty [];
+    melds_test "meld one run and set" test_hand test_meld;
+    melds_test "meld multiple runs/sets" test_hand2 test_meld2;
+    deadwood_test "deadwood of empty hand" test_hand_empty test_hand_empty;
+    deadwood_test "deadwood of hand 1" test_hand test_deadwood;
+    deadwood_test "deadwood of hand 2" test_hand2 test_deadwood2;
+    deadwood_value_test "deadwood value of empty hand" test_hand_empty 0;
+    deadwood_value_test "deadwood value of hand 1" test_hand 20;
+    deadwood_value_test "deadwood value when no deadwood" test_hand6 0;
+    meld_value_test "meld value of empty hand" test_hand_empty 0;
+    meld_value_test "meld value of hand 2" test_hand2 42;
+    meld_value_test "meld value when no deadwood" test_hand6 48;
     string_of_deck_test "string of hand 1" test_hand
       ["Queen of Hearts"; "Six of Clubs"; "Four of Hearts"; "Four of Clubs";
        "Four of Spades"; "Two of Clubs"; "Two of Hearts"; "Ace of Spades";
@@ -154,6 +181,15 @@ let deck_tests =
       "Five of Spades" test_hand false;
     valid_match_test "valid match, mixed cases"
       "ace of spades,Six of Hearts,five of Hearts" test_hand2 true;
+    valid_match_test "valid match, multiple runs and sets"
+      "six of clubs, seven of clubs" test_hand6 true;
+    valid_match_test "invalid match, multiple runs and sets"
+      "six of clubs" test_hand6 false;
+    get_worst_test "worst of deadwood" test_deadwood 
+      ((card_of_string "six of clubs", 3), (card_of_string "two of hearts", 4));
+    get_worst_test "worst of deadwood with one card" test_deadwood2 
+      ((card_of_string "four of diamonds", 2), 
+       (card_of_string "four of diamonds", 2));
   ]
 
 let parse_test 

@@ -316,18 +316,13 @@ let knock_deadwood_value hand =
     let final_d = remove max_card d in
     value_of_hand final_d
 
-(** [valid_melds card melds] returns true if [card] extends any of the melds
-    in [melds]. *)
-let rec valid_melds card melds =
+let rec valid_match match_deck melds =
   match melds with
   | [] -> false
-  | h::t -> let hand = push card h in
-    if is_empty (deadwood hand) then true else valid_melds card t
-
-let rec valid_match match_deck melds =
-  match match_deck with
-  | [] -> true
-  | h::t -> if (valid_melds h melds) then valid_match t melds else false
+  | h::t -> 
+    let hand = push_deck match_deck h in
+    let dead = deadwood hand in
+    if is_empty dead then true else valid_match dead t
 
 let start_cards =
   let temp = shuffle init_deck in  
@@ -501,6 +496,9 @@ let test_hand4 = [(King, Hearts); (Five, Spades); (Six, Diamonds);
 
 let test_hand5 = [(Five, Spades); (Six, Diamonds); (Three, Spades); 
                   (Five, Diamonds); (Two, Spades); (Five, Clubs); (Six, Clubs)]
+
+let test_hand6 = [(Seven, Hearts); (Seven, Spades); (Seven, Hearts);
+                  (Eight, Clubs); (Nine, Clubs); (Ten, Clubs)]
 
 let test_meld = [
   [(Ace, Spades); (Two, Spades); (Three, Spades)];
