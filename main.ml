@@ -229,17 +229,19 @@ let print_help st =
 
      The remaining cards in your hand that do not form melds are called 
      deadwood. Your objective is to minimize the value of your deadwood. When 
-     your deadwood has a value of 10 or less, you can choose to end the round 
-     by knocking (type \"knock\"). Knocking discards the highest value card 
+     your deadwood will have a value of 10 or less at the end of your turn 
+     (after discarding), you can choose to end the round by knocking 
+     (type \"knock\"). Knocking automatically discards the highest value card 
      in your deadwood and arranges the remaining cards into runs and sets. 
 
      After knocking, your opponent will be allowed to lay off their deadwood 
      cards by adding them to your melds (but not your deadwood), if possible.
      To lay off any cards, type \"match\". Then, you will be prompted to type
      the list of cards that you wish to lay off, separated by a comma and 
-     no spaces. If you knock when you have no deadwood, that is called 
-     \"going gin\" (type \"gin\" or \"knock\") and your opponent will not be 
-     allowed to lay off any cards. 
+     no spaces. If you knock when your deadwood value would be zero after 
+     discarding, that is called \"going gin\" (type \"gin\" or \"knock\") and 
+     your opponent will not be allowed to lay off any cards. When you go gin,
+     you automatically win that round. 
 
      Your scores will then be calculated and the winner of the round will be 
      the player with a lower deadwood value. The game will continue until 

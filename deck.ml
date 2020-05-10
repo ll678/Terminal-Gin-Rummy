@@ -7,8 +7,8 @@ type card = rank * suit
 
 type t = card list
 
-
 exception Malformed
+
 
 let init_deck = 
   [
@@ -106,9 +106,12 @@ let rec add_run meld deadwood =
   | h::t -> 
     let head = hd meld in
     let tail = final meld (hd meld) in
-    if ((value_of_rank (fst h) = value_of_rank (fst head) -1 || value_of_rank (fst h) = value_of_rank (fst head) -1 )
-        || (value_of_rank (fst h) = value_of_rank (fst tail) -1 || value_of_rank (fst h) = value_of_rank (fst tail) -1 )) &&
-       snd h = snd head
+    if ((value_of_rank (fst h) = value_of_rank (fst head) -1 
+         || value_of_rank (fst h) = value_of_rank (fst head) -1 )
+        || 
+        (value_of_rank (fst h) = value_of_rank (fst tail) -1 
+         || value_of_rank (fst h) = value_of_rank (fst tail) -1 )) 
+    && snd h = snd head
     then add_run (h::meld) t else add_run meld t
 
 (** [search_rank deadwood acc card] is a deck [t] where all values in the deck 
@@ -118,7 +121,6 @@ let rec search_rank deadwood acc card =
   | [] -> acc
   | h::t -> if value_of_rank (fst h) = value_of_rank (fst card) then 
       search_rank t (h::acc) card else search_rank t acc card 
-
 
 let find_deadwood_with_rank deadwood card =
   search_rank deadwood [] card
@@ -312,7 +314,6 @@ let rec calculate_meld_value list acc =
 let rec list_traversal i n list =
   if (nth list i) = n then i else list_traversal (i+1) n list
 
-
 let rec is_set_check (meld:t) (acc:bool) (rank:rank)  =
   match meld with 
   | [] -> acc
@@ -322,7 +323,6 @@ let rec is_set_check (meld:t) (acc:bool) (rank:rank)  =
 
 let is_set meld =
   is_set_check meld true (fst (hd meld))
-
 
 let best_meld hand =
   let melds = get_melds hand in
@@ -348,20 +348,23 @@ let meld_value hand =
 let rev_sort deck =
   List.rev (suit_sort deck)
 
+let max_deadwood_card hand =
+  let d = deadwood hand in
+  let vals = List.map (fun (rank, _) -> value_of_card rank) d in
+  let largest = function
+    | [] -> 0
+    | x::xs -> List.fold_left max x xs
+  in
+  let max_val = largest vals in
+  let max_index = list_traversal 0 max_val vals in
+  nth d max_index
+
 let knock_deadwood_value hand =
   let d = deadwood hand in
   match d with
   | [] -> 0
-  | _ ->
-    let vals = List.map (fun (rank, _) -> value_of_card rank) d in
-    let largest = function
-      | [] -> 0
-      | x::xs -> List.fold_left max x xs
-    in
-    let max_val = largest vals in
-    let max_index = list_traversal 0 max_val vals in
-    let max_card = nth d max_index in
-    let final_d = remove max_card d in
+  | _ -> 
+    let final_d = remove (max_deadwood_card hand) d in
     value_of_hand final_d
 
 let rec valid_match match_deck melds =

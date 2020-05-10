@@ -17,10 +17,9 @@ type card = rank * suit
 (** The abstract type of values representing card decks. *)
 type t
 
-
-
 (** The exception of malformed cards. *)
 exception Malformed
+
 
 (** [init_deck] is the initialized and sorted standard 52-card deck. *)
 val init_deck : t
@@ -55,7 +54,7 @@ val length : t -> int
 (** [is_set meld] is [true] if meld is a set, [false] otherwise. *)
 val is_set: t -> bool
 
-(** [flatten_deck d] is a flattened list of d. *)
+(** [flatten_deck d] is a flattened list of [d]. *)
 val flatten_deck: t list -> t
 
 (** [find_deadwood_with_rank deadwood acc card] is a deck [t] where all values in the deck 
@@ -101,7 +100,8 @@ val value_of_hand : t -> int
 val union : t -> t -> t
 
 (** [intersect l1 l2] contains only the elements that are elements of [l1]
-    and elements of [l2]. *)
+    and elements of [l2]. This function was inspired by code previously
+    used in A4: Search. *)
 val intersect : t -> t -> t
 
 (** [best_meld hand] returns a list of the meld combinations of [hand] that 
@@ -117,6 +117,10 @@ val deadwood_value : t -> int
 
 (** [meld_value hand] is the total int value of the melds in [hand]. *)
 val meld_value : t -> int
+
+(** [max_deadwood_card hand] is the card with the highest face value in
+    the deadwood of [hand]. *)
+val max_deadwood_card : t -> card
 
 (** [knock_deadwood_value hand] is the int value of the deadwood in [hand]
     with the implied discard of the highest value card in the deadwood. *)
