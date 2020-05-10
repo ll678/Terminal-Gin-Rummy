@@ -74,7 +74,7 @@ let rec get_list n l =
     | []-> []
     | h::t ->  h::(get_list (n-1) t)
 
-(** [value_of_card num] returns the int value corresponding to 
+(** [value_of_card num] returns the standard int value corresponding to 
     a card of [num]. *)
 let value_of_card rank =
   match rank with
@@ -82,8 +82,8 @@ let value_of_card rank =
   | Seven -> 7 | Eight -> 8 | Nine -> 9 | Ten -> 10 | Jack -> 10 
   | Queen -> 10 | King -> 10
 
-(** [value_of_card num] returns the int numerical value corresponding to 
-    a card of [num]. *)
+(** [value_of_card num] returns the int value corresponding to 
+    a card of [num] with face cards in ascending value. *)
 let value_of_rank rank =
   match rank with
   | Ace -> 1 | Two -> 2 | Three -> 3 | Four -> 4 | Five -> 5 | Six -> 6

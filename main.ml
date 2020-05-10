@@ -145,9 +145,9 @@ let rec print_deadwood lst =
        print_string "  ");
     print_deadwood t
 
-(**[change new_st st] is [st] if new_st is [Illegal], 
-   fails if new_st is RoundEnd and
-   is the new_st state otherwise . *)
+(**[change new_st st] is [st] if [new_st] is [Illegal], 
+   fails if [new_st] is RoundEnd and
+   is the state of [new_st] otherwise . *)
 let change (new_st : State.result) (st : State.t) = 
   match new_st with 
   | Legal t -> t
