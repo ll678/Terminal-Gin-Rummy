@@ -375,8 +375,8 @@ let rec valid_match match_deck melds =
     let dead = deadwood hand in
     if is_empty dead then true else valid_match dead t
 
-let start_cards =
-  let temp = shuffle init_deck in  
+let start_cards deck =
+  let temp = shuffle deck in  
   let fst = get_list 31 temp  in
   let snd = get_list 1 (difference temp fst) in
   let trd = get_list 10 (difference (difference temp fst) snd) in
@@ -402,7 +402,6 @@ let rec card_score (card:card) (hand:t) (acc:int) =
 (** [get card hand] is a (card*int) where each card is a 
     card from [hand] and every int is the respective card's card score. *)
 let get_value (card:card) (hand:t) =
-  (* let dif = difference hand [card] in  *)
   (card, card_score card hand 0)
 
 (** [get_values deadwood i acc] is a (card*int)*(card*int) list where each 
@@ -455,7 +454,7 @@ let rec string_of_deck deck =
   | h :: t -> string_of_card h :: string_of_deck t
 
 let card_of_string string = 
-  let str_lst = String.split_on_char ' ' string |> Command.remove_emptys_lower
+  let str_lst = String.split_on_char ' ' string (*|> Command.remove_emptys_lower*)
   in
   if length str_lst < 3 then raise Malformed else
     let fst = nth str_lst 0 in 

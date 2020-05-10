@@ -24,10 +24,10 @@ exception Malformed
 (** [init_deck] is the initialized and sorted standard 52-card deck. *)
 val init_deck : t
 
-(** [start_cards] creates an initialized and shuffled deck and returns a list
-    that contains a list of stock pile cards, a list of discard pile cards, 
-    and each player's starting hand. *)
-val start_cards : t list
+(** [start_cards deck] creates an initialized and shuffled version of [deck] and 
+    returns a list that contains a list of stock pile cards, a list of discard 
+    pile cards, and each player's starting hand. *)
+val start_cards : t -> t list
 
 (** [push card deck] pushes [card] onto the top of [deck]. *)
 val push : card -> t -> t

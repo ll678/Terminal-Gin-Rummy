@@ -35,7 +35,7 @@ let init_players starting_cards starting_scores names = (
   })
 
 let init_state players_starting_scores start_player names = 
-  let starting_cards = Deck.start_cards in
+  let starting_cards = Deck.start_cards (Deck.init_deck) in
   {
     stock_pile = Deck.nth starting_cards 0;
     discard_pile = Deck.nth starting_cards 1;
