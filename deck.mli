@@ -141,6 +141,10 @@ val string_of_card : card -> string
 (** [string_of_deck deck] is the list of stringified cards in [deck]. *)
 val string_of_deck : t -> string list
 
+(** [string_of_deck_f deck] is the list of stringified cards in [deck]
+    separated with ",". *)
+val string_of_deck_f : t -> string
+
 (** [card_of_string string] is the card of [string]. *)
 val card_of_string : string -> card
 

@@ -176,7 +176,7 @@ let handle_hint (new_move : Optimal.move) (st : State.t) =
   | Knock -> print_string "You should knock to win this round!" ; 
     print_endline "\n"
   | Cards t -> print_string "Match with: " ; 
-    print_string_list (Deck.string_of_deck t);
+    print_string (Deck.string_of_deck_f t);
     print_endline "\n"
   | Match -> print_string "Type \"match\" to begin laying off cards!" ; 
     print_endline "\n"
@@ -190,7 +190,13 @@ let perform_optimal st =
   | Discard t -> "Discard " ^ Deck.string_of_card t  ; 
   | Draw t -> "Draw " ^  t ; 
   | Knock -> "Knock" ;
-  | Cards t -> String.concat "Match "  (Deck.string_of_deck t)
+  | Cards t ->  
+    (* print_string "****DEBUG*****";
+       print_string_list (Deck.string_of_deck_f t);
+       print_string "****DEBUG*****";
+       print_string_list (Deck.string_of_deck_f t);
+       print_string "****DEBUG*****"; *)
+    (Deck.string_of_deck_f t)
   | Match -> "Match"
   | Pass -> "Pass"
 

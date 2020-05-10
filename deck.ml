@@ -46,6 +46,61 @@ let test_meld_deck =
     (King, Clubs); (King, Diamonds); (King, Hearts); 
   ]
 
+let test_run_meld_deck =
+
+  [
+    (* Stock pile *)
+    (Nine, Spades);(Ace, Clubs); (Ace, Diamonds); (Ace, Hearts); (Ace, Spades);
+    (Two, Diamonds); (Two, Hearts); (Two, Spades);
+    (Three, Clubs); (Three, Diamonds); (Three, Hearts); (Three, Spades);
+    (Four, Clubs); (Four, Diamonds); (Four, Hearts); (Four, Spades);
+    (Five, Clubs); (Five, Hearts); (Five, Spades);
+    (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
+    (Queen, Clubs);(Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); (Seven, Spades);
+    (Ten, Spades); (Nine, Clubs); 
+    (* Discard pile *)
+    (Eight, Diamonds); 
+
+    (* Player 1 *)
+    (Eight, Hearts); (King, Spades);(Queen, Spades);(Eight, Spades);
+    (Nine, Diamonds);(Jack, Spades);(Nine, Hearts); (Five, Diamonds);
+    (Ten, Clubs); (Two, Clubs);
+
+    (* Player 2 *)
+    (Ten, Diamonds); (Ten, Hearts);(Eight, Clubs);
+    (Jack, Diamonds);  (Jack, Hearts); 
+    (Queen, Diamonds); (Queen, Hearts); 
+    (King, Clubs); (King, Diamonds); (King, Hearts); 
+  ]
+
+let test_run_meld_deck_two =
+  [
+    (* Stock pile *)
+    (Nine, Spades);(Eight, Spades); (Ace, Clubs); (Ace, Diamonds); (Ace, Hearts); 
+    (Two, Diamonds); (Two, Hearts); (Two, Spades);
+    (Three, Clubs); (Three, Diamonds); (Three, Hearts); (Three, Spades);
+    (Four, Clubs); (Four, Diamonds);  (Four, Spades);
+    (Five, Clubs); (Five, Hearts); (Five, Spades); (Eight, Clubs);
+    (Six, Clubs); (Six, Diamonds); (Six, Hearts); (Six, Spades); (Jack, Clubs);
+    (Queen, Clubs);(Seven, Clubs); (Seven, Diamonds); (Seven, Hearts); (Seven, Spades);
+    (Ten, Spades); (Nine, Clubs); 
+    (* Discard pile *)
+    (Ace, Spades);
+
+
+    (* Player 1 *)
+    (Eight, Hearts); (King, Spades);(Queen, Spades);
+    (Nine, Diamonds);(Jack, Spades);(Nine, Hearts); (Five, Diamonds); 
+    (Eight, Diamonds); 
+    (Ten, Clubs); (Two, Clubs);
+
+    (* Player 2 *)
+    (Ten, Diamonds); (Ten, Hearts);
+    (Jack, Diamonds);  (Jack, Hearts); 
+    (Queen, Diamonds); (Queen, Hearts); (Four, Hearts);
+    (King, Clubs); (King, Diamonds); (King, Hearts); 
+  ]
+
 let push card deck = 
   card :: deck
 
@@ -395,13 +450,13 @@ let rec valid_match match_deck melds =
     if is_empty dead then true else valid_match dead t
 
 let start_cards =
-  let temp = test_meld_deck in  
+  let temp = shuffle init_deck in  
   let fst = get_list 31 temp  in
   let snd = get_list 1 (difference temp fst) in
   let trd = get_list 10 (difference (difference temp fst) snd) in
   let fth = 
     get_list 10 (difference (difference (difference temp fst) snd) trd) in
-  [fst; snd;  fth;trd]
+  [fst; snd; trd; fth]
 
 (** [card_score card hand acc] returns an int with the score of [card]. *)
 let rec card_score (card:card) (hand:t) (acc:int) =
@@ -473,9 +528,19 @@ let rec string_of_deck deck =
   | [] -> []
   | h :: t -> string_of_card h :: string_of_deck t
 
+
+let rec string_of_deck_f (deck: t) = 
+  match deck with
+  | [] -> ""
+  | h::[] -> string_of_card h
+  | h :: t -> (string_of_card h ^ ",") ^ string_of_deck_f t
+
 let card_of_string string = 
   let str_lst = String.split_on_char ' ' string |> Command.remove_emptys_lower
   in
+  (* print_string ("****DEBUG****"); *)
+  (* print_string string; *)
+  (* print_string ("****DEBUG****"); *)
   if length str_lst < 3 then raise Malformed else
     let fst = nth str_lst 0 in 
     let rank = 
@@ -492,6 +557,7 @@ let card_of_string string =
       else if fst = "jack" then Jack
       else if fst = "queen" then Queen
       else if fst = "king" then King
+
       else raise Malformed
     in
     let snd = nth str_lst 2 in

@@ -37,6 +37,15 @@ let optimal stock discard hand =
   if value_one > value_two then Draw "Discard" else
     Draw "Stock"
 
+
+(** [print_string_list lst] prints the string list [lst] in the
+    command shell. *)
+let rec print_string_list = function 
+    [] -> ()
+  | h::t -> print_string h ; print_string " " ; print_string_list t
+
+
+
 (** [optimal_draw st] is the optimal draw move *) 
 let optimal_draw st = 
   let stock = State.get_stock st in 
@@ -48,7 +57,6 @@ let optimal_draw st =
     optimal (Deck.hd stock) (Deck.hd discard) hand 
 
 
-
 (** [add_valid_deadwood meld first second] is Meld with extending 
     deadwood added on *) 
 let add_valid_deadwood meld first second =
@@ -56,8 +64,15 @@ let add_valid_deadwood meld first second =
   if Deck.is_set meld then 
     Deck.push_deck (Deck.find_deadwood_with_rank first (Deck.hd meld)) meld
   else 
+    (* Checking to see what we can add in both directiions *)
     let f = Deck.add_run meld first  in
-    let s = Deck.add_run meld first  in
+    let s = Deck.add_run meld second  in
+
+    (* print_string ("****DEBUG Beggining of first****");
+       print_string_list (Deck.string_of_deck f);
+       print_string ("****DEBUG Beggining of second****");
+       print_string_list (Deck.string_of_deck s);
+       print_string ("****DEBUG END****"); *)
     Deck.union f s
 
 (** [match_deadwood matcher_deadwood knocker_melds acc] is the Deck.t list
